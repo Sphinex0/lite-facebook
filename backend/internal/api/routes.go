@@ -1,5 +1,20 @@
 package api
 
-func Routes(db *sql.DB) *http.ServeMux {
+import (
+	"database/sql"
+	"net/http"
 
+	handler "social-network/internal/api/handler"
+)
+
+func Routes(db *sql.DB) *http.ServeMux {
+	H := handler.NewHandler(db)
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/api/Login", H.Login)
+	mux.HandleFunc("/Signup", H.Signup)
+	//mux.HandleFunc("/Lougout", H.LougoutHandler)
+	//mux.HandleFunc("/api/checkuser", H.InfoHandler)
+
+	return mux
 }
