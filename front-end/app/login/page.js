@@ -1,48 +1,53 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import './globals.css'; 
+import { useState } from "react";
+import "./login.css";
 
-export default function Home() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export default function Login() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await FetchLogin(email,password);
+    //Login()
   };
 
   return (
     <div className="container">
-      <form onSubmit={handleSubmit}>
-        {/* Email Input */}
-        <label htmlFor="username">User or email:</label>
-        <input
-          type="text"
-          value={email}
-          placeholder="user or email"
-          required
-          id="username"
-          onChange={(e) => setEmail(e.target.value)}
-        />
-        <i className="bx bxs-user"></i>
+      <div className="form-box">
+        <h2>Login</h2>
 
-        {/* Password Input */}
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          value={password}
-          placeholder="Password"
-          required
-          id="password"
-          onChange={(e) => setPassword(e.target.value)}
-        />
-        <i className="bx bxs-lock-alt"></i>
+        <form onSubmit={handleSubmit}>
+          {/* Email Input */}
+          <div className="input-group">
+            <input
+              type="text"
+              value={email}
+              placeholder="User or Email"
+              required
+              id="username"
+              onChange={(e) => setEmail(e.target.value)}
+              className="input-field"
+            />
+          </div>
 
-        <button type="submit" id="login-btn">
-          Login
-        </button>
-      </form>
+          {/* Password Input */}
+          <div className="input-group">
+            <input
+              type="password"
+              value={password}
+              placeholder="Password"
+              required
+              id="password"
+              onChange={(e) => setPassword(e.target.value)}
+              className="input-field"
+            />
+          </div>
+
+          {/* Submit Button */}
+          <button type="submit" className="submit-btn">Login</button>
+        </form>
+      </div>
     </div>
   );
 }

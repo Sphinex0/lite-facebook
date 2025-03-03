@@ -13,8 +13,6 @@ func Routes(db *sql.DB) *http.ServeMux {
 
 	mux.HandleFunc("/api/Login", H.Login)
 	mux.HandleFunc("/Signup", H.Signup)
-	//mux.HandleFunc("/Lougout", H.LougoutHandler)
-	//mux.HandleFunc("/api/checkuser", H.InfoHandler)
 
 	return mux
 }

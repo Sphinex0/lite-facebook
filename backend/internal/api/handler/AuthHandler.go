@@ -22,6 +22,7 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
+
 	err := H.Service.LoginUser(&user)
 	if err != nil {
 		if err == sqlite3.ErrLocked {
@@ -58,8 +59,7 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// set the cookie
-	//utils.SetSessionCookie(w, user.Uuid)
+	SetSession(id)
 	utils.WriteJson(w, http.StatusOK, "You Logged In Successfuly!")
 }
 
@@ -127,20 +127,3 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.WriteJson(w, http.StatusOK, "You'v loged succesfuly")
 }
-
-/*
-func (H *Handler) LougoutHandler(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
-	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, "bad request")
-	}
-
-	// Delete The cookie
-
-	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
-}
-
-func (H *Handler) InfoHandler(w http.ResponseWriter, r *http.Request) {
-	// check if the user is valide or not
-}*/
