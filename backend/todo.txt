@@ -1,2 +1,9 @@
 //create a db
 // sing up && login functunality
+// groups
+// request
+// chat privet && public
+// accept and reject
+// profile user
+
+
