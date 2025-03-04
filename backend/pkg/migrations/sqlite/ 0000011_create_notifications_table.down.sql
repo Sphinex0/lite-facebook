@@ -1,1 +1,2 @@
-DROP IF EXISTS notifications;
+-- +migrate Down
+DROP TABLE  IF EXISTS notifications;

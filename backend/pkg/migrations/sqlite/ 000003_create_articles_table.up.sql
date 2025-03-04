@@ -1,3 +1,4 @@
+-- +migrate Up
 CREATE TABLE 
         articles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

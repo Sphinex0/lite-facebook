@@ -1,1 +1,2 @@
-DROP IF EXISTS invites;
+-- +migrate Down
+DROP TABLE IF EXISTS invites;

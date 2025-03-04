@@ -17,7 +17,7 @@ func main() {
 		return
 	}
 
-	if err := repository.ApplyMigrations(); err != nil {
+	if err := repository.ApplyMigrations(db); err != nil {
 		log.Fatalf("Migration failed: %v", err)
 	}
 

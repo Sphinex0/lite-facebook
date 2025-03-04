@@ -1,3 +1,4 @@
+-- +migrate Up
 CREATE TABLE 
         messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

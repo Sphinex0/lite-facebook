@@ -1,3 +1,4 @@
+-- +migrate Up
 CREATE TABLE 
     sessions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
