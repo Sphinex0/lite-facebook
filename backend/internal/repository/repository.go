@@ -41,3 +41,7 @@ func ApplyMigrations(db *sql.DB) error {
 func (data *Database) StoreUser(user models.User)  {
 	data.Db.Exec("")
 }
+
+func (data *Database) StoreSession(user models.User)  {
+	data.Db.Exec("")
+}

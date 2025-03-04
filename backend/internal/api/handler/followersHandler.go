@@ -1,6 +1,6 @@
 package handler
 
-func (Handler *Handler) StoreFollow() {
+func (Handler *Handler) AddFollow() {
 }
 
 func (Handler *Handler) GetFollowers() {

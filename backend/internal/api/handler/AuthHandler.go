@@ -1,14 +1,10 @@
 package handler
 
 import (
-	"database/sql"
-	"encoding/json"
 	"net/http"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
-
-	"github.com/mattn/go-sqlite3"
 )
 
 func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -17,49 +13,25 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var user models.User
-	if erro := json.NewDecoder(r.Body).Decode(&user); erro != nil {
+	if err := utils.ParseBody(r, &user); err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
 	err := H.Service.LoginUser(&user)
 	if err != nil {
-		if err == sqlite3.ErrLocked {
-			utils.WriteJson(w, http.StatusLocked, "Database Is Busy!")
-			return
-		}
-		// Email
-		if err.Error() == models.Errors.InvalidEmail {
-			utils.WriteJson(w, http.StatusBadRequest, models.Errors.InvalidEmail)
-			return
-		}
-		if err.Error() == models.Errors.LongEmail {
-			utils.WriteJson(w, http.StatusBadRequest, models.Errors.LongEmail)
-			return
-		}
-
-		// Password
-		if err.Error() == models.Errors.InvalidPassword {
-			utils.WriteJson(w, http.StatusBadRequest, models.Errors.InvalidPassword)
-			return
-		}
-		// General: User Doesn't Exist
-		if err.Error() == models.Errors.InvalidCredentials {
-			utils.WriteJson(w, http.StatusBadRequest, models.Errors.InvalidCredentials)
-			return
-		}
-
-		if err == sql.ErrNoRows {
-			utils.WriteJson(w, http.StatusBadRequest, models.Errors.InvalidCredentials)
-			return
-		}
-
-		utils.WriteJson(w, http.StatusInternalServerError, "Error While logging To An  Account.")
+		utils.WriteJson(w, http.StatusBadRequest, "Error While logging To An  Account.")
 		return
 	}
 
-	// SetSession(id)
-	utils.WriteJson(w, http.StatusOK, "You Logged In Successfuly!")
+	userinfo := models.UserInfo{
+		Nickname:   user.Nickname,
+		First_Name: user.First_Name,
+		Last_Name:  user.Last_Name,
+		Image:      user.Image,
+	}
+
+	utils.WriteJson(w, http.StatusOK, userinfo)
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {

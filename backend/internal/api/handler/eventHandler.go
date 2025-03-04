@@ -1,6 +1,6 @@
 package handler
 
-func (Handler *Handler) StoreEvent() {
+func (Handler *Handler) AddEvent() {
 }
 
 func (Handler *Handler) GetEvents() {

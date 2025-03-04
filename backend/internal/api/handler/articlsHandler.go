@@ -1,10 +1,10 @@
 package handler
 
-func (Handler *Handler) StoreArticle() {
+func (Handler *Handler) AddArticle() {
 }
 
 func (Handler *Handler) GetArticles() {
 }
 
-func (Handler *Handler) StoreReaction() {
+func (Handler *Handler) AddReaction() {
 }
