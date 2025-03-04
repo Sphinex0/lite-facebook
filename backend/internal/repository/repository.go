@@ -16,7 +16,7 @@ const dbPath = "internal/repository/forum.db"
 
 func OpenDb() (*sql.DB, error) {
 	var err error
-	db, err = sql.Open("sqlite3", dbPath)
+	db, err := sql.Open("sqlite3", dbPath)
 	return db, err
 }
 
