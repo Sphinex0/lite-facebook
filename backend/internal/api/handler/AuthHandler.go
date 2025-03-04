@@ -1,6 +1,15 @@
 package handler
 
-/*
+import (
+	"database/sql"
+	"encoding/json"
+	"net/http"
+
+	"social-network/internal/models"
+
+	"github.com/mattn/go-sqlite3"
+)
+
 func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
@@ -115,4 +124,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.WriteJson(w, http.StatusOK, "You'v loged succesfuly")
-}*/
+}
+
+func (Handler *Handler) Logout() {
+}

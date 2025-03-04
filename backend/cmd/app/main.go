@@ -7,6 +7,7 @@ import (
 
 	"social-network/internal/api"
 	"social-network/internal/repository"
+
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 

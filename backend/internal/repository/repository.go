@@ -16,8 +16,12 @@ const dbPath = "internal/repository/forum.db"
 
 func OpenDb() (*sql.DB, error) {
 	var err error
-	db, err := sql.Open("sqlite3", dbPath)
-	return db, err
+	db, err := sql.Open("sqlite3", dbPath+"?_foreing_keys=1")
+	if err != nil {
+		return db, err
+	}
+	db.SetMaxOpenConns(10)
+	return db, nil
 }
 
 func ApplyMigrations(db *sql.DB) error {
