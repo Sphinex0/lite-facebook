@@ -8,3 +8,5 @@ func (Handler *Handler) GetEvents() {
 
 func (Handler *Handler) GetEvent() {
 }
+
+// skip

@@ -6,3 +6,5 @@ func (Handler *Handler) AddInvite() {
 
 func (Handler *Handler) GetInvites() {
 }
+
+// skip
