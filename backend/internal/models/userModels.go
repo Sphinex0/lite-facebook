@@ -19,4 +19,3 @@ type UserInfo struct {
 	Last_Name  string `json:"last_name"`
 	Image      string `json:"image"`
 }
-

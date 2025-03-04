@@ -1,13 +1,14 @@
 package models
 
-type Articls struct {
-	ID string `json:"id"`
-	User_Id string `json:"user_id"`
-	Content string `json:"content"`
-	Privacy string `json:"privacy"`
-	Created_at string `json:"created_at"`
-	Modified_at string `json:"modified_at"`
-	Image string `json:"image"`
-	Parent string `json:"parent"`
-	Group_id string `json:"group_id"`
+// Article represents an article entity, corrected from "Articls".
+type Article struct {
+	ID         string `json:"id"`
+	UserID     string `json:"user_id"` // Renamed to UserID for Go naming conventions
+	Content    string `json:"content"`
+	Privacy    string `json:"privacy"`
+	CreatedAt  string `json:"created_at"`  // Renamed to CreatedAt for consistency
+	ModifiedAt string `json:"modified_at"` // Renamed to ModifiedAt
+	Image      string `json:"image"`
+	Parent     string `json:"parent"`
+	GroupID    string `json:"group_id"` // Renamed to GroupID
 }
