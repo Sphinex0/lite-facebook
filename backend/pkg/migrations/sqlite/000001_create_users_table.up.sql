@@ -9,6 +9,6 @@ CREATE TABLE
         avatar TEXT,
         nickname VARCHAR(255),
         aboutme VARCHAR(255),
-        profileType BOOLEAN DEFAULT 0,
+        profileType  TEXT,
         createdAt DATETIME NOT NULL
     );

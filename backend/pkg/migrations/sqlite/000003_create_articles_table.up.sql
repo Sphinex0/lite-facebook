@@ -1,4 +1,5 @@
-CREATE TABLE articles (
+CREATE TABLE 
+        articles (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER,
     content TEXT,

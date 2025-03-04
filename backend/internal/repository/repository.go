@@ -29,6 +29,7 @@ func OpenDb() (*sql.DB, error) {
 func ApplyMigrations() error {
 	// get the currente directory path name
 	wd, err := os.Getwd()
+	fmt.Println(wd)
 	if err != nil {
 		return fmt.Errorf("can't get the rooted path name %w", err)
 	}

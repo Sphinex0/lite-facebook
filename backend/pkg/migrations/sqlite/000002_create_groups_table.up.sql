@@ -5,5 +5,5 @@ CREATE TABLE
         title TEXT,
         descriptopn TEXT,
         createdAt DATETIME NOT NULL,
-        FOREIGN KEY (creator) REFERENCES users(id) ON DELETE CASCADE,
-    );
+        FOREIGN KEY (creator) REFERENCES users(id) ON DELETE CASCADE
+);
