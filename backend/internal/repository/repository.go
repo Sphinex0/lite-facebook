@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"social-network/internal/models"
 
 	_ "github.com/mattn/go-sqlite3"
 	migrate "github.com/rubenv/sql-migrate"
@@ -35,4 +36,8 @@ func ApplyMigrations(db *sql.DB) error {
 	}
 	fmt.Println("apply Migration Successfully!")
 	return nil
+}
+
+func (data *Database) StoreUser(user models.User)  {
+	data.Db.Exec("")
 }
