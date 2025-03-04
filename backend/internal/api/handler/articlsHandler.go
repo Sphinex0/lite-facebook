@@ -1,10 +1,12 @@
 package handler
 
-func (Handler *Handler) AddArticle() {
+import "net/http"
+
+func (Handler *Handler) AddArticle(w http.ResponseWriter, r *http.Request) {
 }
 
-func (Handler *Handler) GetArticles() {
+func (Handler *Handler) GetArticles(w http.ResponseWriter, r *http.Request) {
 }
 
-func (Handler *Handler) AddReaction() {
+func (Handler *Handler) AddReaction(w http.ResponseWriter, r *http.Request) {
 }

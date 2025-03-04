@@ -8,4 +8,7 @@ require (
 	github.com/rubenv/sql-migrate v1.7.1
 )
 
-require github.com/go-gorp/gorp/v3 v3.1.0 // indirect
+require (
+	github.com/go-gorp/gorp/v3 v3.1.0 // indirect
+	github.com/gofrs/uuid/v5 v5.3.1 // indirect
+)

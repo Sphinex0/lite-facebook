@@ -35,6 +35,7 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hellolooo"))
 	// if r.Method != http.MethodPost {
 	// 	utils.WriteJson(w, http.StatusMethodNotAllowed, "Method not allowed")
 	// 	return
@@ -99,5 +100,6 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	// utils.WriteJson(w, http.StatusOK, "You'v loged succesfuly")
 }
 
-func (Handler *Handler) Logout() {
+func (Handler *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hello"))
 }

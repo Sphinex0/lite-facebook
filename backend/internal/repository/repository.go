@@ -3,8 +3,11 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"time"
+
 	"social-network/internal/models"
 
+	"github.com/gofrs/uuid/v5"
 	_ "github.com/mattn/go-sqlite3"
 	migrate "github.com/rubenv/sql-migrate"
 )
@@ -38,10 +41,17 @@ func ApplyMigrations(db *sql.DB) error {
 	return nil
 }
 
-func (data *Database) StoreUser(user models.User)  {
+func (data *Database) StoreUser(user models.User) {
 	data.Db.Exec("")
 }
 
-func (data *Database) StoreSession(user models.User)  {
+func (data *Database) StoreSession(user models.User) {
 	data.Db.Exec("")
+}
+
+func GetUserByUuid(db *sql.DB, uuid uuid.UUID) (user models.User, err error) {
+	if err = db.QueryRow("SELECT id,first_name,last_name,nickname,image FROM users WHERE uuid = ? AND uuid_exp > ?", uuid.String(), time.Now().Unix()).Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Nickname, &user.Image); err != nil {
+		return
+	}
+	return
 }

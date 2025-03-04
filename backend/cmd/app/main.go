@@ -7,6 +7,7 @@ import (
 
 	"social-network/internal/api"
 	"social-network/internal/repository"
+	"social-network/pkg/middlewares"
 
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
@@ -22,9 +23,14 @@ func main() {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
+	// server := http.Server{
+	// 	Addr:    ":8080",
+	// 	Handler: api.Routes(db),
+	// }
+
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: api.Routes(db),
+		Handler: middlewares.AuthMiddleware(api.Routes(db),db),
 	}
 
 	fmt.Println("http://localhost:8080/")
