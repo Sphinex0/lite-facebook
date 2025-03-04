@@ -2,17 +2,23 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
+
 	"social-network/internal/api"
 	"social-network/internal/repository"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {
-
 	db, err := repository.OpenDb()
 	if err != nil {
 		fmt.Println("Error in opening of database:", err)
 		return
+	}
+
+	if err := repository.ApplyMigrations(); err != nil {
+		log.Fatalf("Migration failed: %v", err)
 	}
 
 	server := http.Server{
