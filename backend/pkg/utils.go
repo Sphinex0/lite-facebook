@@ -74,7 +74,7 @@ func SetSessionCookie(w http.ResponseWriter, uuid string) {
 		Name:   "session_id",
 		Value:  uuid,
 		Path:   "/",
-		MaxAge: 3600,
+		MaxAge: 3600*24,
 	})
 }
 

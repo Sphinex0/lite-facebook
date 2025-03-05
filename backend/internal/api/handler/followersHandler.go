@@ -16,7 +16,6 @@ func (Handler *Handler) AddFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-
 	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
@@ -30,15 +29,16 @@ func (Handler *Handler) AddFollow(w http.ResponseWriter, r *http.Request) {
 	follow.UserID, err = strconv.Atoi(r.FormValue("target"))
 	
 	if err != nil {
+		fmt.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
 	err = Handler.Service.CreateFollow(&follow)
-	if err != nil {
 
+	if err != nil {
 		fmt.Println(err)
-		utils.WriteJson(w, http.StatusBadRequest, "Error")
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 }
