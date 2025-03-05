@@ -20,7 +20,7 @@ const dbPath = "internal/repository/forum.db"
 
 func OpenDb() (*sql.DB, error) {
 	var err error
-	db, err := sql.Open("sqlite3", dbPath+"?_foreing_keys=1")
+	db, err := sql.Open("sqlite3", dbPath+"?_foreign_keys=1")
 	if err != nil {
 		return db, err
 	}
