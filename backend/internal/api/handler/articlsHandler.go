@@ -2,6 +2,7 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -36,19 +37,31 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 	parent, _ := strconv.Atoi(r.FormValue("parent"))
 	if parent != 0 {
 		/// select
+		err := Handler.Service.VerifyParent(parent)
+		if err != nil {
+			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+			return
+		}
 		article.Parent = &parent
 	}
-	// fmt.Println(article)
 	if err := Handler.Service.CreateArticle(&article); err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 }
 
-func (Handler *Handler) GetArticles(w http.ResponseWriter, r *http.Request) {
+func (Handler *Handler) HandelGetArticles(w http.ResponseWriter, r *http.Request) {
 }
 
-func (Handler *Handler) AddReaction(w http.ResponseWriter, r *http.Request) {
+func (Handler *Handler) HandelCreateReaction(w http.ResponseWriter, r *http.Request) {
+	var like models.Like 
+	err := utils.ParseBody(r, &like)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	err = Handler.Service.CreateReaction()
 }
 
 func (Handler *Handler) AddComment(w http.ResponseWriter, r *http.Request) {
