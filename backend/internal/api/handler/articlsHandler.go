@@ -18,14 +18,14 @@ func (Handler *Handler) AddPost(w http.ResponseWriter, r *http.Request) {
 
 	user, ok := r.Context().Value(middlewares.UserIDKey).(models.User)
 	if !ok {
-		utils.RespondWithError(w, http.StatusUnauthorized)
+		utils.WriteJson(w, http.StatusUnauthorized,"Unauthorized")
 		return
 	}
 
 	var article models.Article
 	article.Content = strings.TrimSpace(r.FormValue("content"))
 
-	fmt.Println(article)
+	fmt.Println(article,user)
 }
 
 func (Handler *Handler) GetArticles(w http.ResponseWriter, r *http.Request) {
