@@ -85,3 +85,7 @@ func DeleteSessionCookie(w http.ResponseWriter, uid string) {
 		MaxAge: -1,
 	})
 }
+
+func Length(a, b int, e string) bool {
+	return len(e) < a || len(e) > b
+}
