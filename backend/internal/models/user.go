@@ -3,14 +3,15 @@ package models
 type User struct {
 	ID         int    `json:"id"`
 	Nickname   string `json:"nickname"`
-	Age        int `json:"age"`
+	DateBirth  int    `json:"date_birth"`
 	First_Name string `json:"first_name"`
 	Last_Name  string `json:"last_name"`
 	Email      string `json:"email"`
 	Password   string `json:"password"`
-	Uuid       string `json:"uuid"`
-	Uuid_exp   int    `json:"uuid_exp"`
 	Image      string `json:"image"`
+	About      string `json:"about"`
+	Privacy    string `json:"privacy"`
+	CreatedAt  string `json:"created_at"`
 }
 
 type UserInfo struct {
