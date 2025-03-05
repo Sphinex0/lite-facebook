@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"time"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -18,14 +19,19 @@ func (Handler *Handler) AddPost(w http.ResponseWriter, r *http.Request) {
 
 	user, ok := r.Context().Value(middlewares.UserIDKey).(models.User)
 	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized,"Unauthorized")
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
 	var article models.Article
+	// article.UserID = user.ID
 	article.Content = strings.TrimSpace(r.FormValue("content"))
+	article.Privacy = strings.TrimSpace(r.FormValue("privacy"))
+	// article.CreatedAt = int(time.Now().Unix())
+	// article.ModifiedAt = article.CreatedAt
+	article.Parent = r.FormValue("parent")
 
-	fmt.Println(article,user)
+	fmt.Println(article, user)
 }
 
 func (Handler *Handler) GetArticles(w http.ResponseWriter, r *http.Request) {
