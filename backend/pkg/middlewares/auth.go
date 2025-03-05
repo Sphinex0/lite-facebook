@@ -28,7 +28,6 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 		
 		cookie, err := r.Cookie("uuid")
 		if err != nil && Hasallowed == -1 {
-			fmt.Println(err)
 			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 			return
 		}
@@ -43,7 +42,6 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			if err == nil {
 				user, err := repository.GetUserByUuid(db, uuid)
 				if err != nil && Hasallowed == -1 {
-					fmt.Println(err)
 					utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 					return
 				}
