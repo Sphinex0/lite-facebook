@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"social-network/internal/models"
@@ -20,7 +21,7 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := H.Service.LoginUser(&user)
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, "Error While logging To An  Account.")
+		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -35,71 +36,32 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hellolooo"))
-	// if r.Method != http.MethodPost {
-	// 	utils.WriteJson(w, http.StatusMethodNotAllowed, "Method not allowed")
-	// 	return
-	// }
+	if r.Method != http.MethodPost {
+		utils.WriteJson(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
 
-	// var user models.User
-	// if erro := json.NewDecoder(r.Body).Decode(&user); erro != nil {
-	// 	utils.WriteJson(w, http.StatusBadRequest, "Bad request")
-	// 	return
-	// }
-	// // Proccess Data and Insert it
-	// err := H.Service.RegisterUser(&user)
-	// if err != nil {
-	// 	if err == sqlite3.ErrLocked {
-	// 		utils.WriteJson(w, http.StatusLocked, "Database Is Busy!")
-	// 		return
-	// 	}
-	// 	// Username
-	// 	if err.Error() == models.Errors.InvalidUsername {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
+	var user models.User
+	if erro := json.NewDecoder(r.Body).Decode(&user); erro != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+	// Proccess Data and Insert it
+	err := H.Service.RegisterUser(&user)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, err.Error())
+	}
 
-	// 		return
-	// 	}
-	// 	// gender
-	// 	if err.Error() == models.Errors.InvalidCredentials {
-	// 		utils.WriteJson(w, http.StatusBadRequest, "bad request gender!")
-	// 		return
-	// 	}
-
-	// 	// Age
-	// 	if err.Error() == models.UserErrors.InvalideAge {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
-
-	// 		return
-	// 	}
-
-	// 	// Password
-	// 	if err.Error() == models.Errors.InvalidPassword {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
-
-	// 		return
-	// 	}
-	// 	// Email
-	// 	if err.Error() == models.Errors.InvalidEmail {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
-
-	// 		return
-	// 	}
-	// 	if err.Error() == models.Errors.LongEmail {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
-	// 		return
-	// 	}
-	// 	// General
-	// 	if err.Error() == models.Errors.UserAlreadyExist {
-	// 		utils.WriteJson(w, http.StatusConflict, models.Errors.UserAlreadyExist)
-	// 		return
-	// 	}
-
-	// 	utils.WriteJson(w, http.StatusInternalServerError, "Error While Registering The User.")
-	// 	return
-	// }
-	// utils.WriteJson(w, http.StatusOK, "You'v loged succesfuly")
+	utils.WriteJson(w, http.StatusOK, "You'v loged in succesfuly")
 }
 
-func (Handler *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello"))
+func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "bad request")
+	}
+
+	utils.DeleteSessionCookie(w, user.Uuid)
+	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
 }
