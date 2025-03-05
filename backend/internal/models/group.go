@@ -7,4 +7,5 @@ type Group struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Image       string `json:"image"`
+	CreatedAt  string `json:"created_at"`
 }
