@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,16 +23,25 @@ func (Handler *Handler) AddPost(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
-
 	var article models.Article
-	// article.UserID = user.ID
+	article.UserID = user.ID
 	article.Content = strings.TrimSpace(r.FormValue("content"))
 	article.Privacy = strings.TrimSpace(r.FormValue("privacy"))
-	// article.CreatedAt = int(time.Now().Unix())
-	// article.ModifiedAt = article.CreatedAt
-	article.Parent = r.FormValue("parent")
-
-	fmt.Println(article, user)
+	article.CreatedAt = int(time.Now().Unix())
+	article.ModifiedAt = article.CreatedAt
+	GroupID , err := strconv.Atoi(r.FormValue("group_id"))
+	if err != nil || GroupID == 0 {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	article.GroupID = GroupID
+	parent , err := strconv.Atoi(r.FormValue("parent"))
+	if err != nil || parent == 0 {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	article.Parent = parent
+	fmt.Println(article)
 }
 
 func (Handler *Handler) GetArticles(w http.ResponseWriter, r *http.Request) {
