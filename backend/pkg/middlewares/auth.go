@@ -3,6 +3,7 @@ package middlewares
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"net/http"
 	"slices"
 	"strings"
@@ -25,33 +26,39 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			return strings.Contains(r.URL.Path, ext)
 		})
 
-		cookie, err := r.Cookie("uuid")
-		if err != nil && Hasallowed == -1 {
-			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-			return
-		}
-
-		if cookie != nil {
+		cookie, err := r.Cookie("session_id")
+		fmt.Println(cookie)
+		if Hasallowed == -1 {
+			if err != nil {
+				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+				return
+			}
 			uuid, err := uuid.FromString(cookie.Value)
-			if err != nil && Hasallowed == -1 {
+			if err != nil {
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}
 
-			if err == nil {
-				user, err := repository.GetUserByUuid(db, uuid)
-				if err != nil && Hasallowed == -1 {
-					utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-					return
-				}
+			user, err := repository.GetUserByUuid(db, uuid)
+			if err != nil {
+				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+				return
+			}
+			ctx := context.WithValue(r.Context(), UserIDKey, user)
+			next.ServeHTTP(w, r.WithContext(ctx))
 
+		} else {
+			if err == nil {
+				uuid, err := uuid.FromString(cookie.Value)
 				if err == nil {
-					ctx := context.WithValue(r.Context(), UserIDKey, user)
-					next.ServeHTTP(w, r.WithContext(ctx))
-					return
+					_, err := repository.GetUserByUuid(db, uuid)
+					if err == nil {
+						utils.WriteJson(w, http.StatusForbidden, "StatusForbidden")
+						return
+					}
 				}
 			}
+			next.ServeHTTP(w, r)
 		}
-		next.ServeHTTP(w, r)
 	})
 }

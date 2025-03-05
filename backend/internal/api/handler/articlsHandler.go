@@ -18,7 +18,7 @@ func (Handler *Handler) AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.User)
+	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
@@ -29,13 +29,13 @@ func (Handler *Handler) AddPost(w http.ResponseWriter, r *http.Request) {
 	article.Privacy = strings.TrimSpace(r.FormValue("privacy"))
 	article.CreatedAt = int(time.Now().Unix())
 	article.ModifiedAt = article.CreatedAt
-	GroupID , err := strconv.Atoi(r.FormValue("group_id"))
+	GroupID, err := strconv.Atoi(r.FormValue("group_id"))
 	if err != nil || GroupID == 0 {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 	article.GroupID = GroupID
-	parent , err := strconv.Atoi(r.FormValue("parent"))
+	parent, err := strconv.Atoi(r.FormValue("parent"))
 	if err != nil || parent == 0 {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return

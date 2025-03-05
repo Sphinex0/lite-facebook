@@ -49,8 +49,8 @@ func (data *Database) StoreSession(user models.User) {
 	data.Db.Exec("")
 }
 
-func GetUserByUuid(db *sql.DB, uuid uuid.UUID) (user models.User, err error) {
-	if err = db.QueryRow("SELECT id,first_name,last_name,nickname,image FROM users WHERE uuid = ? AND uuid_exp > ?", uuid.String(), time.Now().Unix()).Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Nickname, &user.Image); err != nil {
+func GetUserByUuid(db *sql.DB, uuid uuid.UUID) (user models.UserInfo, err error) {
+	if err = db.QueryRow("SELECT u.id,first_name,last_name,nickname,image FROM users u join sessions s on u.id = s.user_id  WHERE session_id = ? AND session_exp > ?", uuid.String(), time.Now().Unix()).Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Nickname, &user.Image); err != nil {
 		return
 	}
 	return
