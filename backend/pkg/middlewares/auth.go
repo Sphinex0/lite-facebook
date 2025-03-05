@@ -3,7 +3,6 @@ package middlewares
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"net/http"
 	"slices"
 	"strings"
@@ -25,7 +24,7 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 		Hasallowed := slices.IndexFunc(allowedPath, func(ext string) bool {
 			return strings.Contains(r.URL.Path, ext)
 		})
-		
+
 		cookie, err := r.Cookie("uuid")
 		if err != nil && Hasallowed == -1 {
 			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
