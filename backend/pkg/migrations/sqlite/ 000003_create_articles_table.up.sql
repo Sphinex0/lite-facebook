@@ -3,7 +3,7 @@ CREATE TABLE
     articles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
-        content TEXT,
+        content TEXT NOT NULL,
         privacy TEXT NOT NULL,
         created_at DATETIME NOT NULL,
         modified_at DATETIME,
