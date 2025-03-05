@@ -8,9 +8,9 @@ import (
 )
 
 func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	// utils.SetSessionCookie(w, "550e8400-e29b-41d4-a716-446655440000")
-	// utils.WriteJson(w, 200, "nice")
-	// return
+	utils.SetSessionCookie(w, "550e8400-e29b-41d4-a716-446655440000")
+	utils.WriteJson(w, 200, "nice")
+	return
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
