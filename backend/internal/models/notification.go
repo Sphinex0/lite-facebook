@@ -2,10 +2,10 @@ package models
 
 // Notification represents a user notification.
 type Notification struct {
-	ID        string `json:"id"`
-	UserID    string `json:"user_id"`
+	ID        int `json:"id"`
+	UserID    int `json:"user_id"`
 	Type      string `json:"type"`
-	InvokerID string `json:"invoker_id"`
-	GroupID   string `json:"group_id"`
-	EventID   string `json:"event_id"`
+	InvokerID int `json:"invoker_id"`
+	GroupID   int `json:"group_id"`
+	EventID   int `json:"event_id"`
 }
