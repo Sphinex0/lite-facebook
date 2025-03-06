@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"os"
@@ -39,20 +40,24 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
-	// Parse the multipart form (10MB max file size)
-	err := r.ParseMultipartForm(10 << 20)
+	var user models.User
+	// Decode JSON from the request body
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
-		http.Error(w, "File too big", http.StatusBadRequest)
+		utils.WriteJson(w, http.StatusBadRequest, "bad request!")
 		return
 	}
 
-	// Extract user data from form fields
-	user := H.Service.ExtractUserData(r)
-
 	// Extract profile picture (optional)
 	var filePath string
-	file, handler, err := r.FormFile("profile_picture")
+	file, handler, err := r.FormFile("avatar")
 	if err == nil { // No error means a file was uploaded
+		// Parse the multipart form (10MB max file size)
+		err := r.ParseMultipartForm(10 << 20)
+		if err != nil {
+			utils.WriteJson(w, http.StatusBadRequest, "file too big")
+			return
+		}
 		defer file.Close()
 
 		// Ensure Profile directory exists
@@ -79,9 +84,11 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		user.Image = filePath
 	}
 
+	fmt.Println(user.First_Name)
 	// Proccess Data and Insert it
 	err = H.Service.RegisterUser(&user)
 	if err != nil {
+		fmt.Println(err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}

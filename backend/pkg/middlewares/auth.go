@@ -1,60 +1,42 @@
 package middlewares
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
 	"net/http"
-	"slices"
-	"strings"
-
-	"social-network/internal/repository"
-	utils "social-network/pkg"
-
-	"github.com/gofrs/uuid/v5"
 )
 
-type contextKey string
-
-const UserIDKey contextKey = "userID"
-
-func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
+// CORS middleware to handle cross-origin requests
+func CORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		allowedPath := []string{"/api/login", "/api/signup"}
-		Hasallowed := slices.IndexFunc(allowedPath, func(ext string) bool {
-			return strings.Contains(r.URL.Path, ext)
-		})
-		
-		cookie, err := r.Cookie("uuid")
-		if err != nil && Hasallowed == -1 {
-			fmt.Println(err)
-			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		// List of allowed origins (you can modify it based on your needs)
+		allowedOrigins := []string{
+			"http://localhost:3000",
+		}
+
+		// Get the `Origin` header from the request
+		origin := r.Header.Get("Origin")
+
+		// Check if the origin is in the allowed origins list
+		allowOrigin := "*"
+		for _, allowedOrigin := range allowedOrigins {
+			if allowedOrigin == origin {
+				allowOrigin = allowedOrigin
+				break
+			}
+		}
+
+		// Set the CORS headers
+		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+		w.Header().Set("Access-Control-Allow-Credentials", "true")
+
+		// If it's a pre-flight request (OPTIONS method), end the request here
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
 			return
 		}
 
-		if cookie != nil {
-			uuid, err := uuid.FromString(cookie.Value)
-			if err != nil && Hasallowed == -1 {
-				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-				return
-			}
-
-			if err == nil {
-				user, err := repository.GetUserByUuid(db, uuid)
-				if err != nil && Hasallowed == -1 {
-					fmt.Println(err)
-					utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-					return
-				}
-
-				if err == nil {
-					ctx := context.WithValue(r.Context(), UserIDKey, user)
-					next.ServeHTTP(w, r.WithContext(ctx))
-					return
-				}
-			}
-		}
+		// Call the next handler
 		next.ServeHTTP(w, r)
 	})
 }

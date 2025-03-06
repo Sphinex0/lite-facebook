@@ -2,13 +2,14 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"html"
 	"net/http"
 	"net/mail"
+	"strings"
+
 	"social-network/internal/models"
 	utils "social-network/pkg"
-	"strconv"
-	"strings"
 
 	"github.com/gofrs/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -39,15 +40,8 @@ func (S *Service) LoginUser(User *models.User) error {
 }
 
 func (s *Service) RegisterUser(user *models.User) error {
-	// Username
-	if len((*user).Nickname) < 3 || len((*user).Nickname) > 15 {
-		return errors.New("InvalidUsername")
-	}
-
 	// Age
-	if !CheckAgeValidation((*user).Age) {
-		return errors.New("InvalideAge")
-	}
+	fmt.Println((*user).Dob)
 
 	// First_Name
 	if len((*user).First_Name) < 3 || len((*user).First_Name) > 15 {
@@ -71,6 +65,20 @@ func (s *Service) RegisterUser(user *models.User) error {
 	}
 	if len((*user).Email) > 50 {
 		return errors.New("LongEmail")
+	}
+
+	// Nickname
+	if (*user).Nickname != "" {
+		if len(strings.TrimSpace((*user).Nickname)) < 3 || len(strings.TrimSpace((*user).Nickname)) > 15 {
+			return errors.New("InvalidUsername")
+		}
+	}
+
+	// AboutMe
+	if (*user).AboutMe != "" {
+		if len(strings.TrimSpace((*user).AboutMe)) < 3 || len(strings.TrimSpace((*user).AboutMe)) > 50 {
+			return errors.New("InvalidUsername")
+		}
 	}
 
 	// username or email existance
@@ -106,18 +114,6 @@ func GenerateUuid() string {
 	return uuid.Must(uuid.NewV4()).String()
 }
 
-func CheckAgeValidation(age string) bool {
-	Age, err := strconv.Atoi(age)
-	if err != nil {
-		return false
-	}
-	if Age > 1000 || Age < 0 {
-		return false
-	}
-
-	return true
-}
-
 func (s *Service) GetInfoData(userUID string) (bool, error) {
 	// Get username and user id
 	id, _ := s.Database.GetUser(userUID)
@@ -146,22 +142,11 @@ func EncyptPassword(password string) (string, error) {
 }
 
 func (S *Service) DeleteSessionCookie(w http.ResponseWriter, uuid string) error {
-	err := S.Database.DeleteCookieFromdb(uuid); if err != nil {
+	err := S.Database.DeleteCookieFromdb(uuid)
+	if err != nil {
 		return errors.New("error while deleting the cookie")
 	}
 	utils.DeleteSessionCookie(w, uuid)
 	return nil
 }
 
-func (S *Service) ExtractUserData(r *http.Request) models.User {
-	// Extract user data from form fields
-	 user := models.User{
-		Nickname:  r.FormValue("nickname"),
-		Age:       r.FormValue("age"),
-		First_Name: r.FormValue("first_name"),
-		Last_Name:  r.FormValue("last_name"),
-		Email:     r.FormValue("email"),
-		Password:  r.FormValue("password"),
-	}
-	return user
-}

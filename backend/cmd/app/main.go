@@ -25,7 +25,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: middlewares.AuthMiddleware(api.Routes(db),db),
+		Handler: middlewares.CORS(api.Routes(db)),
 	}
 
 	fmt.Println("http://localhost:8080/")
