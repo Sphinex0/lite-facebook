@@ -19,12 +19,14 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	var user models.User
 	if err := utils.ParseBody(r, &user); err != nil {
+		fmt.Println("yey", err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
 	err := H.Service.LoginUser(&user)
 	if err != nil {
+		fmt.Println("err",err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
