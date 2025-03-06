@@ -68,6 +68,7 @@ func (Handler *Handler) HandelGetPosts(w http.ResponseWriter, r *http.Request) {
 
 	err := utils.ParseBody(r, &Data)
 	if err != nil {
+		fmt.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}

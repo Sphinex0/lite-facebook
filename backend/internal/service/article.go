@@ -39,7 +39,7 @@ func (service *Service) CreateReaction(like *models.Like) (err error) {
 	return
 }
 
-func (service *Service) FetchPosts(id int) (err error) {
-	service.Database.GetPosts(id)
+func (service *Service) FetchPosts(id int) (article_views []models.ArticleView ,err error) {
+	article_views , err = service.Database.GetPosts(id)
 	return
 }

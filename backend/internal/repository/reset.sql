@@ -57,3 +57,6 @@ INSERT INTO articles (id, user_id, content, privacy, created_at, modified_at, im
 INSERT INTO articles (id, user_id, content, privacy, created_at, modified_at, image, parent, group_id) VALUES (8, 1, 'new new new post', 'public', 1741273317, 1741273317, '', NULL, NULL);
 INSERT INTO articles (id, user_id, content, privacy, created_at, modified_at, image, parent, group_id) VALUES (9, 1, 'comment comment comment', 'public', 1741273435, 1741273435, '', 4, NULL);
 INSERT INTO articles (id, user_id, content, privacy, created_at, modified_at, image, parent, group_id) VALUES (10, 1, 'comment 1', 'public', 1741273572, 1741273572, '', 8, NULL);
+
+
+INSERT INTO articles (id, user_id, content, privacy, created_at, modified_at, image, parent, group_id) VALUES (11, 2, 'new post hahaha', 'private', 1741273282, 1741273282, '', NULL, NULL);

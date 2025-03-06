@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"database/sql"
 	"fmt"
 
 	"social-network/internal/models"
@@ -77,7 +76,7 @@ func (data *Database) GetReaction(user_id, article_id int) (id, like int, err er
 	return
 }
 
-func (data *Database) GetPosts(id int) (err error) {
+func (data *Database) GetPosts(id int) (article_views []models.ArticleView ,err error) {
 	query := `
 		SELECT * 
 		FROM article_view
@@ -88,7 +87,6 @@ func (data *Database) GetPosts(id int) (err error) {
 	if err != nil {
 		return
 	}
-	var article_views []models.ArticleView
 	for rows.Next() {
 		var article_view models.ArticleView
 		tab := utils.GetScanFields(&article_view.UserInfo)
@@ -100,8 +98,8 @@ func (data *Database) GetPosts(id int) (err error) {
 			fmt.Println(err1)
 		}
 		if article_view.Article.Privacy == "private" {
-			err1 := data.GetFollowByUser(id,article_view.Article.Creator)
-			if err1 = nil {
+			err1 := data.GetFollowByUser(id, article_view.Article.UserID)
+			if err1 == nil {
 				article_views = append(article_views, article_view)
 			}
 		} else {
