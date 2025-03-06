@@ -45,8 +45,8 @@ func (database *Database) CheckIfUserExists(email string) bool {
 }
 
 func (database *Database) InsertUser(user models.User) error {
-	res, err := database.Db.Exec("INSERT INTO user (Nickname, Age, First_Name, Last_Name, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		user.Nickname, user.Age, user.First_Name, user.Last_Name, user.Email, user.Password)
+	res, err := database.Db.Exec("INSERT INTO user (Nickname, Age, First_Name, Last_Name, email, password, avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		user.Nickname, user.Age, user.First_Name, user.Last_Name, user.Email, user.Password, user.Image)
 	if err != nil {
 		return err
 	}

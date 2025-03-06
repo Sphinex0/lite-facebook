@@ -23,11 +23,6 @@ func main() {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
-	// server := http.Server{
-	// 	Addr:    ":8080",
-	// 	Handler: api.Routes(db),
-	// }
-
 	server := http.Server{
 		Addr:    ":8080",
 		Handler: middlewares.AuthMiddleware(api.Routes(db),db),

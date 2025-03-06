@@ -152,3 +152,16 @@ func (S *Service) DeleteSessionCookie(w http.ResponseWriter, uuid string) error 
 	utils.DeleteSessionCookie(w, uuid)
 	return nil
 }
+
+func (S *Service) ExtractUserData(r *http.Request) models.User {
+	// Extract user data from form fields
+	 user := models.User{
+		Nickname:  r.FormValue("nickname"),
+		Age:       r.FormValue("age"),
+		First_Name: r.FormValue("first_name"),
+		Last_Name:  r.FormValue("last_name"),
+		Email:     r.FormValue("email"),
+		Password:  r.FormValue("password"),
+	}
+	return user
+}

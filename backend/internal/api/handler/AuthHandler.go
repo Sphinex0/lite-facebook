@@ -2,7 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -36,22 +39,52 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.WriteJson(w, http.StatusMethodNotAllowed, "Method not allowed")
+	// Parse the multipart form (10MB max file size)
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		http.Error(w, "File too big", http.StatusBadRequest)
 		return
 	}
 
-	var user models.User
-	if erro := json.NewDecoder(r.Body).Decode(&user); erro != nil {
-		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
-		return
+	// Extract user data from form fields
+	user := H.Service.ExtractUserData(r)
+
+	// Extract profile picture (optional)
+	var filePath string
+	file, handler, err := r.FormFile("profile_picture")
+	if err == nil { // No error means a file was uploaded
+		defer file.Close()
+
+		// Ensure Profile directory exists
+		uploadDir := "Profile"
+		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+			os.Mkdir(uploadDir, os.ModePerm)
+		}
+
+		// Save with a unique filename (e.g., user.UUID + filename)
+		filePath = filepath.Join(uploadDir, user.Uuid+"_"+handler.Filename)
+		dst, err := os.Create(filePath)
+		if err != nil {
+			utils.WriteJson(w, http.StatusInternalServerError, "Could not save file")
+			return
+		}
+		defer dst.Close()
+		_, err = io.Copy(dst, file)
+		if err != nil {
+			utils.WriteJson(w, http.StatusInternalServerError, "Failed to save file")
+			return
+		}
+
+		// Assign file path to user struct
+		user.Image = filePath
 	}
+
 	// Proccess Data and Insert it
-	err := H.Service.RegisterUser(&user)
+	err = H.Service.RegisterUser(&user)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
+		return
 	}
-
 	utils.WriteJson(w, http.StatusOK, "You'v loged in succesfuly")
 }
 
