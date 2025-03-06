@@ -1,18 +1,17 @@
 package service
 
 import (
+	"database/sql"
+	"errors"
 	"slices"
-	"strings"
 
 	"social-network/internal/models"
 )
 
 func (service *Service) CreateArticle(article *models.Article) (err error) {
 	privacies := []string{"public", "private", "almost_private"}
-	index := slices.IndexFunc(privacies, func(ext string) bool {
-		return strings.Contains(article.Privacy, ext)
-	})
-	if index == -1 {
+	isAllowedPrivacy := slices.Contains(privacies, article.Privacy)
+	if !isAllowedPrivacy {
 		article.Privacy = "public"
 	}
 	err = service.Database.SaveArticle(article)
@@ -24,15 +23,18 @@ func (service *Service) VerifyParent(parent int) (err error) {
 	return
 }
 
-
-func (service *Service) CreateReaction(article *models.Article) (err error) {
-	privacies := []string{"public", "private", "almost_private"}
-	index := slices.IndexFunc(privacies, func(ext string) bool {
-		return strings.Contains(article.Privacy, ext)
-	})
-	if index == -1 {
-		article.Privacy = "public"
+func (service *Service) CreateReaction(like *models.Like) (err error) {
+	if (like.Like != 1 && like.Like != -1) || like.ArticleID == 0 {
+		return errors.New("invalid Like value")
 	}
-	err = service.Database.SaveReaction(article)
+
+	id, existsLike, err := service.Database.GetReaction(like.UserID, like.ArticleID)
+	if err == sql.ErrNoRows {
+		err = service.Database.SaveReaction(like)
+	} else if existsLike == like.Like {
+		err = service.Database.DeleteReaction(id)
+	} else if err == nil {
+		err = service.Database.UpdateReaction(id, like.Like)
+	}
 	return
 }

@@ -54,14 +54,30 @@ func (Handler *Handler) HandelGetArticles(w http.ResponseWriter, r *http.Request
 }
 
 func (Handler *Handler) HandelCreateReaction(w http.ResponseWriter, r *http.Request) {
-	var like models.Like 
+	if r.Method != http.MethodPost {
+		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	var like models.Like
 	err := utils.ParseBody(r, &like)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
+	like.UserID = user.ID
 
-	err = Handler.Service.CreateReaction()
+	err = Handler.Service.CreateReaction(&like)
+	if err != nil {
+		log.Println(err)
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
 }
 
 func (Handler *Handler) AddComment(w http.ResponseWriter, r *http.Request) {
