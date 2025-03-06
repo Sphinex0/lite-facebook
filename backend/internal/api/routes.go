@@ -21,8 +21,8 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/user/update", handler.UpdateUser)
 
 	// articls
-	mux.HandleFunc("/api/posts", handler.HandelGetArticles)
-	mux.HandleFunc("/api/comments", handler.HandelGetArticles)
+	mux.HandleFunc("/api/posts", handler.HandelGetPosts)
+	mux.HandleFunc("/api/comments", handler.HandelGetComments)
 	mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle)
 	mux.HandleFunc("/api/reactions/store", handler.HandelCreateReaction)
 

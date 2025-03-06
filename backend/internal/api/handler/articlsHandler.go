@@ -50,7 +50,52 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func (Handler *Handler) HandelGetArticles(w http.ResponseWriter, r *http.Request) {
+func (Handler *Handler) HandelGetPosts(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	var Data struct {
+		Before int `json:"before"`
+	}
+
+	err := utils.ParseBody(r, &Data)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	if Data.Before == 0 {
+		Data.Before = int(time.Now().Unix())
+	}
+
+	// var article_view models.ArticleView
+	err = Handler.Service.FetchPosts(user.ID)
+	if err != nil || Data.Before == 0 {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+}
+
+func (Handler *Handler) HandelGetComments(w http.ResponseWriter, r *http.Request) {
+	// if r.Method != http.MethodGet {
+	// 	utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
+	// 	return
+	// }
+
+	// user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	// if !ok {
+	// 	utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+	// 	return
+	// }
+	// var article_view models.ArticleView
 }
 
 func (Handler *Handler) HandelCreateReaction(w http.ResponseWriter, r *http.Request) {

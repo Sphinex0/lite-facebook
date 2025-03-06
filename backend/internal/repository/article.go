@@ -75,3 +75,31 @@ func (data *Database) GetReaction(user_id, article_id int) (id, like int, err er
 
 	return
 }
+
+func (data *Database) GetPosts(id int) (err error) {
+	query := `
+		SELECT * 
+		FROM article_view
+	`
+
+	rows, err := data.Db.Query(query)
+	if err != nil {
+		return
+	}
+	var article_views []models.ArticleView
+	for rows.Next() {
+		var article_view models.ArticleView
+		tab := utils.GetScanFields(&article_view.UserInfo)
+		tab = append(tab, utils.GetScanFields(&article_view.Article)...)
+		tab = append(tab, &article_view.Likes, &article_view.DisLikes, &article_view.CommentsCount)
+
+		err1 := rows.Scan(tab...)
+		if err1 != nil {
+			fmt.Println(err1)
+		}
+		article_views = append(article_views, article_view)
+	}
+	rows.Close()
+	fmt.Println(article_views)
+	return
+}

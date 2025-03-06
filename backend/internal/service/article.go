@@ -38,3 +38,8 @@ func (service *Service) CreateReaction(like *models.Like) (err error) {
 	}
 	return
 }
+
+func (service *Service) FetchPosts(id int) (err error) {
+	service.Database.GetPosts(id)
+	return
+}
