@@ -56,7 +56,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		defer file.Close()
 
 		// Ensure Profile directory exists
-		uploadDir := "Profile"
+		uploadDir := "backend/internal/repository/profile"
 		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
 			os.Mkdir(uploadDir, os.ModePerm)
 		}
