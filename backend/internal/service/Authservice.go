@@ -3,8 +3,10 @@ package service
 import (
 	"errors"
 	"html"
+	"net/http"
 	"net/mail"
 	"social-network/internal/models"
+	utils "social-network/pkg"
 	"strconv"
 	"strings"
 
@@ -24,16 +26,15 @@ func (S *Service) LoginUser(User *models.User) error {
 	}
 
 	// chefk password and email validity
-	err := S.Database.CheckMailAndPaswdvalidity(User.Email, User.Password)
+	usrId, err := S.Database.CheckMailAndPaswdvalidity(User.Email, User.Password)
 	if err != nil {
 		return err
 	}
 	// generate new uuid
 	(*User).Uuid = GenerateUuid()
 
-	
 	// Update uuid
-	S.Database.UpdateUuid((*User).Uuid, (*User).Email)
+	S.Database.UpdateUuid((*User).Uuid, usrId)
 	return nil
 }
 
@@ -142,4 +143,12 @@ func EncyptPassword(password string) (string, error) {
 		return "", err
 	}
 	return string(hashedPass), nil
+}
+
+func (S *Service) DeleteSessionCookie(w http.ResponseWriter, uuid string) error {
+	err := S.Database.DeleteCookieFromdb(uuid); if err != nil {
+		return errors.New("error while deleting the cookie")
+	}
+	utils.DeleteSessionCookie(w, uuid)
+	return nil
 }

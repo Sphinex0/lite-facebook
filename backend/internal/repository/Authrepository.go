@@ -8,23 +8,24 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (data *Database) CheckMailAndPaswdvalidity(email string, Password string) error {
+func (data *Database) CheckMailAndPaswdvalidity(email string, Password string) (int, error) {
 	var dbpswd string
-	err := data.Db.QueryRow("SELECT password FROM users WHERE email=?", email).Scan(&dbpswd)
+	var usrId int
+	err := data.Db.QueryRow("SELECT id, password FROM users WHERE email=?", email).Scan(&usrId, &dbpswd)
 	if err != nil {
-		return errors.New("invalide coredentials")
+		return 0, errors.New("invalide coredentials")
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(dbpswd), []byte(Password))
 	if err != nil {
-		return errors.New("incorrect password")
+		return 0, errors.New("incorrect password")
 	}
-	return nil
+	return usrId, nil
 }
 
-func (database *Database) UpdateUuid(uuid, email string) error {
+func (database *Database) UpdateUuid(uuid string, userId int) error {
 	expire := time.Now().Add(time.Duration(time.Now().Local().Year()))
-	_, err := database.Db.Exec("UPDATE users SET uuid = ?, expired_at = ? WHERE email = ?", uuid, expire, email)
+	_, err := database.Db.Exec("INSERT INTO sessions (user-id = ? uuid = ?, expired_at = ?) VALUES(?,?,?)", userId, uuid, expire)
 	return err
 }
 
@@ -44,7 +45,28 @@ func (database *Database) CheckIfUserExists(email string) bool {
 }
 
 func (database *Database) InsertUser(user models.User) error {
-	_, err := database.Db.Exec("INSERT INTO user (Nickname, Age, First_Name, Last_Name, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+	res, err := database.Db.Exec("INSERT INTO user (Nickname, Age, First_Name, Last_Name, email, password) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		user.Nickname, user.Age, user.First_Name, user.Last_Name, user.Email, user.Password)
-	return err
+	if err != nil {
+		return err
+	}
+
+	usrid, err := res.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	_, err = database.Db.Exec("INSERT INTO session (uuid, user_id) VALUES (?,?)", user.Uuid, usrid)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (database *Database) DeleteCookieFromdb(uuid string) error {
+	_, err := database.Db.Exec("DELETE FROM sessions WHERE uuid = ?", uuid)
+	if err != nil {
+		return err
+	}
+	return nil
 }

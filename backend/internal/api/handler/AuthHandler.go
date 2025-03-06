@@ -61,7 +61,10 @@ func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 	}
-
-	utils.DeleteSessionCookie(w, user.Uuid)
+	err = H.Service.DeleteSessionCookie(w, user.Uuid)
+	if err != nil {
+		utils.WriteJson(w, http.StatusOK, err.Error())
+		return
+	}
 	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
 }
