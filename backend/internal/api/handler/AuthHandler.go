@@ -40,36 +40,34 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	// Decode JSON from the request body
-	err := json.NewDecoder(r.Body).Decode(&user)
+	// Parse the multipart form (10MB max file size)
+	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, "bad request!")
+		utils.WriteJson(w, http.StatusBadRequest, "file too big")
 		return
 	}
+
+	user := H.Service.Extractuser(r)
 
 	// Extract profile picture (optional)
 	var filePath string
 	file, handler, err := r.FormFile("avatar")
+	fmt.Println(err)
 	if err == nil { // No error means a file was uploaded
-		// Parse the multipart form (10MB max file size)
-		err := r.ParseMultipartForm(10 << 20)
-		if err != nil {
-			utils.WriteJson(w, http.StatusBadRequest, "file too big")
-			return
-		}
 		defer file.Close()
 
 		// Ensure Profile directory exists
-		uploadDir := "backend/internal/repository/profile"
+		uploadDir := "../backend/internal/repository/profile"
 		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+			fmt.Println("yes it does make a file")
 			os.Mkdir(uploadDir, os.ModePerm)
 		}
 
 		// Save with a unique filename (e.g., user.UUID + filename)
-		filePath = filepath.Join(uploadDir, user.Uuid+"_"+handler.Filename)
+		filePath = filepath.Join(uploadDir, handler.Filename)
 		dst, err := os.Create(filePath)
 		if err != nil {
+			fmt.Println(err)
 			utils.WriteJson(w, http.StatusInternalServerError, "Could not save file")
 			return
 		}
@@ -82,13 +80,13 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 
 		// Assign file path to user struct
 		user.Image = filePath
+		fmt.Println("image path", filePath)
 	}
 
-	fmt.Println(user.First_Name)
 	// Proccess Data and Insert it
 	err = H.Service.RegisterUser(&user)
 	if err != nil {
-		fmt.Println(err.Error())
+		fmt.Println("grvrgvr", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}

@@ -2,8 +2,9 @@ package repository
 
 import (
 	"errors"
-	"social-network/internal/models"
 	"time"
+
+	"social-network/internal/models"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -45,8 +46,8 @@ func (database *Database) CheckIfUserExists(email string) bool {
 }
 
 func (database *Database) InsertUser(user models.User) error {
-	res, err := database.Db.Exec("INSERT INTO users (Nickname, datebirth, FirstName, Last_Name, email, password, avatar) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		user.Nickname, user.Dob, user.First_Name, user.Last_Name, user.Email, user.Password, user.Image)
+	res, err := database.Db.Exec("INSERT INTO users (Nickname, datebirth, firstName, lastName, email, password, avatar, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		user.Nickname, user.Dob, user.First_Name, user.Last_Name, user.Email, user.Password, user.Image, time.Now())
 	if err != nil {
 		return err
 	}
@@ -56,7 +57,7 @@ func (database *Database) InsertUser(user models.User) error {
 		return err
 	}
 
-	_, err = database.Db.Exec("INSERT INTO session (uuid, user_id) VALUES (?,?)", user.Uuid, usrid)
+	_, err = database.Db.Exec("INSERT INTO sessions (uuid, user_id, session_exp) VALUES (?,?,?)", user.Uuid, usrid, time.Now().AddDate(1, 0, 0))
 	if err != nil {
 		return err
 	}
