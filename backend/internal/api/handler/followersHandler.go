@@ -2,20 +2,21 @@ package handler
 
 import (
 	"fmt"
+	"log"
 	"net/http"
-	"strconv"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
 	"social-network/pkg/middlewares"
 )
 
-func (Handler *Handler) AddFollow(w http.ResponseWriter, r *http.Request) {
+// send follow / unfollow
+func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-	
+
 	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
@@ -25,19 +26,52 @@ func (Handler *Handler) AddFollow(w http.ResponseWriter, r *http.Request) {
 	var follow models.Follower
 	var err error
 
+	err = utils.ParseBody(r, &follow)
+
 	follow.Follower = user.ID
-	follow.UserID, err = strconv.Atoi(r.FormValue("target"))
-	
+	// follow.UserID, err = strconv.Atoi(r.FormValue("uesr_id"))
+
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-	err = Handler.Service.CreateFollow(&follow)
-
+	err = Handler.Service.Follow(&follow)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+}
+
+// accept/reject follow request
+func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	var follow models.Follower
+	var err error
+
+	err = utils.ParseBody(r, &follow)
+	fmt.Println(user.ID , follow.UserID)
+	if err != nil {
+		log.Println(err)
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+
+	err = Handler.Service.FollowDecision(&follow)
+	if err != nil {
+		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}

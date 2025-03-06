@@ -34,7 +34,9 @@ func Routes(db *sql.DB) *http.ServeMux {
 	// followers
 	mux.HandleFunc("/api/followers", handler.GetFollowers)
 	mux.HandleFunc("/api/followings", handler.GetFollowings)
-	mux.HandleFunc("/api/follow", handler.AddFollow)
+	mux.HandleFunc("/api/follow", handler.HandleFollow)
+	mux.HandleFunc("/api/follow/decision", handler.HandleFollowRequest)
+
 
 	return mux
 }
