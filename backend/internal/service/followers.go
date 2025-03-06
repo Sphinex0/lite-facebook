@@ -40,6 +40,7 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 }
 
 func (S *Service) FollowDecision(follow *models.Follower) (err error) {
+	
 	if follow.Status == "accepted" {
 		err = S.Database.AcceptFollowRequest(follow)
 	} else if follow.Status == "rejected" {

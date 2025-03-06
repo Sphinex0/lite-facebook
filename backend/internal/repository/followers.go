@@ -22,7 +22,7 @@ func (data *Database) SaveFollow(follow *models.Follower) (err error) {
 
 func (data *Database) GetFollow(follow *models.Follower) (followExist bool, err error) {
 	row := data.Db.QueryRow(`
-        SELECT id 
+        SELECT *
 		FROM followers
 		WHERE user_id = ?
 		AND follower = ?
@@ -30,7 +30,7 @@ func (data *Database) GetFollow(follow *models.Follower) (followExist bool, err 
 		follow.UserID,
 		follow.Follower)
 
-	err = row.Scan(&follow.ID)
+	err = row.Scan(&follow)
 
 	if err == nil {
 		followExist = true
@@ -81,7 +81,7 @@ func (data *Database) GetFollowers(user *models.UserInfo) (followers []models.Us
 func (data *Database) GetFollowByUser(user int, creator int) (err error) {
 	var id int
 	err = data.Db.QueryRow(`
-        SELECT u.id
+        SELECT id
 		FROM followers 
 		WHERE user_id = ?
 		AND follower = ?
