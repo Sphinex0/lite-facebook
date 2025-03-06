@@ -18,6 +18,26 @@ INSERT INTO users (
     952259471
 );
 
+INSERT INTO users (
+    nickname,
+    date_birth,
+    first_name,
+    last_name,
+    email,
+    password,
+    image,
+    created_at
+) VALUES (
+    'testuser2',
+    952259475,
+    'John2',
+    'Doe2',
+    'john.doe2@example.com',
+    'hashed_password1234',
+    'profile.jpg',
+    952259475
+);
+
 INSERT INTO sessions VALUES (
     NULL,
     1,

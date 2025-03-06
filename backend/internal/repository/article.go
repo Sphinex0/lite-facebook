@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"social-network/internal/models"
@@ -80,6 +81,7 @@ func (data *Database) GetPosts(id int) (err error) {
 	query := `
 		SELECT * 
 		FROM article_view
+		WHERE parent ISNULL
 	`
 
 	rows, err := data.Db.Query(query)
@@ -97,7 +99,14 @@ func (data *Database) GetPosts(id int) (err error) {
 		if err1 != nil {
 			fmt.Println(err1)
 		}
-		article_views = append(article_views, article_view)
+		if article_view.Article.Privacy == "private" {
+			err1 := data.GetFollowByUser(id,article_view.Article.Creator)
+			if err1 = nil {
+				article_views = append(article_views, article_view)
+			}
+		} else {
+			article_views = append(article_views, article_view)
+		}
 	}
 	rows.Close()
 	fmt.Println(article_views)
