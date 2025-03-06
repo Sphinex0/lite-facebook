@@ -28,8 +28,9 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/reactions/store", handler.GetArticles)
 
 	// group
+	mux.HandleFunc("/api/CreateGroup", handler.AddGroup)
 	mux.HandleFunc("/api/groups", handler.GetGroups)
-	mux.HandleFunc("/api/group", handler.GetGroup)
+	mux.HandleFunc("/api/group/{id}", handler.GetGroup)
 
 	// followers
 	mux.HandleFunc("/api/followers", handler.GetFollowers)

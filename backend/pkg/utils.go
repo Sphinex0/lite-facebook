@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 )
 
 func WriteJson(w http.ResponseWriter, statuscode int, Data any) error {
@@ -88,4 +89,8 @@ func DeleteSessionCookie(w http.ResponseWriter, uid string) {
 
 func Length(a, b int, e string) bool {
 	return len(e) < a || len(e) > b
+}
+
+func Placeholders(n int) string {
+	return strings.Repeat("?,", n)[:2*n-1]
 }

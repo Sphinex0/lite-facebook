@@ -1,8 +1,49 @@
 package service
 
-import "social-network/internal/models"
+import (
+	"fmt"
+	"social-network/internal/models"
+)
+
+func (S *Service) GreatedGroup(Group *models.Group) (err error) {
+	err = S.Database.SaveGroup(Group)
+	return
+}
+
+func (S *Service) AllGroups(Group *[]models.Group) ([]models.Group, error) {
+	rows, err := S.Database.Getallgroup()
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var groups []models.Group
+	for rows.Next() {
+		var group models.Group
+		if err := rows.Scan(&group.ID, &group.Creator, &group.Title, &group.Description ,& group.Image,&group.CreatedAt); err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		groups = append(groups, group)
+	}
 
 
-func (S *Service) GetGroup(User *models.User) error {
-	
+
+	return groups, nil
+}
+
+
+
+func (S *Service) GetGroupsById(Group *models.Group, Id string) (*models.Group,error)  {
+    row := S.Database.GetGroupById(Id)
+    if row == nil {
+        return nil ,fmt.Errorf("no group found with ID: %s", Id)
+    }
+    
+    // Scan the row into the Group struct
+    if err := row.Scan(&Group.ID, &Group.Creator, &Group.Title, &Group.Description, &Group.Image, &Group.CreatedAt); err != nil {
+        return  nil ,fmt.Errorf("error scanning group data: %v", err)
+    }
+
+	return Group , nil
 }

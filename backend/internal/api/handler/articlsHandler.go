@@ -9,7 +9,6 @@ import (
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
-	"social-network/pkg/middlewares"
 )
 
 func (Handler *Handler) AddPost(w http.ResponseWriter, r *http.Request) {
@@ -18,13 +17,13 @@ func (Handler *Handler) AddPost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
-	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
+	// user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	// if !ok {
+	// 	utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+	// 	return
+	// }
 	var article models.Article
-	article.UserID = user.ID
+	article.UserID = 1
 	article.Content = strings.TrimSpace(r.FormValue("content"))
 	article.Privacy = strings.TrimSpace(r.FormValue("privacy"))
 	article.CreatedAt = int(time.Now().Unix())
