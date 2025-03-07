@@ -82,27 +82,8 @@ func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Reque
 }
 
 func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
-	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	var timeBefore models.Data
-
-	err := utils.ParseBody(r, &timeBefore)
-	if timeBefore.Before == 0 {
-		timeBefore.Before = int(time.Now().Unix())
-	}
-
+	user, timeBefore, err := Handler.AfterGet(w, r)
 	if err != nil {
-		log.Println(err)
-		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
@@ -116,27 +97,8 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 }
 
 func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
-	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	var timeBefore models.Data
-
-	err := utils.ParseBody(r, &timeBefore)
-	if timeBefore.Before == 0 {
-		timeBefore.Before = int(time.Now().Unix())
-	}
-
+	user, timeBefore, err := Handler.AfterGet(w, r)
 	if err != nil {
-		log.Println(err)
-		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
@@ -150,26 +112,8 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 }
 
 func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
-	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	var timeBefore models.Data
-
-	err := utils.ParseBody(r, &timeBefore)
-	if timeBefore.Before == 0 {
-		timeBefore.Before = int(time.Now().Unix())
-	}
+	user, timeBefore, err := Handler.AfterGet(w, r)
 	if err != nil {
-		log.Println(err)
-		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 

@@ -44,7 +44,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		}
 		article.Parent = &parent
 	}
-	if err := Handler.Service.CreateArticle(&article); err != nil {
+	if  err := Handler.Service.CreateArticle(&article); err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return

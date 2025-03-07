@@ -3,12 +3,17 @@ package service
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"slices"
 
 	"social-network/internal/models"
 )
 
 func (service *Service) CreateArticle(article *models.Article) (err error) {
+	if article.Content == "" {
+		err = fmt.Errorf("err in content")
+		return
+	}
 	privacies := []string{"public", "private", "almost_private"}
 	isAllowedPrivacy := slices.Contains(privacies, article.Privacy)
 	if !isAllowedPrivacy {
@@ -46,6 +51,7 @@ func (service *Service) FetchPosts(id, before int) (article_views []models.Artic
 
 func (service *Service) FetchComments(id, before, parent int) (article_views []models.ArticleView, err error) {
 	if parent == 0 {
+		err = fmt.Errorf("err in parent")
 		return
 	}
 	article_views, err = service.Database.GetComments(id, before, parent)
