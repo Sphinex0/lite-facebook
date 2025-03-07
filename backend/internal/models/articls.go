@@ -12,4 +12,3 @@ type Article struct {
 	Parent     *int   `json:"parent"`
 	GroupID    *int   `json:"group_id"`
 }
-

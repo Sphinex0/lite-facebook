@@ -30,6 +30,8 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 	article.CreatedAt = int(time.Now().Unix())
 	article.ModifiedAt = article.CreatedAt
 	GroupID, _ := strconv.Atoi(r.FormValue("group_id"))
+	users := r.Form["users"]
+	
 	if GroupID != 0 {
 		/// select
 		article.GroupID = &GroupID
@@ -44,7 +46,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		}
 		article.Parent = &parent
 	}
-	if err := Handler.Service.CreateArticle(&article); err != nil {
+	if err := Handler.Service.CreateArticle(&article,users); err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return

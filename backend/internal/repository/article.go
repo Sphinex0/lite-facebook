@@ -7,7 +7,7 @@ import (
 	utils "social-network/pkg"
 )
 
-func (data *Database) SaveArticle(article *models.Article) (err error) {
+func (data *Database) SaveArticle(article *models.Article, users []string) (err error) {
 	args := utils.GetExecFields(article, "ID")
 	res, err := data.Db.Exec(fmt.Sprintf(`
 		INSERT INTO articles
@@ -19,6 +19,17 @@ func (data *Database) SaveArticle(article *models.Article) (err error) {
 	}
 	id, err := res.LastInsertId()
 	article.ID = int(id)
+
+	if article.Parent == nil {
+		for _, user := range users {
+			_, err = data.Db.Exec(`
+				INSERT INTO
+					permited_users
+				VALUES
+					(NULL, ?, ?);
+			`, id, user)
+		}
+	}
 
 	return
 }

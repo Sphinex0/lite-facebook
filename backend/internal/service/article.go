@@ -8,13 +8,13 @@ import (
 	"social-network/internal/models"
 )
 
-func (service *Service) CreateArticle(article *models.Article) (err error) {
+func (service *Service) CreateArticle(article *models.Article,users []string) (err error) {
 	privacies := []string{"public", "private", "almost_private"}
 	isAllowedPrivacy := slices.Contains(privacies, article.Privacy)
 	if !isAllowedPrivacy {
 		article.Privacy = "public"
 	}
-	err = service.Database.SaveArticle(article)
+	err = service.Database.SaveArticle(article,users)
 	return
 }
 
