@@ -72,6 +72,33 @@ func (data *Database) DeleteFollow(follow *models.Follower) (err error) {
 	return
 }
 
+func (data *Database) GetFollowersIds(userID  int) (followerIds []int, err error) {
+	var rows *sql.Rows
+	rows, err = data.Db.Query(`
+        SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
+		FROM followers f
+		JOIN users u
+		ON f.follower = u.id
+		WHERE user_id = ?
+		AND status = "accepted"
+
+    `,
+		userID,)
+	if err != nil {
+		return
+	}
+
+	for rows.Next() {
+		var user models.UserInfo
+		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
+			return
+		}
+		followerIds = append(followerIds, user.ID)
+	}
+
+	return
+}
+
 func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers []models.UserInfo, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
