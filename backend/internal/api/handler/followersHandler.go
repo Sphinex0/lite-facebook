@@ -32,7 +32,6 @@ func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 	follow.CreatedAt = int(time.Now().Unix())
 	follow.ModifiedAt = follow.CreatedAt
 
-
 	// follow.UserID, err = strconv.Atoi(r.FormValue("uesr_id"))
 
 	if err != nil {
@@ -94,16 +93,20 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	var before int
+	var timeBefore models.Data
 
-	err := utils.ParseBody(r, &before)
+	err := utils.ParseBody(r, &timeBefore)
+	if timeBefore.Before == 0 {
+		timeBefore.Before = int(time.Now().Unix())
+	}
+
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-	requesters, err := Handler.Service.GetFollowRequests(&user, before)
+	requesters, err := Handler.Service.GetFollowRequests(&user, timeBefore.Before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -124,17 +127,20 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var before int
+	var timeBefore models.Data
 
-	err := utils.ParseBody(r, &before)
+	err := utils.ParseBody(r, &timeBefore)
+	if timeBefore.Before == 0 {
+		timeBefore.Before = int(time.Now().Unix())
+	}
+
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-
-	followers, err := Handler.Service.GetFollowers(&user, before)
+	followers, err := Handler.Service.GetFollowers(&user, timeBefore.Before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -155,17 +161,19 @@ func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	var before int
+	var timeBefore models.Data
 
-	err := utils.ParseBody(r, &before)
+	err := utils.ParseBody(r, &timeBefore)
+	if timeBefore.Before == 0 {
+		timeBefore.Before = int(time.Now().Unix())
+	}
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-
-	followings, err := Handler.Service.GetFollowings(&user, before)
+	followings, err := Handler.Service.GetFollowings(&user, timeBefore.Before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")

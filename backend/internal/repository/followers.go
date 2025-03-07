@@ -82,6 +82,7 @@ func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers
 		WHERE user_id = ?
 		AND status = "accepted"
 		AND modified_at < ?
+
     `,
 		user.ID,
 		before)
