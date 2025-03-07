@@ -24,3 +24,26 @@ func (data *Database) SaveInvite(Invite *models.Invite) (err error) {
 
 	return
 }
+
+func (data *Database) AcceptInviteRequest(Invite *models.Invite) (err error) {
+	_, err = data.Db.Exec(`
+        UPDATE Invites
+		SET status = "accepted"
+		WHERE id = ?
+		AND status = "pending"
+    `,
+		Invite.ID)
+
+	return
+}
+
+func (data *Database) DeleteInvites(Invite *models.Invite) (err error) {
+	_, err = data.Db.Exec(`
+        DELETE 
+		FROM Invites
+		WHERE id = ?
+    `,
+		Invite.ID)
+
+	return
+}

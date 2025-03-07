@@ -16,12 +16,12 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 	return
 }
 
-func (service *Service) InviderDecision(follow *models.Follower) (err error) {
+func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 	
-	if follow.Status == "accepted" {
-		err = service.Database.AcceptFollowRequest(follow)
-	} else if follow.Status == "rejected" {
-		err = service.Database.DeleteFollow(follow)
+	if Invites.Status == "accepted" {
+		err = service.Database.AcceptInviteRequest(Invites)
+	} else if Invites.Status == "rejected" {
+		err = service.Database.DeleteInvites(Invites)
 	} else {
 		err = fmt.Errorf("bad request")
 	}
