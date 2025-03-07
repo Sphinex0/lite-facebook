@@ -7,4 +7,5 @@ type Follower struct {
 	Follower  int    `json:"follower"`
 	Status    string `json:"status"`
 	CreatedAt int    `json:"created_at"`
+	ModifiedAt int    `json:"modified_at"`
 }

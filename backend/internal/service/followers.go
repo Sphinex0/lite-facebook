@@ -65,16 +65,16 @@ func (S *Service) FollowDecision(follow *models.Follower) (err error) {
 	return
 }
 
-func (S *Service) GetFollowRequests(user *models.UserInfo) (requesters []models.UserInfo,err error) {
-	requesters , err = S.Database.GetFollowRequests(user)
+func (S *Service) GetFollowRequests(user *models.UserInfo, before int) (requesters []models.UserInfo,err error) {
+	requesters , err = S.Database.GetFollowRequests(user, before)
 	return
 }
 
-func (S *Service) GetFollowers(user *models.UserInfo) (followers []models.UserInfo,err error) {
-	followers , err = S.Database.GetFollowers(user)
+func (S *Service) GetFollowers(user *models.UserInfo, before int) (followers []models.UserInfo,err error) {
+	followers , err = S.Database.GetFollowers(user, before)
 	return
 }
-func (S *Service) GetFollowings(user *models.UserInfo) (followings []models.UserInfo,err error) {
-	followings , err = S.Database.GetFollowings(user)
+func (S *Service) GetFollowings(user *models.UserInfo, before int) (followings []models.UserInfo,err error) {
+	followings , err = S.Database.GetFollowings(user, before)
 	return
 }

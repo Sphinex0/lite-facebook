@@ -30,6 +30,8 @@ func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 
 	follow.Follower = user.ID
 	follow.CreatedAt = int(time.Now().Unix())
+	follow.ModifiedAt = follow.CreatedAt
+
 
 	// follow.UserID, err = strconv.Atoi(r.FormValue("uesr_id"))
 
@@ -65,6 +67,7 @@ func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Reque
 
 	err = utils.ParseBody(r, &follow)
 	follow.UserID = user.ID
+	follow.ModifiedAt = int(time.Now().Unix())
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -79,14 +82,8 @@ func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func (Handler *Handler) GetFollowers(w http.ResponseWriter, r *http.Request) {
-}
-
-func (Handler *Handler) GetFollowings(w http.ResponseWriter, r *http.Request) {
-}
-
 func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
@@ -97,7 +94,16 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	requesters, err := Handler.Service.GetFollowRequests(&user)
+	var before int
+
+	err := utils.ParseBody(r, &before)
+	if err != nil {
+		log.Println(err)
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+
+	requesters, err := Handler.Service.GetFollowRequests(&user, before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -107,7 +113,7 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 }
 
 func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
@@ -118,7 +124,17 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	followers, err := Handler.Service.GetFollowers(&user)
+	var before int
+
+	err := utils.ParseBody(r, &before)
+	if err != nil {
+		log.Println(err)
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+
+
+	followers, err := Handler.Service.GetFollowers(&user, before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -128,7 +144,7 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 }
 
 func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
@@ -139,7 +155,17 @@ func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	followings, err := Handler.Service.GetFollowings(&user)
+	var before int
+
+	err := utils.ParseBody(r, &before)
+	if err != nil {
+		log.Println(err)
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+
+
+	followings, err := Handler.Service.GetFollowings(&user, before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")

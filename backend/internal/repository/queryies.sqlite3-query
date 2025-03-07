@@ -1,39 +1,52 @@
 -- database: ./forum.db
 -- Use the ▷ button in the top right corner to run the entire file.
-SELECT
-    A.*,
-    COALESCE((SELECT like FROM likes L WHERE L.user_id = 1 AND L.article_id = A.id),0) as like
-FROM
-    article_view A
-    LEFT JOIN followers F ON A.user_id = F.user_id
-    AND F.follower = 1
-    AND F.status = 'accepted'
-    LEFT JOIN permited_users P ON A.id = P.article_id
-    AND P.user_id = 1
-WHERE
-    parent IS NULL
-    AND (
-        A.privacy = 'public'
-        OR (
-            A.id = ?
-        )
-        OR (
-            A.privacy = 'almost_private'
-            AND F.id IS NOT NULL
-        )
-        OR (
-            A.privacy = 'private'
-            AND P.user_id IS NOT NULL
-        )
-    )
-;
+INSERT INTO users (
+    nickname,
+    date_birth,
+    first_name,
+    last_name,
+    email,
+    password,
+    image,
+    created_at
+) VALUES (
+    'testuser',
+    952259471,
+    'John',
+    'Doe',
+    'john.doe@example.com',
+    'hashed_password123',
+    'profile.jpg',
+    952259471
+);
 
-SELECT
-			A.*,
-			COALESCE((SELECT like FROM likes L WHERE L.user_id = 1 AND L.article_id = A.id),0) as like
-		FROM
-			article_view A
-		WHERE
-			parent IS NULL
-			AND A.id = 4
+INSERT INTO users (
+    nickname,
+    date_birth,
+    first_name,
+    last_name,
+    email,
+    password,
+    image,
+    created_at
+) VALUES (
+    'testuser453',
+    952259475,
+    'John34',
+    'Doe37',
+    'john.doe45@example.com',
+    'hashed_password1234',
+    'profile.jpg',
+    952259475
+);
 
+INSERT INTO sessions VALUES (
+    NULL,
+    1,
+    '550e8400-e29b-41d4-a716-446655440000',
+    1977654321
+)
+
+
+    -- '550e8400-e29b-41d4-a716-446655440000',
+    -- 1677654321,

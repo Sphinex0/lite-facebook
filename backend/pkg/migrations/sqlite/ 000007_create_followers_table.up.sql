@@ -5,6 +5,7 @@ CREATE TABLE followers (
     follower INTEGER NOT NULL,
     status TEXT,
     created_at INTEGER NOT NULL,
+    modified_at INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (follower) REFERENCES users(id) ON DELETE CASCADE
 );
