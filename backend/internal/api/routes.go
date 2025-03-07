@@ -27,9 +27,15 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/reactions/store", handler.HandelCreateReaction)
 
 	// group
-	mux.HandleFunc("/api/CreateGroup", handler.AddGroup)
+	mux.HandleFunc("/api/groups/store", handler.AddGroup)
 	mux.HandleFunc("/api/groups", handler.GetGroups)
 	mux.HandleFunc("/api/group/{id}", handler.GetGroup)
+
+	// Invites
+	mux.HandleFunc("/api/invate/store//{IdGroup}/{IdReciver}", handler.AddInviteByReceiver)
+	mux.HandleFunc("/api/addInvitebySender/{IdGroup}/{IdReciver}", handler.AddInviteBySender)
+	mux.HandleFunc("/api/Invite/{id}", handler.GetGroup)
+
 
 	// followers
 	mux.HandleFunc("/api/followers", handler.GetFollowers)
