@@ -72,7 +72,7 @@ func (data *Database) DeleteFollow(follow *models.Follower) (err error) {
 	return
 }
 
-func (data *Database) GetFollowers(user *models.UserInfo) (followers []models.UserInfo, err error) {
+func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers []models.UserInfo, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
         SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
@@ -81,8 +81,10 @@ func (data *Database) GetFollowers(user *models.UserInfo) (followers []models.Us
 		ON f.follower = u.id
 		WHERE user_id = ?
 		AND status = "accepted"
+		AND modified_at < ?
     `,
-		user.ID)
+		user.ID,
+		before)
 	if err != nil {
 		return
 	}
@@ -98,7 +100,7 @@ func (data *Database) GetFollowers(user *models.UserInfo) (followers []models.Us
 	return
 }
 
-func (data *Database) GetFollowings(user *models.UserInfo) (followings []models.UserInfo, err error) {
+func (data *Database) GetFollowings(user *models.UserInfo, before int) (followings []models.UserInfo, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
         SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
@@ -108,7 +110,8 @@ func (data *Database) GetFollowings(user *models.UserInfo) (followings []models.
 		WHERE f.follower = ?
 		AND status = "accepted"
     `,
-		user.ID)
+		user.ID,
+		before)
 	if err != nil {
 		return
 	}
@@ -138,7 +141,7 @@ func (data *Database) GetPendingFollowByUsers(follow *models.Follower) (err erro
 	return
 }
 
-func (data *Database) GetFollowRequests(user *models.UserInfo) (requesters []models.UserInfo, err error) {
+func (data *Database) GetFollowRequests(user *models.UserInfo, before int) (requesters []models.UserInfo, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
         SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
@@ -147,8 +150,10 @@ func (data *Database) GetFollowRequests(user *models.UserInfo) (requesters []mod
 		ON f.follower = u.id
 		WHERE user_id = ?
 		AND status = "pending"
+		AND modified_at < ?
     `,
-		user.ID)
+		user.ID,
+		before)
 	if err != nil {
 		return
 	}
@@ -167,10 +172,12 @@ func (data *Database) GetFollowRequests(user *models.UserInfo) (requesters []mod
 func (data *Database) AcceptFollowRequest(follow *models.Follower) (err error) {
 	_, err = data.Db.Exec(`
         UPDATE followers
-		SET status = "accepted"
+		SET status = "accepted",
+			modified_at = ?
 		WHERE id = ?
     `,
-		follow.ID)
+	follow.ModifiedAt,
+	follow.ID)
 
 	return
 }
