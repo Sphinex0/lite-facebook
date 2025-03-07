@@ -32,7 +32,6 @@ func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 	follow.CreatedAt = int(time.Now().Unix())
 	follow.ModifiedAt = follow.CreatedAt
 
-
 	// follow.UserID, err = strconv.Atoi(r.FormValue("uesr_id"))
 
 	if err != nil {
@@ -83,27 +82,12 @@ func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Reque
 }
 
 func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
-	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	var before int
-
-	err := utils.ParseBody(r, &before)
+	user, timeBefore, err := Handler.AfterGet(w, r)
 	if err != nil {
-		log.Println(err)
-		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-	requesters, err := Handler.Service.GetFollowRequests(&user, before)
+	requesters, err := Handler.Service.GetFollowRequests(&user, timeBefore.Before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -113,28 +97,12 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 }
 
 func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
-	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	var before int
-
-	err := utils.ParseBody(r, &before)
+	user, timeBefore, err := Handler.AfterGet(w, r)
 	if err != nil {
-		log.Println(err)
-		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-
-	followers, err := Handler.Service.GetFollowers(&user, before)
+	followers, err := Handler.Service.GetFollowers(&user, timeBefore.Before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -144,28 +112,12 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 }
 
 func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
-		return
-	}
-
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
-	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	var before int
-
-	err := utils.ParseBody(r, &before)
+	user, timeBefore, err := Handler.AfterGet(w, r)
 	if err != nil {
-		log.Println(err)
-		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-
-	followings, err := Handler.Service.GetFollowings(&user, before)
+	followings, err := Handler.Service.GetFollowings(&user, timeBefore.Before)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
