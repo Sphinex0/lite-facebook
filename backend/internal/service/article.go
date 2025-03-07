@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strconv"
 
 	"social-network/internal/models"
 )
@@ -20,7 +21,22 @@ func (service *Service) CreateArticle(article *models.Article, users []string, i
 		article.Privacy = "public"
 	}
 
-	// allowedUser , err := service.Database.GetFollowersIds(id)
+	followerIds, err := service.Database.GetFollowersIds(id)
+	
+	if err != nil {
+		return
+	}
+
+	for _, user := range users {
+		id, err = strconv.Atoi(user)
+		if err != nil {
+			return
+		}
+		if !slices.Contains(followerIds, id) {
+			err = fmt.Errorf("error in user")
+			return
+		}
+	}
 
 	err = service.Database.SaveArticle(article, users)
 	return
