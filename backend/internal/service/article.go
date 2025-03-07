@@ -9,7 +9,7 @@ import (
 	"social-network/internal/models"
 )
 
-func (service *Service) CreateArticle(article *models.Article) (err error) {
+func (service *Service) CreateArticle(article *models.Article, users []string, id int) (err error) {
 	if article.Content == "" {
 		err = fmt.Errorf("err in content")
 		return
@@ -19,7 +19,10 @@ func (service *Service) CreateArticle(article *models.Article) (err error) {
 	if !isAllowedPrivacy {
 		article.Privacy = "public"
 	}
-	err = service.Database.SaveArticle(article,users)
+
+	// allowedUser , err := service.Database.GetFollowersIds(id)
+
+	err = service.Database.SaveArticle(article, users)
 	return
 }
 
