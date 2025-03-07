@@ -8,6 +8,32 @@ import (
 	utils "social-network/pkg"
 )
 
+func (data *Database) GetFollowersCount(user *models.UserInfo) (count int, err error) {
+	row := data.Db.QueryRow(`
+        SELECT COUNT(*)
+		FROM followers
+		WHERE user_id = ?
+    `,
+		user.ID)
+
+	err = row.Scan(&count)
+
+	return
+}
+
+func (data *Database) GetFollowingsCount(user *models.UserInfo) (count int, err error) {
+	row := data.Db.QueryRow(`
+        SELECT COUNT(*)
+		FROM followers
+		WHERE follower = ?
+    `,
+		user.ID)
+
+	err = row.Scan(&count)
+
+	return
+}
+
 func (data *Database) SaveFollow(follow *models.Follower) (err error) {
 	args := utils.GetExecFields(follow, "ID")
 
@@ -20,7 +46,7 @@ func (data *Database) SaveFollow(follow *models.Follower) (err error) {
 	return
 }
 
-func (data *Database) GetFollow(follow *models.Follower) (followExist bool, err error) {
+func (data *Database) GetFollow(follow *models.Follower) (err error) {
 	row := data.Db.QueryRow(`
         SELECT *
 		FROM followers
@@ -30,13 +56,7 @@ func (data *Database) GetFollow(follow *models.Follower) (followExist bool, err 
 		follow.UserID,
 		follow.Follower)
 
-	err = row.Scan(&follow)
-
-	if err == nil {
-		followExist = true
-	} else if err == sql.ErrNoRows {
-		followExist = false
-	}
+	err = row.Scan(utils.GetScanFields(follow)...)
 
 	return
 }
@@ -58,7 +78,7 @@ func (data *Database) GetFollowers(user *models.UserInfo) (followers []models.Us
         SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
 		FROM followers f
 		JOIN users u
-		ON f.user_id = u.id
+		ON f.follower = u.id
 		WHERE user_id = ?
 		AND status = "accepted"
     `,
@@ -69,7 +89,7 @@ func (data *Database) GetFollowers(user *models.UserInfo) (followers []models.Us
 
 	for rows.Next() {
 		var user models.UserInfo
-		if err = rows.Scan(&user); err != nil {
+		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
 			return
 		}
 		followers = append(followers, user)
@@ -78,27 +98,13 @@ func (data *Database) GetFollowers(user *models.UserInfo) (followers []models.Us
 	return
 }
 
-func (data *Database) GetFollowByUser(user int, creator int) (err error) {
-	var id int
-	err = data.Db.QueryRow(`
-        SELECT id
-		FROM followers 
-		WHERE user_id = ?
-		AND follower = ?
-		AND status = "accepted"
-    `,
-		creator, user).Scan(&id)
-
-	return
-}
-
-func (data *Database) GetFollowings(user *models.UserInfo) (followers []models.UserInfo, err error) {
+func (data *Database) GetFollowings(user *models.UserInfo) (followings []models.UserInfo, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
         SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
 		FROM followers f
 		JOIN users u
-		ON f.follower = u.id
+		ON f.user_id = u.id
 		WHERE f.follower = ?
 		AND status = "accepted"
     `,
@@ -109,20 +115,36 @@ func (data *Database) GetFollowings(user *models.UserInfo) (followers []models.U
 
 	for rows.Next() {
 		var user models.UserInfo
-		if err = rows.Scan(&user); err != nil {
+		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
 			return
 		}
-		followers = append(followers, user)
+		followings = append(followings, user)
 	}
 
 	return
 }
 
-func (data *Database) GetFollowRequests(user *models.UserInfo) (Requests []models.Follower, err error) {
+// to get the follow without the status (used to modify old status)
+func (data *Database) GetPendingFollowByUsers(follow *models.Follower) (err error) {
+	err = data.Db.QueryRow(`
+        SELECT id, user_id, follower
+		FROM followers 
+		WHERE user_id = ?
+		AND follower = ?
+		AND status = "pending"
+    `,
+		follow.UserID, follow.Follower).Scan(&follow.ID, &follow.UserID, &follow.Follower)
+
+	return
+}
+
+func (data *Database) GetFollowRequests(user *models.UserInfo) (requesters []models.UserInfo, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
-        SELECT *
-		FROM followers
+        SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
+		FROM followers f
+		JOIN users u
+		ON f.follower = u.id
 		WHERE user_id = ?
 		AND status = "pending"
     `,
@@ -132,11 +154,11 @@ func (data *Database) GetFollowRequests(user *models.UserInfo) (Requests []model
 	}
 
 	for rows.Next() {
-		var follow models.Follower
-		if err = rows.Scan(&follow); err != nil {
+		var user models.UserInfo
+		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
 			return
 		}
-		Requests = append(Requests, follow)
+		requesters = append(requesters, user)
 	}
 
 	return
@@ -147,7 +169,6 @@ func (data *Database) AcceptFollowRequest(follow *models.Follower) (err error) {
         UPDATE followers
 		SET status = "accepted"
 		WHERE id = ?
-		AND status = "pending"
     `,
 		follow.ID)
 
