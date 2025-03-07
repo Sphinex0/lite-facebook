@@ -8,3 +8,8 @@ type ArticleView struct {
 	CommentsCount int      `json:"comments_count"`
 	Like          int      `json:"like"`
 }
+
+type Data struct {
+	Before int `json:"before"`
+	Parent int `json:"parent"`
+}

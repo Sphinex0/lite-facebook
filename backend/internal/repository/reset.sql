@@ -60,3 +60,13 @@ INSERT INTO articles (id, user_id, content, privacy, created_at, modified_at, im
 
 
 INSERT INTO articles (id, user_id, content, privacy, created_at, modified_at, image, parent, group_id) VALUES (11, 2, 'new post hahaha', 'private', 1741273282, 1741273282, '', NULL, NULL);
+
+
+
+INSERT INTO articles (user_id, content, privacy, created_at, modified_at, image, parent, group_id) VALUES (2, 'This the post of dndnd', 'almost_private', 1741273572, 1741273572, '', NULL, NULL);
+
+INSERT INTO articles (user_id, content, privacy, created_at, modified_at, image, parent, group_id) VALUES (2, 'This the post of dndnd 222', 'almost_private', 1741273572, 1741273572, '', NULL, NULL);
+
+INSERT INTO articles (user_id, content, privacy, created_at, modified_at, image, parent, group_id) VALUES (2, 'mohadad', 'private', 1741273572, 1741273572, '', NULL, NULL);
+
+INSERT INTO permited_users VALUES (NULL,14,1)
