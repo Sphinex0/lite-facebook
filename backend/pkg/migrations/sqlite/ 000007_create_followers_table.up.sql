@@ -4,6 +4,10 @@ CREATE TABLE followers (
     user_id INTEGER NOT NULL,
     follower INTEGER NOT NULL,
     status TEXT,
+    created_at INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (follower) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE INDEX index_user_id ON followers (user_id);
+CREATE INDEX index_follower ON followers (follower);
