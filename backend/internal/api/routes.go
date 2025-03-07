@@ -33,8 +33,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 
 	// Invites
 	mux.HandleFunc("/api/invate/store", handler.AddInviteByReceiver)
-	// mux.HandleFunc("/api/addInvitebySender/{IdGroup}/{IdReciver}", handler.AddInviteBySender)
-	mux.HandleFunc("/api/Invite/{id}", handler.GetGroup)
+	mux.HandleFunc("/api/Invite/decision", handler.HandleInviteRequest)
 
 
 	// followers
