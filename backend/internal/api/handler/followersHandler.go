@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+	"time"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -28,6 +29,8 @@ func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 	err = utils.ParseBody(r, &follow)
 
 	follow.Follower = user.ID
+	follow.CreatedAt = int(time.Now().Unix())
+
 	// follow.UserID, err = strconv.Atoi(r.FormValue("uesr_id"))
 
 	if err != nil {

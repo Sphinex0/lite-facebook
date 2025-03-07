@@ -9,6 +9,6 @@ CREATE TABLE users (
     password TEXT NOT NULL,
     image TEXT,
     about TEXT,
-    privacy TEXT,
+    privacy TEXT DEFAULT "public",
     created_at INTEGER NOT NULL
 );
