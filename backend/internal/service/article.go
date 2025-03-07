@@ -38,3 +38,16 @@ func (service *Service) CreateReaction(like *models.Like) (err error) {
 	}
 	return
 }
+
+func (service *Service) FetchPosts(id, before int) (article_views []models.ArticleView, err error) {
+	article_views, err = service.Database.GetPosts(id, before)
+	return
+}
+
+func (service *Service) FetchComments(id, before, parent int) (article_views []models.ArticleView, err error) {
+	if parent == 0 {
+		return
+	}
+	article_views, err = service.Database.GetComments(id, before, parent)
+	return
+}

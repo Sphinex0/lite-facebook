@@ -1,0 +1,39 @@
+-- database: ./forum.db
+-- Use the ▷ button in the top right corner to run the entire file.
+SELECT
+    A.*,
+    COALESCE((SELECT like FROM likes L WHERE L.user_id = 1 AND L.article_id = A.id),0) as like
+FROM
+    article_view A
+    LEFT JOIN followers F ON A.user_id = F.user_id
+    AND F.follower = 1
+    AND F.status = 'accepted'
+    LEFT JOIN permited_users P ON A.id = P.article_id
+    AND P.user_id = 1
+WHERE
+    parent IS NULL
+    AND (
+        A.privacy = 'public'
+        OR (
+            A.id = ?
+        )
+        OR (
+            A.privacy = 'almost_private'
+            AND F.id IS NOT NULL
+        )
+        OR (
+            A.privacy = 'private'
+            AND P.user_id IS NOT NULL
+        )
+    )
+;
+
+SELECT
+			A.*,
+			COALESCE((SELECT like FROM likes L WHERE L.user_id = 1 AND L.article_id = A.id),0) as like
+		FROM
+			article_view A
+		WHERE
+			parent IS NULL
+			AND A.id = 4
+
