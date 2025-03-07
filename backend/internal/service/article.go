@@ -43,3 +43,4 @@ func (service *Service) FetchPosts(id int) (article_views []models.ArticleView ,
 	article_views , err = service.Database.GetPosts(id)
 	return
 }
+
