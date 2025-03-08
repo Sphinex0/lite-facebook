@@ -24,10 +24,24 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 		if err1 != nil {
 			fmt.Println(err1)
 		}
-		// if conv.Conversation.Type == "group" {
-		// 	conv.Group =
-		// }
 		conversations = append(conversations, conv)
 	}
+
+	for i, conv := range conversations {
+		if conv.Conversation.Type == "group" {
+			row := data.GetGroupById(conv.Conversation.Entitie_two_group)
+			err1 := row.Scan(utils.GetScanFields(&conversations[i].Group)...)
+			if err1 != nil {
+				fmt.Println(err1)
+			}
+		} else {
+			var err1 error
+			conversations[i].UserInfo, err1 = data.GetUserByID(conv.Conversation.Entitie_two_group)
+			if err1 != nil {
+				fmt.Println(err1)
+			}
+		}
+	}
+
 	return
 }

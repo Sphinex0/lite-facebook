@@ -14,8 +14,10 @@ import (
 )
 
 var (
-	clients   = make(map[string]*websocket.Conn)
-	clientsMu sync.RWMutex
+	userConnections         = make(map[string]*websocket.Conn)
+	conversationSubscribers = make(map[string][]string)
+	connMu                  sync.RWMutex
+	subMu                   sync.RWMutex
 )
 
 func (Handler *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc {
@@ -44,9 +46,9 @@ func (Handler *Handler) MessagesHandler(upgrader websocket.Upgrader) http.Handle
 			return
 		}
 		key := fmt.Sprint(user.ID) + "_" + session
-		clientsMu.Lock()
-		clients[key] = conn
-		clientsMu.Unlock()
+		connMu.Lock()
+		userConnections[key] = conn
+		connMu.Unlock()
 		broadcastUserStatus()
 		defer removeClient(session)
 
@@ -85,7 +87,7 @@ func handleMessage(msg models.WSMessage, conn *websocket.Conn, Handler *Handler)
 		case "conversations":
 			msg.Type = "conversations"
 			clientsMu.RLock()
-			msg.OnlineUsers = getClientIDs()
+			// msg.OnlineUsers = getClientIDs()
 			clientsMu.RUnlock()
 			msg.Conversations, err = Handler.Service.FetchConversations(msg.Message.SenderID)
 			if err != nil {
@@ -126,10 +128,26 @@ func ErrorMessage(senderID int, conn *websocket.Conn) {
 	})
 }
 
-func getClientIDs() []string {
-	keys := make([]string, 0, len(clients))
-	for key := range clients {
-		keys = append(keys, key)
-	}
-	return keys
-}
+// func getClientIDs() []string {
+// 	keys := make([]string, 0, len(clients))
+// 	for key := range clients {
+// 		keys = append(keys, key)
+// 	}
+// 	return keys
+// }
+
+
+// subMu.RLock()
+// subscribers := conversationSubscribers["1"]
+// subMu.RUnlock()
+// connMu.RLock()
+// for _, userID := range subscribers {
+//     if conn, ok := userConnections[userID]; ok {
+//         conn.WriteJSON(wsMessage)
+//     }
+// }
+// connMu.RUnlock()
+
+// subMu.Lock()
+// conversationSubscribers["1"] = append(conversationSubscribers["1"], "user_1")
+// subMu.Unlock()

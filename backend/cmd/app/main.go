@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
 	"social-network/internal/api"
 	"social-network/internal/repository"
 	"social-network/pkg/middlewares"
@@ -22,7 +23,7 @@ func main() {
 
 	server := http.Server{
 		Addr:    ":8080",
-		Handler: middlewares.CORS(api.Routes(db)),
+		Handler: middlewares.CORS(middlewares.AuthMiddleware(api.Routes(db), db)),
 	}
 
 	fmt.Println("http://localhost:8080/")
