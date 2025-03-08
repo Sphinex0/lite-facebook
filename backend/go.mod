@@ -3,9 +3,11 @@ module social-network
 go 1.22.3
 
 require (
-	github.com/golang-migrate/migrate/v4 v4.18.2
+	github.com/gofrs/uuid v4.4.0+incompatible
+	github.com/gofrs/uuid/v5 v5.3.1
 	github.com/mattn/go-sqlite3 v1.14.24
 	github.com/rubenv/sql-migrate v1.7.1
+	golang.org/x/crypto v0.31.0
 )
 
 require (

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from 'next/navigation'
 import "./signup.css";
 
 export default function SignupPage() {
@@ -15,6 +16,8 @@ export default function SignupPage() {
     aboutMe: "",
   });
 
+  const router = useRouter();
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -23,7 +26,38 @@ export default function SignupPage() {
     setForm({ ...form, avatar: e.target.files[0] });
   };
 
+
+  const handleSignup = async (e) => {
+    e.preventDefault(); // Prevent the default form submit behavior
+    const data = new FormData()
+    for (let i in form) {
+      data.append(i , form[i])
+      
+    }
+    // data.append([...form])
+    try {
+      const response = await fetch("http://localhost:8080/api/signup", {
+        method: "POST",
+        body: data, // Send form data as a JSON string
+      });
+
+
+      if (response.status == 200) {
+        // If the response is ok, navigate to the homepage
+        console.log("wewis");
+        
+        router.push('/');
+      } else {
+        // Handle failure (you might want to show an error message)
+        console.log(response);
+      }
+    } catch (error) {
+      console.error("Error during sign-up:", error);
+    }
+  };
+  
   return (
+    <form onSubmit={handleSignup}>
     <div className="container">
       <div className="form-box">
         <h2>Sign Up</h2>
@@ -63,8 +97,9 @@ export default function SignupPage() {
           onChange={handleChange}
         ></textarea>
 
-        <button className="submit-btn">Sign Up</button>
+        <button type="submit" className="submit-btn">Sign Up</button>
       </div>
     </div>
+    </form>
   );
 }

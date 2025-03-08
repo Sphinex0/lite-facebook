@@ -1,16 +1,18 @@
 package handler
 
 import (
+	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
 )
 
 func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
-	utils.SetSessionCookie(w, "550e8400-e29b-41d4-a716-446655440000")
-	utils.WriteJson(w, 200, "nice")
-	return
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
@@ -23,7 +25,8 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := H.Service.LoginUser(&user)
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, "Error While logging To An  Account.")
+		fmt.Println("err", err.Error())
+		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -38,71 +41,66 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hellolooo"))
-	// if r.Method != http.MethodPost {
-	// 	utils.WriteJson(w, http.StatusMethodNotAllowed, "Method not allowed")
-	// 	return
-	// }
+	user := H.Service.Extractuser(r)
 
-	// var user models.User
-	// if erro := json.NewDecoder(r.Body).Decode(&user); erro != nil {
-	// 	utils.WriteJson(w, http.StatusBadRequest, "Bad request")
-	// 	return
-	// }
-	// // Proccess Data and Insert it
-	// err := H.Service.RegisterUser(&user)
-	// if err != nil {
-	// 	if err == sqlite3.ErrLocked {
-	// 		utils.WriteJson(w, http.StatusLocked, "Database Is Busy!")
-	// 		return
-	// 	}
-	// 	// Username
-	// 	if err.Error() == models.Errors.InvalidUsername {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
+	// Parse the multipart form (10MB max file size)
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "file too big")
+		return
+	}
 
-	// 		return
-	// 	}
-	// 	// gender
-	// 	if err.Error() == models.Errors.InvalidCredentials {
-	// 		utils.WriteJson(w, http.StatusBadRequest, "bad request gender!")
-	// 		return
-	// 	}
+	// Extract profile picture (optional)
+	var filePath string
+	file, handler, err := r.FormFile("avatar")
+	if err == nil { // No error means a file was uploaded
 
-	// 	// Age
-	// 	if err.Error() == models.UserErrors.InvalideAge {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
+		// Ensure Profile directory exists
+		uploadDir := "../backend/internal/repository/profile"
+		defer file.Close()
+		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
+			os.Mkdir(uploadDir, os.ModePerm)
+		}
 
-	// 		return
-	// 	}
+		// Save with a unique filename (e.g., user.UUID + filename)
+		filePath = filepath.Join(uploadDir, handler.Filename)
+		dst, err := os.Create(filePath)
+		if err != nil {
+			fmt.Println(err)
+			utils.WriteJson(w, http.StatusInternalServerError, "Could not save file")
+			return
+		}
+		defer dst.Close()
+		_, err = io.Copy(dst, file)
+		if err != nil {
+			utils.WriteJson(w, http.StatusInternalServerError, "Failed to save file")
+			return
+		}
 
-	// 	// Password
-	// 	if err.Error() == models.Errors.InvalidPassword {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
+		// Assign file path to user struct
+		user.Image = filePath
+	}
 
-	// 		return
-	// 	}
-	// 	// Email
-	// 	if err.Error() == models.Errors.InvalidEmail {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
-
-	// 		return
-	// 	}
-	// 	if err.Error() == models.Errors.LongEmail {
-	// 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
-	// 		return
-	// 	}
-	// 	// General
-	// 	if err.Error() == models.Errors.UserAlreadyExist {
-	// 		utils.WriteJson(w, http.StatusConflict, models.Errors.UserAlreadyExist)
-	// 		return
-	// 	}
-
-	// 	utils.WriteJson(w, http.StatusInternalServerError, "Error While Registering The User.")
-	// 	return
-	// }
-	// utils.WriteJson(w, http.StatusOK, "You'v loged succesfuly")
+	// Proccess Data and Insert it
+	err = H.Service.RegisterUser(&user)
+	if err != nil {
+		fmt.Println("yes",err.Error())
+		utils.WriteJson(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, "You'v loged in succesfuly")
 }
 
-func (Handler *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hello"))
+func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	var Uuid string
+	err := json.NewDecoder(r.Body).Decode(&Uuid)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "bad request")
+	}
+	err = H.Service.DeleteSessionCookie(w, Uuid)
+	if err != nil {
+		utils.WriteJson(w, http.StatusOK, err.Error())
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
 }
