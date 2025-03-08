@@ -55,7 +55,11 @@ func (data *Database) DeleteInvites(Invite *models.Invite) (err error) {
 }
 
 func (data *Database) Saveinvite(Invite *models.Invite) (int, error) {
-	res := data.Db.QueryRow(`SELECT id FROM invites WHERE group_id =? AND (sender = ? OR receiver =?) `, Invite.GroupID, Invite.Sender, Invite.Sender)
+	res := data.Db.QueryRow(`
+    SELECT id 
+    FROM invites 
+    WHERE group_id = ? AND sender = ? AND receiver = ?
+`, Invite.GroupID, Invite.Sender, Invite.Receiver)
 	var id int
 
 	err := res.Scan(&id)
