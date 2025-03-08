@@ -45,7 +45,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		}
 		article.Parent = &parent
 	}
-	if err := Handler.Service.CreateArticle(&article); err != nil {
+	if  err := Handler.Service.CreateArticle(&article); err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
@@ -54,7 +54,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 }
 
 func (Handler *Handler) HandelGetPosts(w http.ResponseWriter, r *http.Request) {
-	user, data, err := Handler.AfterGetArticles(w, r)
+	user, data, err := Handler.AfterGet(w, r)
 	if err != nil {
 		return
 	}
@@ -67,7 +67,7 @@ func (Handler *Handler) HandelGetPosts(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Handler *Handler) HandelGetComments(w http.ResponseWriter, r *http.Request) {
-	user, data, err := Handler.AfterGetArticles(w, r)
+	user, data, err := Handler.AfterGet(w, r)
 	if err != nil {
 		return
 	}
@@ -108,7 +108,7 @@ func (Handler *Handler) HandelCreateReaction(w http.ResponseWriter, r *http.Requ
 	utils.WriteJson(w, http.StatusCreated, like)
 }
 
-func (Handler *Handler) AfterGetArticles(w http.ResponseWriter, r *http.Request) (user models.UserInfo, data models.Data, err error) {
+func (Handler *Handler) AfterGet(w http.ResponseWriter, r *http.Request) (user models.UserInfo, data models.Data, err error) {
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		err = fmt.Errorf("err in methode")
