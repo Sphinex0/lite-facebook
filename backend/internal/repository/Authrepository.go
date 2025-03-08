@@ -24,10 +24,12 @@ func (data *Database) CheckMailAndPaswdvalidity(email string, Password string) (
 	return usrId, nil
 }
 
-func (database *Database) UpdateUuid(uuid string, userId int) error {
-	expire := time.Now().Add(time.Duration(time.Now().Local().Year()))
-	_, err := database.Db.Exec("INSERT INTO sessions (user-id = ? uuid = ?, expired_at = ?) VALUES(?,?,?)", userId, uuid, expire)
-	return err
+func (database *Database) AddUuid(Uuid string, userId int) error {
+	_, err := database.Db.Exec("INSERT INTO sessions (uuid, user_id, session_exp) VALUES (?,?,?)", Uuid, userId, time.Now().AddDate(1, 0, 0))
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (Database *Database) GetUser(uid string) (int, error) {
@@ -45,9 +47,9 @@ func (database *Database) CheckIfUserExists(email string) bool {
 	return err == nil
 }
 
-func (database *Database) InsertUser(user models.User) error {
-	res, err := database.Db.Exec("INSERT INTO users (Nickname, datebirth, firstName, lastName, email, password, avatar, createdAt) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		user.Nickname, user.Dob, user.First_Name, user.Last_Name, user.Email, user.Password, user.Image, time.Now())
+func (database *Database) InsertUser(user models.User, Uuid string) error {
+	res, err := database.Db.Exec("INSERT INTO users (Nickname, date_birth, first_name, last_name, email, password, image, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		user.Nickname, user.DateBirth, user.First_Name, user.Last_Name, user.Email, user.Password, user.Image, time.Now())
 	if err != nil {
 		return err
 	}
@@ -57,7 +59,7 @@ func (database *Database) InsertUser(user models.User) error {
 		return err
 	}
 
-	_, err = database.Db.Exec("INSERT INTO sessions (uuid, user_id, session_exp) VALUES (?,?,?)", user.Uuid, usrid, time.Now().AddDate(1, 0, 0))
+	err = database.AddUuid(Uuid,int(usrid))
 	if err != nil {
 		return err
 	}

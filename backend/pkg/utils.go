@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"reflect"
+	"strings"
 )
 
 func WriteJson(w http.ResponseWriter, statuscode int, Data any) error {
@@ -68,20 +69,28 @@ func GetExecFields(s interface{}, excludeFields ...string) []interface{} {
 
 // transform the next set and delete cookie to gorillamux once //
 
-func SetSessionCookie(w http.ResponseWriter, uid string) {
+func SetSessionCookie(w http.ResponseWriter, uuid string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session_token",
-		Value:  uid,
+		Name:   "session_id",
+		Value:  uuid,
 		Path:   "/",
-		MaxAge: 3600,
+		MaxAge: 3600 * 24,
 	})
 }
 
 func DeleteSessionCookie(w http.ResponseWriter, uid string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session_token",
+		Name:   "session_id",
 		Value:  uid,
 		Path:   "/",
 		MaxAge: -1,
 	})
+}
+
+func Length(a, b int, e string) bool {
+	return len(e) < a || len(e) > b
+}
+
+func Placeholders(n int) string {
+	return strings.Repeat("?,", n)[:2*n-1]
 }

@@ -1,14 +1,14 @@
 -- +migrate Up
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password CHAR(60) NOT NULL,
-    firstName VARCHAR(255) NOT NULL,
-    lastName VARCHAR(255) NOT NULL,
-    datebirth DATE NOT NULL,
-    avatar TEXT,
-    nickname VARCHAR(255),
-    aboutme VARCHAR(255),
-    profileType TEXT,
-    createdAt DATETIME NOT NULL
+    nickname TEXT NOT NULL UNIQUE,
+    date_birth INTEGER NOT NULL,
+    first_name TEXT NOT NULL,
+    last_name TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    image TEXT,
+    about TEXT,
+    privacy TEXT DEFAULT "public",
+    created_at INTEGER NOT NULL
 );

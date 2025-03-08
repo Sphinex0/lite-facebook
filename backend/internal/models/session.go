@@ -2,7 +2,8 @@ package models
 
 // Session represents a user session.
 type Session struct {
-	ID         string `json:"id"`
-	UserID     string `json:"user_id"`
-	SessionExp string `json:"session_exp"`
+	ID         int `json:"id"`
+	UserID     int `json:"user_id"`
+	SessionID int `json:"session_id"`
+	SessionExp int `json:"session_exp"`
 }

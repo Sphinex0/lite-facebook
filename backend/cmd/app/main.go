@@ -4,12 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-
 	"social-network/internal/api"
 	"social-network/internal/repository"
 	"social-network/pkg/middlewares"
-
-	_ "github.com/golang-migrate/migrate/v4/source/file"
 )
 
 func main() {

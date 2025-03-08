@@ -32,16 +32,16 @@ func (S *Service) LoginUser(User *models.User) error {
 		return err
 	}
 	// generate new uuid
-	(*User).Uuid = GenerateUuid()
+	var Uuid = GenerateUuid()
 
 	// Update uuid
-	S.Database.UpdateUuid((*User).Uuid, usrId)
+	S.Database.AddUuid(Uuid, usrId)
 	return nil
 }
 
 func (s *Service) RegisterUser(user *models.User) error {
 	// Age
-	fmt.Println((*user).Dob)
+	fmt.Println((*user).DateBirth)
 
 	// First_Name
 	if len((*user).First_Name) < 3 || len((*user).First_Name) > 15 {
@@ -87,7 +87,7 @@ func (s *Service) RegisterUser(user *models.User) error {
 	}
 
 	// Generate Uuid
-	(*user).Uuid = GenerateUuid()
+	var Uuid = GenerateUuid()
 
 	// Encrypt Pass
 	var err error
@@ -100,7 +100,7 @@ func (s *Service) RegisterUser(user *models.User) error {
 	(*user).Nickname = html.EscapeString((*user).Nickname)
 
 	// Insert the user
-	return s.Database.InsertUser(*user)
+	return s.Database.InsertUser(*user, Uuid)
 }
 
 func ValidateLength(data string) bool {
@@ -156,7 +156,7 @@ func (S *Service) Extractuser(r *http.Request) (models.User){
 		Password: r.FormValue("password"),
 		First_Name: r.FormValue("firstName"),
 		Last_Name: r.FormValue("lastName"),
-		Dob: r.FormValue("dob"),
+		DateBirth: r.FormValue("dob"),
 		Image: r.FormValue("avatar"),
 		Nickname: r.FormValue("nickname"),
 		AboutMe: r.FormValue("aboutMe"),

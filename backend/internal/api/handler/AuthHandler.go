@@ -19,7 +19,6 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 	var user models.User
 	if err := utils.ParseBody(r, &user); err != nil {
-		fmt.Println("yey", err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
@@ -50,12 +49,12 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusBadRequest, "file too big")
 		return
 	}
+
 	// Extract profile picture (optional)
 	var filePath string
 	file, handler, err := r.FormFile("avatar")
-	fmt.Println(err)
 	if err == nil { // No error means a file was uploaded
-		
+
 		// Ensure Profile directory exists
 		uploadDir := "../backend/internal/repository/profile"
 		defer file.Close()
@@ -85,6 +84,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	// Proccess Data and Insert it
 	err = H.Service.RegisterUser(&user)
 	if err != nil {
+		fmt.Println("yes",err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -92,12 +92,12 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	var user models.User
-	err := json.NewDecoder(r.Body).Decode(&user)
+	var Uuid string
+	err := json.NewDecoder(r.Body).Decode(&Uuid)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 	}
-	err = H.Service.DeleteSessionCookie(w, user.Uuid)
+	err = H.Service.DeleteSessionCookie(w, Uuid)
 	if err != nil {
 		utils.WriteJson(w, http.StatusOK, err.Error())
 		return

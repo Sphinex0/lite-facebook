@@ -3,10 +3,10 @@ CREATE TABLE
     articles (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         user_id INTEGER,
-        content TEXT,
+        content TEXT NOT NULL,
         privacy TEXT NOT NULL,
-        created_at DATETIME NOT NULL,
-        modified_at DATETIME,
+        created_at INTEGER NOT NULL,
+        modified_at INTEGER,
         image TEXT,
         parent INTEGER,
         group_id INTEGER,
