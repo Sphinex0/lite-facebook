@@ -30,8 +30,14 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/group/posts", handler.HandelGetPostsByGroup)    // post {"before":184525547,"group_id":1}
 
 	// group
+	mux.HandleFunc("/api/groups/store", handler.AddGroup)
 	mux.HandleFunc("/api/groups", handler.GetGroups)
-	mux.HandleFunc("/api/group", handler.GetGroup)
+	mux.HandleFunc("/api/group/{id}", handler.GetGroup)
+
+	// Invites
+	mux.HandleFunc("/api/invate/store", handler.AddInviteByReceiver)
+	mux.HandleFunc("/api/Invite/decision", handler.HandleInviteRequest)
+
 
 	// followers
 	mux.HandleFunc("/api/followers", handler.HandleGetFollowers)            // get
