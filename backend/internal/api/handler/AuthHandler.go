@@ -26,7 +26,7 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := H.Service.LoginUser(&user)
 	if err != nil {
-		fmt.Println("err",err.Error())
+		fmt.Println("err", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -42,26 +42,24 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
+	user := H.Service.Extractuser(r)
+
 	// Parse the multipart form (10MB max file size)
 	err := r.ParseMultipartForm(10 << 20)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "file too big")
 		return
 	}
-
-	user := H.Service.Extractuser(r)
-
 	// Extract profile picture (optional)
 	var filePath string
 	file, handler, err := r.FormFile("avatar")
 	fmt.Println(err)
 	if err == nil { // No error means a file was uploaded
-		defer file.Close()
-
+		
 		// Ensure Profile directory exists
 		uploadDir := "../backend/internal/repository/profile"
+		defer file.Close()
 		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
-			fmt.Println("yes it does make a file")
 			os.Mkdir(uploadDir, os.ModePerm)
 		}
 
@@ -82,13 +80,11 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 
 		// Assign file path to user struct
 		user.Image = filePath
-		fmt.Println("image path", filePath)
 	}
 
 	// Proccess Data and Insert it
 	err = H.Service.RegisterUser(&user)
 	if err != nil {
-		fmt.Println("grvrgvr", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
