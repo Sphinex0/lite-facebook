@@ -11,4 +11,5 @@ require (
 require (
 	github.com/go-gorp/gorp/v3 v3.1.0 // indirect
 	github.com/gofrs/uuid/v5 v5.3.1 // indirect
+	github.com/gorilla/websocket v1.5.3 // indirect
 )

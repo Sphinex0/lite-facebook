@@ -5,6 +5,8 @@ import (
 	"net/http"
 
 	"social-network/internal/api/handler"
+
+	"github.com/gorilla/websocket"
 )
 
 func Routes(db *sql.DB) *http.ServeMux {
@@ -21,23 +23,30 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/user/update", handler.UpdateUser)
 
 	// articls
-	mux.HandleFunc("/api/posts", handler.HandelGetPosts) // post {"before":184525547}
-	mux.HandleFunc("/api/comments", handler.HandelGetComments)  // post {"before":184525547, "parent":4}
-	mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle) // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
+	mux.HandleFunc("/api/posts", handler.HandelGetPosts)                 // post {"before":184525547}
+	mux.HandleFunc("/api/comments", handler.HandelGetComments)           // post {"before":184525547, "parent":4}
+	mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle)   // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
 	mux.HandleFunc("/api/reactions/store", handler.HandelCreateReaction) // post {"like":1|-1, "article_id":4}
-	mux.HandleFunc("/api/group/posts", handler.HandelGetPostsByGroup) // post {"before":184525547,"group_id":1}
+	mux.HandleFunc("/api/group/posts", handler.HandelGetPostsByGroup)    // post {"before":184525547,"group_id":1}
 
 	// group
 	mux.HandleFunc("/api/groups", handler.GetGroups)
 	mux.HandleFunc("/api/group", handler.GetGroup)
 
 	// followers
-	mux.HandleFunc("/api/followers", handler.HandleGetFollowers) //get
-	mux.HandleFunc("/api/followings", handler.HandleGetFollowings) //get
-	mux.HandleFunc("/api/follow/requests", handler.HandleGetFollowRequests) //get
-	mux.HandleFunc("/api/follow", handler.HandleFollow) //post {"user_id":2}
-	mux.HandleFunc("/api/follow/decision", handler.HandleFollowRequest) //post {"follower":2,"status":"accepted"}
+	mux.HandleFunc("/api/followers", handler.HandleGetFollowers)            // get
+	mux.HandleFunc("/api/followings", handler.HandleGetFollowings)          // get
+	mux.HandleFunc("/api/follow/requests", handler.HandleGetFollowRequests) // get
+	mux.HandleFunc("/api/follow", handler.HandleFollow)                     // post {"user_id":2}
+	mux.HandleFunc("/api/follow/decision", handler.HandleFollowRequest)     // post {"follower":2,"status":"accepted"}
 
+	// websocket
+
+	upgrader := websocket.Upgrader{
+		CheckOrigin: func(r *http.Request) bool { return true },
+	}
+
+	mux.HandleFunc("/ws", handler.MessagesHandler(upgrader))
 
 	return mux
 }

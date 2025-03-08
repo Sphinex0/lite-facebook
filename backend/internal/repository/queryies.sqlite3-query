@@ -1356,3 +1356,8 @@ FROM
     article_view A
 WHERE
     A.group_id = 1 AND A.parent IS NULL AND A.created_at < 1841432480
+;
+
+SELECT *
+FROM conversations
+WHERE entitie_one = 1 OR entitie_two_user = 1
