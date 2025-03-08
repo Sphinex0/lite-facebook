@@ -3,10 +3,13 @@ const Home = () =>{
   return (
     <div className={styles.container}>
      <aside>
-
+      <ul>
+        <li>
+          
+        </li>
+      </ul>
      </aside>
      <section>
-
      </section>
      <aside>
 
