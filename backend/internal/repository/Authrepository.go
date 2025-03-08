@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 	"time"
 
@@ -59,7 +60,7 @@ func (database *Database) InsertUser(user models.User, Uuid string) error {
 		return err
 	}
 
-	err = database.AddUuid(Uuid,int(usrid))
+	err = database.AddUuid(Uuid, int(usrid))
 	if err != nil {
 		return err
 	}
@@ -72,4 +73,12 @@ func (database *Database) DeleteCookieFromdb(uuid string) error {
 		return err
 	}
 	return nil
+}
+
+func CheckIfUserExistsById[T int | string](usrID T, Db *sql.DB) bool {
+	var exists bool
+
+	err := Db.QueryRow("SELECT EXISTS(SELECT id FROM users WHERE usrid = ?)", usrID).Scan(&exists)
+
+	return err == nil
 }
