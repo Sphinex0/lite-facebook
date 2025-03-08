@@ -38,3 +38,17 @@ func (data *Database) GetGroupById(id string) *sql.Row{
 }
 
 
+func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error){
+    res := data.Db.QueryRow(`SELECT creator FROM groups Where id =?`, group_ID)
+	var id int
+
+	err := res.Scan(&id)
+	if err != nil {
+		return false,err
+	}
+	if id ==IdUser{
+		return true ,nil
+	}
+	return false,fmt.Errorf("not create group")
+}
+

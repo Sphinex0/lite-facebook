@@ -46,6 +46,25 @@ func (data *Database) SaveFollow(follow *models.Follower) (err error) {
 	return
 }
 
+func (data *Database) IsFollow(user1 int, user2 int) (following bool) {
+	var count int
+	err := data.Db.QueryRow(`
+        SELECT COUNT(*)
+		FROM followers
+		WHERE user_id = ?
+		AND follower = ?
+    `,
+		user1,
+		user2).Scan(&count)
+	if err == nil && count == 1 {
+		following = true
+	} else {
+		following = false
+	}
+
+	return
+}
+
 func (data *Database) GetFollow(follow *models.Follower) (err error) {
 	row := data.Db.QueryRow(`
         SELECT *
@@ -72,7 +91,7 @@ func (data *Database) DeleteFollow(follow *models.Follower) (err error) {
 	return
 }
 
-func (data *Database) GetFollowersIds(userID  int) (followerIds []int, err error) {
+func (data *Database) GetFollowersIds(userID int) (followerIds []int, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
         SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
@@ -83,7 +102,7 @@ func (data *Database) GetFollowersIds(userID  int) (followerIds []int, err error
 		AND status = "accepted"
 
     `,
-		userID,)
+		userID)
 	if err != nil {
 		return
 	}
@@ -204,8 +223,8 @@ func (data *Database) AcceptFollowRequest(follow *models.Follower) (err error) {
 			modified_at = ?
 		WHERE id = ?
     `,
-	follow.ModifiedAt,
-	follow.ID)
+		follow.ModifiedAt,
+		follow.ID)
 
 	return
 }

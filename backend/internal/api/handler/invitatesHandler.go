@@ -47,18 +47,19 @@ func (Handler *Handler) HandleInviteRequest(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	var invite models.Invite
+	var Invite models.Invite
 	var err error
 
-	err = utils.ParseBody(r, &invite)
-	// fmt.Println(user.ID , follow.UserID)
+	err = utils.ParseBody(r, &Invite)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-	err = Handler.Service.FollowDecision(&invite)
+	Invite.Sender=user.ID
+	fmt.Println(Invite)
+	err = Handler.Service.InviderDecision(&Invite)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
