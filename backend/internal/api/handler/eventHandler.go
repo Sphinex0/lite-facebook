@@ -21,7 +21,7 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	var Event models.Event
 	err := utils.ParseBody(r, &Event)
-	fmt.Println(err)
+	fmt.Println(user.ID)
 	Event.UserID = user.ID
 	if err != nil || Event.UserID == 0 || Event.GroupID == 0 {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")

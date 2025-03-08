@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strings"
 	"time"
 
 	"social-network/internal/models"
@@ -18,9 +17,11 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var Group models.Group
-	Group.Creator = 1
-	Group.Title = strings.TrimSpace(r.FormValue("Title"))
-	Group.Description = strings.TrimSpace(r.FormValue("Description"))
+	err := utils.ParseBody(r, &Group)
+	if err != nil {
+		fmt.Println(err)
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
 	Group.CreatedAt = int(time.Now().Unix())
 	fmt.Println(Group.Title)
 	fmt.Println(Group.Description)
@@ -42,7 +43,6 @@ func (Handler *Handler) GetGroups(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 
-
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(grp)
 }
@@ -52,9 +52,9 @@ func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-	idStr := r.PathValue("id")
 	var Groups models.Group
-	group, err:=Handler.Service.GetGroupsById(&Groups, idStr)
+	err := utils.ParseBody(r, &Groups)
+	group, err := Handler.Service.GetGroupsById(&Groups)
 	if err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
