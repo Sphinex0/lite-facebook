@@ -25,6 +25,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/comments", handler.HandelGetComments)  // post {"before":184525547, "parent":4}
 	mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle) // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
 	mux.HandleFunc("/api/reactions/store", handler.HandelCreateReaction) // post {"like":1|-1, "article_id":4}
+	mux.HandleFunc("/api/group/posts", handler.HandelGetPostsByGroup) // post {"before":184525547,"group_id":1}
 
 	// group
 	mux.HandleFunc("/api/groups", handler.GetGroups)

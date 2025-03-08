@@ -175,3 +175,52 @@ func (data *Database) GetComments(id, before, parent int) (article_views []model
 	rows.Close()
 	return
 }
+
+func (data *Database) VerifyGroupByID(group_id, id int) (err error) {
+	query := `
+		SELECT id
+		FROM invites
+		WHERE group_id = ?
+		AND status = "accepted"
+		AND (
+			sender = ? OR receiver = ?
+		)
+	`
+	var result int
+	err = data.Db.QueryRow(query, group_id, id, id).Scan(&result)
+	return
+}
+
+func (data *Database) GetPostsByGroup(id, group_id, before int) (article_views []models.ArticleView, err error) {
+	query := `
+		SELECT
+			A.*,
+			COALESCE((SELECT like FROM likes L WHERE L.user_id = ? AND L.article_id = A.id),0) as like
+		FROM
+			article_view A
+		WHERE
+			A.group_id = ? AND A.parent IS NULL AND A.created_at < ?
+        ORDER BY A.created_at DESC
+        LIMIT 10
+	`
+
+	rows, err := data.Db.Query(query, id, group_id, before)
+	if err != nil {
+		return
+	}
+	for rows.Next() {
+		var article_view models.ArticleView
+		tab := utils.GetScanFields(&article_view.UserInfo)
+		tab = append(tab, utils.GetScanFields(&article_view.Article)...)
+		tab = append(tab, &article_view.Likes, &article_view.DisLikes, &article_view.CommentsCount, &article_view.Like)
+
+		err1 := rows.Scan(tab...)
+		if err1 != nil {
+			fmt.Println(err1)
+			continue
+		}
+		article_views = append(article_views, article_view)
+	}
+	rows.Close()
+	return
+}

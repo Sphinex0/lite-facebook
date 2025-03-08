@@ -35,10 +35,6 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		users = r.Form["users"]
 	}
 
-	if GroupID != 0 {
-		/// select
-		article.GroupID = &GroupID
-	}
 	parent, _ := strconv.Atoi(r.FormValue("parent"))
 	if parent != 0 {
 		/// select
@@ -48,6 +44,17 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 			return
 		}
 		article.Parent = &parent
+		article.Privacy = "public"
+	} else if GroupID != 0 {
+		/// select
+		err := Handler.Service.VerifyGroup(GroupID, user.ID)
+		if err != nil {
+			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+			return
+		}
+		article.GroupID = &GroupID
+		article.Privacy = "public"
+
 	}
 	if err := Handler.Service.CreateArticle(&article, users, user.ID); err != nil {
 		fmt.Println(err)
@@ -63,6 +70,24 @@ func (Handler *Handler) HandelGetPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	article_views, err := Handler.Service.FetchPosts(user.ID, data.Before)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, article_views)
+}
+
+func (Handler *Handler) HandelGetPostsByGroup(w http.ResponseWriter, r *http.Request) {
+	user, data, err := Handler.AfterGet(w, r)
+	if err != nil {
+		return
+	}
+	err = Handler.Service.VerifyGroup(data.GroupID, user.ID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		return
+	}
+	article_views, err := Handler.Service.FetchPostsByGroup(user.ID, data.GroupID, data.Before)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return

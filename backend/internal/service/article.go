@@ -22,7 +22,6 @@ func (service *Service) CreateArticle(article *models.Article, users []string, i
 	}
 
 	followerIds, err := service.Database.GetFollowersIds(id)
-	
 	if err != nil {
 		return
 	}
@@ -47,6 +46,11 @@ func (service *Service) VerifyParent(parent int) (err error) {
 	return
 }
 
+func (service *Service) VerifyGroup(group_id, id int) (err error) {
+	err = service.Database.VerifyGroupByID(group_id, id)
+	return
+}
+
 func (service *Service) CreateReaction(like *models.Like) (err error) {
 	if (like.Like != 1 && like.Like != -1) || like.ArticleID == 0 {
 		return errors.New("invalid Like value")
@@ -65,6 +69,11 @@ func (service *Service) CreateReaction(like *models.Like) (err error) {
 
 func (service *Service) FetchPosts(id, before int) (article_views []models.ArticleView, err error) {
 	article_views, err = service.Database.GetPosts(id, before)
+	return
+}
+
+func (service *Service) FetchPostsByGroup(id, group_id, before int) (article_views []models.ArticleView, err error) {
+	article_views, err = service.Database.GetPostsByGroup(id, group_id, before)
 	return
 }
 
