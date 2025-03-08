@@ -32,7 +32,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/group/{id}", handler.GetGroup)
 
 	// Invites
-	mux.HandleFunc("/api/invate/store", handler.AddInviteByReceiver)
+	mux.HandleFunc("/api/invite/store", handler.AddInviteByReceiver)
 	mux.HandleFunc("/api/invite/decision", handler.HandleInviteRequest)
 
 
