@@ -43,6 +43,11 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/Event/store", handler.AddEvent)
 	mux.HandleFunc("/api/Event/decision", handler.HandleInviteRequest)
 
+	//Events_options
+
+	mux.HandleFunc("/api/Event/options/store", handler.OptionEvent)
+	mux.HandleFunc("/api/Event/options", handler.GetEventOption)
+
 	// followers
 	mux.HandleFunc("/api/followers", handler.HandleGetFollowers)            // get
 	mux.HandleFunc("/api/followings", handler.HandleGetFollowings)          // get

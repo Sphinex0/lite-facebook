@@ -8,6 +8,7 @@ import (
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
+	"social-network/pkg/middlewares"
 )
 
 func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
@@ -15,11 +16,16 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-
+	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	
 	var Group models.Group
+	Group.Creator=user.ID
 	err := utils.ParseBody(r, &Group)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	Group.CreatedAt = int(time.Now().Unix())

@@ -16,6 +16,8 @@ func (Handler *Handler) AddInviteByReceiver(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	fmt.Println(user)
+	fmt.Println(ok)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
