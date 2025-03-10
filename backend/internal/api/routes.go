@@ -41,7 +41,8 @@ func Routes(db *sql.DB) *http.ServeMux {
 
 	// Events
 	mux.HandleFunc("/api/Event/store", handler.AddEvent)
-	// mux.HandleFunc("/api/Event/decision", handler.)
+	mux.HandleFunc("/api/Events", handler.GetEvents)
+	mux.HandleFunc("/api/Event", handler.GetEvent)
 
 	// Events_options
 

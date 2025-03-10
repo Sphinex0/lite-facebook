@@ -28,6 +28,13 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
+
+
+	if Event.Title=="" || Event.Description=="" {
+		utils.WriteJson(w, http.StatusBadRequest, "Bad Request")
+		return
+	}
+
 	if err := Handler.Service.CreateEvent(Event); err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
@@ -92,6 +99,7 @@ func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
 	}
 	err = Handler.Service.PostEventsOption(OptionEvent)
 	if err != nil {
@@ -117,6 +125,7 @@ func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(EventOptions)

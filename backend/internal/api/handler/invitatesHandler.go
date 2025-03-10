@@ -60,7 +60,10 @@ func (Handler *Handler) HandleInviteRequest(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	fmt.Println(Invite)
+	fmt.Println(Invite.GroupID)
+	fmt.Println(Invite.Sender)
+	fmt.Println(Invite.Receiver)
+	fmt.Println(Invite.Status)
 	err = Handler.Service.InviderDecision(&Invite)
 	if err != nil {
 		log.Println("ttttttt",err)

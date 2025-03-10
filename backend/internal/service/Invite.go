@@ -40,7 +40,7 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 	} else if Invites.Status == "rejected" {
 		err = service.Database.DeleteInvites(Invites)
 	} else {
-		err = fmt.Errorf("bad request")
+		err = fmt.Errorf("bad  xcfdsf request")
 	}
 	return
 }

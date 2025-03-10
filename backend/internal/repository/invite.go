@@ -37,6 +37,8 @@ func (data *Database) AcceptInviteRequest(Invite *models.Invite) error {
 		return err
 	}
 	res1, err1 := res.RowsAffected()
+	fmt.Println(err1)
+	fmt.Println(res1)
 	if res1 == 0 || err1 != nil {
 		return fmt.Errorf("not fount")
 	}
