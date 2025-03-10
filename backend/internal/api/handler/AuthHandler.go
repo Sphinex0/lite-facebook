@@ -7,9 +7,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
+
+	"github.com/mattn/go-sqlite3"
 )
 
 func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -25,7 +28,6 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	err := H.Service.LoginUser(&user)
 	if err != nil {
-		fmt.Println("err", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -84,7 +86,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	// Proccess Data and Insert it
 	err = H.Service.RegisterUser(&user)
 	if err != nil {
-		fmt.Println("yes",err.Error())
+		fmt.Println("yes", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -103,4 +105,41 @@ func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
+}
+
+func (H *Handler) CheckUserValidity(w http.ResponseWriter, r *http.Request) {
+	var Authorized bool
+	// parse user uid
+	userUID, err := r.Cookie("session_token")
+	if err != nil {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	// Get Info Data
+	Authorized, err = H.Service.GetInfoData(userUID.Value)
+	if err != nil {
+		if err == sqlite3.ErrLocked {
+			utils.WriteJson(w, http.StatusLocked, struct {
+				Message string `json:"message"`
+			}{Message: "Database Locked"})
+			return
+		}
+
+		utils.WriteJson(w, http.StatusInternalServerError, struct {
+			Message string `json:"message"`
+		}{Message: "Internal Server Error"})
+		return
+	}
+
+	if !H.Service.Database.CheckExpiredCookie(userUID.Value, time.Now()) {
+		Authorized = false
+		err = H.Service.DeleteSessionCookie(w, userUID.Value)
+		if err != nil {
+			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+			return
+		}
+	}
+
+	utils.WriteJson(w, http.StatusOK, Authorized)
 }

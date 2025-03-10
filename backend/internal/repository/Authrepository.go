@@ -35,7 +35,7 @@ func (database *Database) AddUuid(Uuid string, userId int) error {
 
 func (Database *Database) GetUser(uid string) (int, error) {
 	var id int
-	err := Database.Db.QueryRow("SELECT id FROM users WHERE uuid = ?", uid).Scan(&id)
+	err := Database.Db.QueryRow("SELECT id FROM sessions WHERE uuid = ?", uid).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -81,4 +81,11 @@ func CheckIfUserExistsById[T int | string](usrID T, Db *sql.DB) bool {
 	err := Db.QueryRow("SELECT EXISTS(SELECT id FROM users WHERE usrid = ?)", usrID).Scan(&exists)
 
 	return err == nil
+}
+
+func (database *Database) CheckExpiredCookie(uid string, date time.Time) bool {
+	var expired time.Time
+	database.Db.QueryRow("SELECT session_exp FROM sessions WHERE uuid = ?", uid).Scan(&expired)
+
+	return date.Compare(expired) <= -1
 }
