@@ -133,9 +133,9 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 			&article_view.Likes,
 			&article_view.DisLikes,
 			&article_view.CommentsCount,
-			&article_view.Like,
 			&article_view.GroupName,
 			&article_view.GroupImage,
+			&article_view.Like,
 		)
 
 		err1 := rows.Scan(tab...)

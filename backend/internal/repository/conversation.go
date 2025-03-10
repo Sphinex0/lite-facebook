@@ -15,7 +15,6 @@ func (data *Database) CreateConversation(conv *models.Conversation) (err error) 
 		VALUES (NULL, %v) 
 	`, utils.Placeholders(len(args))),
 		args...)
-		
 	if err != nil {
 		return
 	}
@@ -23,6 +22,21 @@ func (data *Database) CreateConversation(conv *models.Conversation) (err error) 
 	id, err := res.LastInsertId()
 	conv.ID = int(id)
 
+	return
+}
+
+func (data *Database) VerifyConversation(id1, id2 int, type_obj string) (err error) {
+	param := `WHERE entitie_two_group = ?`
+	if type_obj == "private" {
+		param = `WHERE entitie_two_user = ?`
+	}
+	var result int
+	err = data.Db.QueryRow(fmt.Sprintf(`
+		SELECT id
+		FROM conversations
+		WHERE entitie_one = ? AND %v`,
+		param),
+		id1, id2).Scan(&result)
 	return
 }
 
