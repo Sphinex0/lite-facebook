@@ -38,6 +38,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/invite/store", handler.AddInvite)
 	mux.HandleFunc("/api/invite/decision", handler.HandleInviteRequest)
 	mux.HandleFunc("/api/invites", handler.GetInvites)
+	mux.HandleFunc("/api/invites/members", handler.GetMembers)
 
 	// Events
 	mux.HandleFunc("/api/Event/store", handler.AddEvent)

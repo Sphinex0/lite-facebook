@@ -64,3 +64,43 @@ func (S *Service) AllInvites(id int) ([]models.Invite, error) {
 
 	return Invites, nil
 }
+func (S *Service) AllMembers(id int) ([]models.Invite, error) {
+	rows, err := S.Database.Getallmembers(id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var Invites []models.Invite
+	for rows.Next() {
+		var Invite models.Invite
+		if err := rows.Scan(utils.GetScanFields(&Invite)...); err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		Invites = append(Invites, Invite)
+	}
+
+	return Invites, nil
+}
+
+
+func (S *Service) Members(Invite []models.Invite) (map[int]models.User, error) {
+	member:= make(map[int]models.User)
+	for _, m := range Invite {
+        row1, err := S.Database.GetUsers(m.Receiver)
+        if err != nil {
+            fmt.Println(err)
+            return nil, fmt.Errorf("error getting receiver user with ID %d: %w", m.Receiver, err)
+        }
+        member[m.Receiver] = row1
+
+        row2, err := S.Database.GetUsers(m.Sender)
+        if err != nil {
+            fmt.Println(err)
+            return nil, fmt.Errorf("error getting sender user with ID %d: %w", m.Sender, err)
+        }
+        member[m.Sender] = row2
+    }
+	return member ,nil
+}

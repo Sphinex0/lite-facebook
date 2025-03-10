@@ -92,3 +92,27 @@ func (Handler *Handler) GetInvites(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(Invites)
 }
+
+
+
+func  (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request)  {
+	if r.Method != http.MethodGet {
+		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+	var Invite models.Invite
+	err := utils.ParseBody(r, &Invite)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+	Invites, err := Handler.Service.AllMembers(Invite.GroupID)
+	if err != nil {
+		fmt.Println(err)
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
+	valid ,err:= Handler.Service.Members(Invites)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(valid)
+
+}
