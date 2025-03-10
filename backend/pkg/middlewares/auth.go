@@ -36,8 +36,8 @@ func CORS(next http.Handler) http.Handler {
 
 		// Set the CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, withCredentials")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		// If it's a pre-flight request (OPTIONS method), end the request here
@@ -45,6 +45,7 @@ func CORS(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
 		// Call the next handler
 		next.ServeHTTP(w, r)
 	})
@@ -56,7 +57,6 @@ const UserIDKey contextKey = "userID"
 
 func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		allowedPath := []string{"/api/login", "/api/signup"}
 		Hasallowed := slices.IndexFunc(allowedPath, func(ext string) bool {
 			return strings.Contains(r.URL.Path, ext)
