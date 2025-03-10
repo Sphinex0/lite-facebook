@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"social-network/internal/models"
+	utils "social-network/pkg"
 )
 
 func (service *Service) CreateInvite(Invites models.Invite) (err error) {
@@ -26,7 +27,7 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 			Invites.ID = id
 			err = service.Database.DeleteInvites(&Invites)
 		}
-	}else {
+	} else {
 		return fmt.Errorf("not follow")
 	}
 	return
@@ -42,4 +43,24 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 		err = fmt.Errorf("bad request")
 	}
 	return
+}
+
+func (S *Service) AllInvites(id int) ([]models.Invite, error) {
+	rows, err := S.Database.GetallInvite(id)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var Invites []models.Invite
+	for rows.Next() {
+		var Invite models.Invite
+		if err := rows.Scan(utils.GetScanFields(&Invite)...); err != nil {
+			fmt.Println(err)
+			return nil, err
+		}
+		Invites = append(Invites, Invite)
+	}
+
+	return Invites, nil
 }

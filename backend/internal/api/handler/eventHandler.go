@@ -77,11 +77,14 @@ func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
+	
 	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
+	
+
 	var OptionEvent models.EventOption
 
 	OptionEvent.UserID=user.ID

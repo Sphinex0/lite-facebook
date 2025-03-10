@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,7 +11,7 @@ import (
 	"social-network/pkg/middlewares"
 )
 
-func (Handler *Handler) AddInviteByReceiver(w http.ResponseWriter, r *http.Request) {
+func (Handler *Handler) AddInvite(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
@@ -52,19 +53,39 @@ func (Handler *Handler) HandleInviteRequest(w http.ResponseWriter, r *http.Reque
 	var Invite models.Invite
 	var err error
 
+	Invite.Sender = user.ID
 	err = utils.ParseBody(r, &Invite)
 	if err != nil {
-		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 
-	Invite.Sender=user.ID
 	fmt.Println(Invite)
 	err = Handler.Service.InviderDecision(&Invite)
 	if err != nil {
-		log.Println(err)
+		log.Println("ttttttt",err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
+}
+
+func (Handler *Handler) GetInvites(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	Invites, err := Handler.Service.AllInvites(user.ID)
+	if err != nil {
+		fmt.Println(err)
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Invites)
 }

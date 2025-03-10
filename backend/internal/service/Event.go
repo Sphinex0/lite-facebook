@@ -8,13 +8,13 @@ import (
 )
 
 func (service *Service) CreateEvent(Events models.Event) (err error) {
-	valid, err := service.Database.GetCreatorGroup(Events.GroupID, Events.UserID)
-	if err != nil {
-		return
-	}
-	if valid {
-		err = service.Database.SaveEvent(&Events)
-	}
+	// valid, err := service.Database.GetCreatorEvent(Events.GroupID, Events.UserID)
+	// if err != nil {
+	// 	return
+	// }
+	// if valid {
+	// 	err = service.Database.SaveEvent(&Events)
+	// }
 	return
 }
 
@@ -30,7 +30,7 @@ func (service *Service) AllEvents() ([]models.Event, error) {
 
     for rows.Next() {
         var event models.Event
-        if err := rows.Scan(utils.GetScanFields(&event)); err != nil {
+        if err := rows.Scan(utils.GetScanFields(&event)...); err != nil {
             fmt.Println(err)
             return nil, err
         }
