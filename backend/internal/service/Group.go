@@ -12,7 +12,7 @@ func (S *Service) GreatedGroup(Group *models.Group) (err error) {
 	return
 }
 
-func (S *Service) AllGroups(Group *[]models.Group) ([]models.Group, error) {
+func (S *Service) AllGroups() ([]models.Group, error) {
 	rows, err := S.Database.Getallgroup()
 	if err != nil {
 		return nil, err
@@ -22,7 +22,7 @@ func (S *Service) AllGroups(Group *[]models.Group) ([]models.Group, error) {
 	var groups []models.Group
 	for rows.Next() {
 		var group models.Group
-		if err := rows.Scan(utils.GetScanFields(&Group)); err != nil {
+		if err := rows.Scan(utils.GetScanFields(&group)...); err != nil {
 			fmt.Println(err)
 			return nil, err
 		}
@@ -32,14 +32,14 @@ func (S *Service) AllGroups(Group *[]models.Group) ([]models.Group, error) {
 	return groups, nil
 }
 
-func (S *Service) GetGroupsById(Group *models.Group, Id string) (*models.Group, error) {
-	row := S.Database.GetGroupById(Id)
+func (S *Service) GetGroupsById(Group *models.Group) (*models.Group, error) {
+	row := S.Database.GetGroupById(Group.ID)
 	if row == nil {
-		return nil, fmt.Errorf("no group found with ID: %s", Id)
+		return nil, fmt.Errorf("no group found with ID: %s", Group.ID)
 	}
 
 	// Scan the row into the Group struct
-	if err := row.Scan(utils.GetScanFields(&Group)); err != nil {
+	if err := row.Scan(utils.GetScanFields(Group)...); err != nil {
 		return nil, fmt.Errorf("error scanning group data: %v", err)
 	}
 

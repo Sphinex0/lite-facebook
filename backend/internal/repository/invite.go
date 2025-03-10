@@ -70,3 +70,14 @@ func (data *Database) Saveinvite(Invite *models.Invite) (int, error) {
 
 	return id, nil
 }
+
+
+func (data *Database) GetallInvite(id int) (*sql.Rows, error) {
+    res, err := data.Db.Query(`
+	SELECT * FROM invites WHERE 
+	(sender = ? OR receiver = ?) AND status = "pending"` ,id ,id)
+    if err != nil {
+        return nil, err
+    }
+    return res, nil
+}

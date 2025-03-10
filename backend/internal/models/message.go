@@ -16,5 +16,5 @@ type WSMessage struct {
 	Kind          string              `json:"kind"`
 	Typing        bool                `json:"is_typing"`
 	Conversations []ConversationsInfo `json:"conversations"`
-	OnlineUsers   []string            `json:"online_users"`
+	OnlineUsers   []int            `json:"online_users"`
 }

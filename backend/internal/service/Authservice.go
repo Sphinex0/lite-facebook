@@ -32,7 +32,7 @@ func (S *Service) LoginUser(User *models.User) error {
 		return err
 	}
 	// generate new uuid
-	var Uuid = GenerateUuid()
+	Uuid := GenerateUuid()
 
 	// Update uuid
 	S.Database.AddUuid(Uuid, usrId)
@@ -87,7 +87,7 @@ func (s *Service) RegisterUser(user *models.User) error {
 	}
 
 	// Generate Uuid
-	var Uuid = GenerateUuid()
+	Uuid := GenerateUuid()
 
 	// Encrypt Pass
 	var err error
@@ -150,16 +150,16 @@ func (S *Service) DeleteSessionCookie(w http.ResponseWriter, uuid string) error 
 	return nil
 }
 
-func (S *Service) Extractuser(r *http.Request) (models.User){
+func (S *Service) Extractuser(r *http.Request) models.User {
 	user := models.User{
-		Email: r.FormValue("email"),
-		Password: r.FormValue("password"),
+		Email:      r.FormValue("email"),
+		Password:   r.FormValue("password"),
 		First_Name: r.FormValue("firstName"),
-		Last_Name: r.FormValue("lastName"),
-		DateBirth: r.FormValue("dob"),
-		Image: r.FormValue("avatar"),
-		Nickname: r.FormValue("nickname"),
-		AboutMe: r.FormValue("aboutMe"),
+		Last_Name:  r.FormValue("lastName"),
+		DateBirth:  r.FormValue("dob"),
+		Image:      r.FormValue("avatar"),
+		Nickname:   r.FormValue("nickname"),
+		AboutMe:    r.FormValue("aboutMe"),
 	}
 	return user
 }

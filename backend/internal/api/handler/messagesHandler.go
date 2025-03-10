@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"sync"
 
@@ -14,20 +15,14 @@ import (
 )
 
 var (
-	clients   = make(map[string]*websocket.Conn)
-	clientsMu sync.RWMutex
+	userConnections         = make(map[int][]*websocket.Conn)
+	conversationSubscribers = make(map[int][]int)
+	connMu                  sync.RWMutex
+	subMu                   sync.RWMutex
 )
 
 func (Handler *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//
-		cookie, err := r.Cookie("session_id")
-		if err != nil {
-			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-			return
-		}
-		session := cookie.Value
-
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			fmt.Println("WebSocket Upgrade Error:", err)
@@ -43,12 +38,13 @@ func (Handler *Handler) MessagesHandler(upgrader websocket.Upgrader) http.Handle
 			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 			return
 		}
-		key := fmt.Sprint(user.ID) + "_" + session
-		clientsMu.Lock()
-		clients[key] = conn
-		clientsMu.Unlock()
-		broadcastUserStatus()
-		defer removeClient(session)
+
+		connMu.Lock()
+		userConnections[user.ID] = append(userConnections[user.ID], conn)
+		connMu.Unlock()
+
+		// broadcastUserStatus()
+		defer removeConnection(user.ID, conn)
 
 		for {
 			var msg models.WSMessage
@@ -62,62 +58,65 @@ func (Handler *Handler) MessagesHandler(upgrader websocket.Upgrader) http.Handle
 	}
 }
 
+func removeConnection(userID int, conn *websocket.Conn) {
+	connMu.Lock()
+	defer connMu.Unlock()
+	if conns, ok := userConnections[userID]; ok {
+		for i, c := range conns {
+			if c == conn {
+				userConnections[userID] = append(conns[:i], conns[i+1:]...)
+				break
+			}
+		}
+		if len(userConnections[userID]) == 0 {
+			delete(userConnections, userID)
+			fmt.Println("Delete user")
+			// broadcastUserStatus()
+		}
+	}
+}
+
 func handleMessage(msg models.WSMessage, conn *websocket.Conn, Handler *Handler) {
 	var err error
-	if msg.Kind == "private" {
-		switch msg.Type {
-		case "new_message":
-			msg.Message.Content = strings.TrimSpace(msg.Message.Content)
-			if len(msg.Message.Content) == 0 || len(msg.Message.Content) > 500 {
-				ErrorMessage(msg.Message.SenderID, conn)
-				return
-			}
-
-			// if err := msg.Message.StoreMessage(); err != nil {
-			// 	fmt.Println("Message Store Error:", err)
-			// 	ErrorMessage(msg.SenderID, conn)
-			// 	return
-			// }
-
-			// distributeMessage(msg)
-		case "read":
-			// msg.Message.UpdateRead()
-		case "conversations":
-			msg.Type = "conversations"
-			clientsMu.RLock()
-			msg.OnlineUsers = getClientIDs()
-			clientsMu.RUnlock()
-			msg.Conversations, err = Handler.Service.FetchConversations(msg.Message.SenderID)
-			if err != nil {
-				fmt.Println("GetConversations Error:", err)
-				return
-			}
-			conn.WriteJSON(msg)
-		case "typing":
-			// distributeMessage(msg)
+	switch msg.Type {
+	case "new_message":
+		subMu.RLock()
+		subscribers, ok := conversationSubscribers[msg.Message.ConversationID]
+		subMu.RUnlock()
+		if !ok || !slices.Contains(subscribers, msg.Message.SenderID) {
+			return
 		}
-	} else if msg.Kind == "group" {
+
+		msg.Message.Content = strings.TrimSpace(msg.Message.Content)
+		if len(msg.Message.Content) == 0 || len(msg.Message.Content) > 500 {
+			ErrorMessage(msg.Message.SenderID, conn)
+			return
+		}
+
+		if err := Handler.Service.CreateMessage(&msg.Message); err != nil {
+			fmt.Println("Message Store Error:", err)
+			ErrorMessage(msg.Message.SenderID, conn)
+			return
+		}
+
+		distributeMessage(msg, subscribers)
+	case "read":
+		// msg.Message.UpdateRead()
+	case "conversations":
+		msg.Type = "conversations"
+		msg.Conversations, err = Handler.Service.FetchConversations(msg.Message.SenderID)
+		if err != nil {
+			fmt.Println("GetConversations Error:", err)
+			return
+		}
+		msg.OnlineUsers = getClientIDs(msg.Conversations)
+		conn.WriteJSON(msg)
+	case "typing":
+		// distributeMessage(msg)
 	}
 }
 
 func broadcastUserStatus() {
-}
-
-func removeClient(session string) {
-	clientsMu.Lock()
-	if conn, ok := clients[session]; ok {
-		conn.Close()
-		delete(clients, session)
-	}
-	clientsMu.Unlock()
-
-	broadcastUserStatus()
-}
-
-func ParseIdUuid(id_session string) (id string, session string) {
-	tab := strings.Split(id_session, "_")
-	id, session = tab[0], tab[1]
-	return
 }
 
 func ErrorMessage(senderID int, conn *websocket.Conn) {
@@ -126,10 +125,39 @@ func ErrorMessage(senderID int, conn *websocket.Conn) {
 	})
 }
 
-func getClientIDs() []string {
-	keys := make([]string, 0, len(clients))
-	for key := range clients {
-		keys = append(keys, key)
+// distributeMessage sends the message to all conversation participants
+func distributeMessage(msg models.WSMessage, subscribers []int) {
+	connMu.RLock()
+	defer connMu.RUnlock()
+	for _, userID := range subscribers {
+		if conns, ok := userConnections[userID]; ok {
+			for _, conn := range conns {
+				if err := conn.WriteJSON(msg); err != nil {
+					fmt.Println("Write Error:", err)
+				}
+			}
+		}
 	}
-	return keys
+}
+
+func contains(slice []int, val int) bool {
+	for _, v := range slice {
+		if v == val {
+			return true
+		}
+	}
+	return false
+}
+
+func getClientIDs(cnvs []models.ConversationsInfo) (Ids []int) {
+	connMu.RLock()
+	defer connMu.RUnlock()
+	for _, cnv := range cnvs {
+		if cnv.Conversation.Type == "private" {
+			if _, ok := userConnections[cnv.UserInfo.ID]; ok {
+				Ids = append(Ids, cnv.UserInfo.ID)
+			}
+		}
+	}
+	return
 }

@@ -25,30 +25,28 @@ func (data *Database) SaveGroup(Group *models.Group) (err error) {
 }
 
 func (data *Database) Getallgroup() (*sql.Rows, error) {
-    res, err := data.Db.Query(`SELECT * FROM groups`)
-    if err != nil {
-        return nil, err
-    }
-    return res, nil
+	res, err := data.Db.Query(`SELECT * FROM groups`)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
-func (data *Database) GetGroupById(id string) *sql.Row{
+func (data *Database) GetGroupById(id int) *sql.Row{
     res := data.Db.QueryRow(`SELECT * FROM groups Where id =?`, id)
    
     return res
 }
 
-
-func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error){
-    res := data.Db.QueryRow(`SELECT creator FROM groups Where id =?`, group_ID)
+func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
+	res := data.Db.QueryRow(`SELECT creator FROM groups Where id =?`, group_ID)
 	var id int
 
 	err := res.Scan(&id)
 	if err != nil {
-		return false,err
+		return false, err
 	}
-	if id ==IdUser{
-		return true ,nil
+	if id == IdUser {
+		return true, nil
 	}
-	return false,fmt.Errorf("not create group")
+	return false, fmt.Errorf("not create group")
 }
-
