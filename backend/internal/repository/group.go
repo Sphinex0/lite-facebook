@@ -31,11 +31,10 @@ func (data *Database) Getallgroup() (*sql.Rows, error) {
 	}
 	return res, nil
 }
-
-func (data *Database) GetGroupById(id int) *sql.Row {
-	res := data.Db.QueryRow(`SELECT * FROM groups Where id =?`, id)
-
-	return res
+func (data *Database) GetGroupById(id int) *sql.Row{
+    res := data.Db.QueryRow(`SELECT * FROM groups Where id =?`, id)
+   
+    return res
 }
 
 func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
