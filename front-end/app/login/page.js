@@ -1,15 +1,32 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from 'next/navigation'
 import "./login.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //Login()
+    
+    try {
+      const response = await fetch("http://localhost:8080/api/login", {
+        method: "POST",
+        body: JSON.stringify({email,password}), 
+      });
+
+
+      if (response.status == 200) {
+        router.push('/');
+      } else {
+        console.log(response);
+      }
+    } catch (error) {
+      console.error("Error during sign-up:", error);
+    }
   };
 
   return (

@@ -5,11 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"slices"
+	"strconv"
 
 	"social-network/internal/models"
 )
 
-func (service *Service) CreateArticle(article *models.Article) (err error) {
+func (service *Service) CreateArticle(article *models.Article, users []string, id int) (err error) {
 	if article.Content == "" {
 		err = fmt.Errorf("err in content")
 		return
@@ -19,12 +20,34 @@ func (service *Service) CreateArticle(article *models.Article) (err error) {
 	if !isAllowedPrivacy {
 		article.Privacy = "public"
 	}
-	err = service.Database.SaveArticle(article)
+
+	followerIds, err := service.Database.GetFollowersIds(id)
+	if err != nil {
+		return
+	}
+
+	for _, user := range users {
+		id, err = strconv.Atoi(user)
+		if err != nil {
+			return
+		}
+		if !slices.Contains(followerIds, id) {
+			err = fmt.Errorf("error in user")
+			return
+		}
+	}
+
+	err = service.Database.SaveArticle(article, users)
 	return
 }
 
 func (service *Service) VerifyParent(parent int) (err error) {
 	err = service.Database.GetArticlParent(parent)
+	return
+}
+
+func (service *Service) VerifyGroup(group_id, id int) (err error) {
+	err = service.Database.VerifyGroupByID(group_id, id)
 	return
 }
 
@@ -46,6 +69,11 @@ func (service *Service) CreateReaction(like *models.Like) (err error) {
 
 func (service *Service) FetchPosts(id, before int) (article_views []models.ArticleView, err error) {
 	article_views, err = service.Database.GetPosts(id, before)
+	return
+}
+
+func (service *Service) FetchPostsByGroup(id, group_id, before int) (article_views []models.ArticleView, err error) {
+	article_views, err = service.Database.GetPostsByGroup(id, group_id, before)
 	return
 }
 

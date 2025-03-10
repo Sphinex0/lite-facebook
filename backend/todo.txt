@@ -6,4 +6,5 @@
 // accept and reject
 // profile user
 
-
+// coockie exeoiring in the update after login
+// add the session in the sessions table
