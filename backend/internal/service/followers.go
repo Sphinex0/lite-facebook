@@ -41,7 +41,18 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		err = S.Database.SaveFollow(follow)
 		if err != nil {
 			log.Println("error saving the follow")
+		}else {
+			if follow.Status == "accepted" {
+				conv := models.Conversation{
+					Entitie_one: follow.Follower,
+					Entitie_two_user: &follow.UserID,
+					Type: "private",
+				}
+			
+				S.Database.CreateConversation(&conv)
+			}
 		}
+
 	}
 	return
 }
@@ -55,6 +66,15 @@ func (S *Service) FollowDecision(follow *models.Follower) (err error) {
 
 	if follow.Status == "accepted" {
 		err = S.Database.AcceptFollowRequest(follow)
+		if err == nil{
+			conv := models.Conversation{
+				Entitie_one: follow.Follower,
+				Entitie_two_user: &follow.UserID,
+				Type: "private",
+			}
+		
+			S.Database.CreateConversation(&conv)
+		}
 	} else if follow.Status == "rejected" {
 		err = S.Database.DeleteFollow(follow)
 	} else {

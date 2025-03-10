@@ -2,7 +2,11 @@
 const Users = () => {
   const fetchPosts = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/posts")
+      const response = await fetch("http://localhost:8080/api/posts",{
+        method:"POST",
+        credentials: "include",
+        body:"{}"
+      })
       console.log("status:", response.status)
       if (response.ok){
         const data = await response.json()
@@ -32,7 +36,9 @@ const Users = () => {
 
   const login = async () => {
     try {
-      const response = await fetch("http://localhost:8080/api/login")
+      const response = await fetch("http://localhost:8080/api/login",{
+        credentials: "include"
+      })
       console.log("status:", response.status)
       console.log(response)
       if (response.ok){
