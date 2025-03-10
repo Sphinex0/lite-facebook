@@ -33,7 +33,7 @@ func CORS(next http.Handler) http.Handler {
 				break
 			}
 		}
-
+		fmt.Println(allowOrigin,origin)
 		// Set the CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -56,7 +56,6 @@ const UserIDKey contextKey = "userID"
 
 func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
 		allowedPath := []string{"/api/login", "/api/signup"}
 		Hasallowed := slices.IndexFunc(allowedPath, func(ext string) bool {
 			return strings.Contains(r.URL.Path, ext)
