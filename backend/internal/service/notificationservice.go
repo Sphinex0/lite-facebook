@@ -8,10 +8,9 @@ import (
 
 )
 
-func (S *Service) GetUserNotifications(usrId string) ([]models.Notification, error) {
-	err := S.Database.CheckIfUserExistsById(usrId)
-	if err != nil {
-		return []models.Notification{}, err
+func (S *Service) GetUserNotifications(usrId string) ([]models.Notification, (error)) {
+	if !repository.CheckIfUserExistsById(usrId, S.Database.Db){
+		return []models.Notification{}, errors.New("invaibale user")
 	}
 
 	return S.Database.GetUserNotifications(usrId)
