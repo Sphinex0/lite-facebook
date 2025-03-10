@@ -7,41 +7,17 @@ import (
 	utils "social-network/pkg"
 )
 
-func (data *Database) GetConversations(id int) (conversations []models.ConversationsInfo, err error) {
-	query := `
-		SELECT *
-		FROM conversations
-		WHERE entitie_one = ? OR entitie_two_user = ?
-	`
-	rows, err := data.Db.Query(query, id, id)
+func (data *Database) SaveMessage(msg *models.Message) (err error) {
+	args := utils.GetExecFields(msg, "ID")
+	res, err := data.Db.Exec(fmt.Sprintf(`
+		INSERT INTO messages
+		VALUES (NULL, %v) 
+	`, utils.Placeholders(len(args))),
+		args...)
 	if err != nil {
 		return
 	}
-	defer rows.Close()
-	for rows.Next() {
-		var conv models.ConversationsInfo
-		err1 := rows.Scan(utils.GetScanFields(&conv.Conversation)...)
-		if err1 != nil {
-			fmt.Println(err1)
-		}
-		conversations = append(conversations, conv)
-	}
-
-	for i, conv := range conversations {
-		if conv.Conversation.Type == "group" {
-			row := data.GetGroupById(conv.Conversation.Entitie_two_group)
-			err1 := row.Scan(utils.GetScanFields(&conversations[i].Group)...)
-			if err1 != nil {
-				fmt.Println(err1)
-			}
-		} else {
-			var err1 error
-			conversations[i].UserInfo, err1 = data.GetUserByID(conv.Conversation.Entitie_two_group)
-			if err1 != nil {
-				fmt.Println(err1)
-			}
-		}
-	}
-
+	id, err := res.LastInsertId()
+	msg.ID = int(id)
 	return
 }

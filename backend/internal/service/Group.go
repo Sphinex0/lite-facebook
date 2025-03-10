@@ -32,7 +32,7 @@ func (S *Service) AllGroups(Group *[]models.Group) ([]models.Group, error) {
 	return groups, nil
 }
 
-func (S *Service) GetGroupsById(Group *models.Group, Id string) (*models.Group, error) {
+func (S *Service) GetGroupsById(Group *models.Group, Id int) (*models.Group, error) {
 	row := S.Database.GetGroupById(Id)
 	if row == nil {
 		return nil, fmt.Errorf("no group found with ID: %s", Id)

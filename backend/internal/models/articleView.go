@@ -7,6 +7,8 @@ type ArticleView struct {
 	DisLikes      int      `json:"disLikes"`
 	CommentsCount int      `json:"comments_count"`
 	Like          int      `json:"like"`
+	GroupName     *string  `json:"group_name"`
+	GroupImage    *string  `json:"group_image"`
 }
 
 type Data struct {

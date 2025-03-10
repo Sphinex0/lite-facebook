@@ -26,6 +26,8 @@ SELECT
         FROM articles Art
         WHERE
             Art.parent = A.id
-    ) comments
+    ) comments,
+    G.title,G.image
 FROM articles A
-    JOIN users U ON U.id = A.user_id;
+    JOIN users U ON U.id = A.user_id
+    LEFT JOIN groups G ON G.id = A.group_id

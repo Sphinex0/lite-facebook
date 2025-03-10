@@ -129,7 +129,14 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 		var article_view models.ArticleView
 		tab := utils.GetScanFields(&article_view.UserInfo)
 		tab = append(tab, utils.GetScanFields(&article_view.Article)...)
-		tab = append(tab, &article_view.Likes, &article_view.DisLikes, &article_view.CommentsCount, &article_view.Like)
+		tab = append(tab,
+			&article_view.Likes,
+			&article_view.DisLikes,
+			&article_view.CommentsCount,
+			&article_view.Like,
+			&article_view.GroupName,
+			&article_view.GroupImage,
+		)
 
 		err1 := rows.Scan(tab...)
 		if err1 != nil {
