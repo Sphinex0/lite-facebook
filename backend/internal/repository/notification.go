@@ -4,14 +4,22 @@ import (
 	"social-network/internal/models"
 )
 
-
-
 func (database *Database) GetUserNotifications(userID string) ([]models.Notification, error) {
-	/*
-		1- invoker valide group not valide
-		2- invoker valide group valide event not valide
-	*/
-	rows, err := database.Db.Query(``, userID)
+	rows, err := database.Db.Query(`SELECT 
+    n.id AS notification_id,
+    n.type,
+    u.name AS invoker_name,
+    g.name AS group_name,
+	n.event_id AS event_id,
+FROM 
+    notifications n
+LEFT JOIN 
+    users u ON n.invoker_id = u.id
+LEFT JOIN 
+    groups g ON n.group_id = g.id
+WHERE 
+    n.user_id = ?;
+`, userID)
 	if err != nil {
 		return []models.Notification{}, err
 	}
@@ -20,7 +28,7 @@ func (database *Database) GetUserNotifications(userID string) ([]models.Notifica
 	var notifications []models.Notification
 	for rows.Next() {
 		var notification models.Notification
-		err := rows.Scan(&notification.Type, &notification.InvokerID, &notification.GroupID, &notification.EventID)
+		err := rows.Scan(&notification.ID, &notification.Type, &notification.InvokerName, &notification.GroupTitle, &notification.EventID)
 		if err != nil {
 			return []models.Notification{}, err
 		}
@@ -43,8 +51,9 @@ func (database *Database) CheckIfEventExists(EventId int) bool {
 }
 
 func (database *Database) InsertNotification(notification models.Notification) error {
-	_,err := database.Db.Exec("INSERT INTO notifications user_id, type, invoker_id, group_id, event_id", 
-	notification.UserID, notification.Type, notification.InvokerID, notification.GroupID, notification.EventID); if err != nil {
+	_, err := database.Db.Exec("INSERT INTO notifications user_id, type, invoker_id, group_id, event_id",
+		notification.UserID, notification.Type, notification.InvokerID, notification.GroupID, notification.EventID)
+	if err != nil {
 		return err
 	}
 	return nil
