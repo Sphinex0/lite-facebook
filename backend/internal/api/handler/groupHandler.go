@@ -30,6 +30,10 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 	Group.CreatedAt = int(time.Now().Unix())
 	fmt.Println(Group.Title)
 	fmt.Println(Group.Description)
+	if Group.Title != "" || len(Group.Title) > 50 || Group.Description != "" || len(Group.Description) > 250 {
+		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusInternalServerError))
+		return
+	}
 	if err := Handler.Service.GreatedGroup(&Group); err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))

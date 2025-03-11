@@ -25,8 +25,7 @@ func (Handler *Handler) AddInvite(w http.ResponseWriter, r *http.Request) {
 	}
 	var Invite models.Invite
 	err := utils.ParseBody(r, &Invite)
-	fmt.Println(err)
-	if err != nil || Invite.Receiver == 0 || Invite.GroupID == 0 {
+	if err != nil || Invite.Receiver == 0 || Invite.GroupID == 0  || Invite.Sender==Invite.Receiver{
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
@@ -112,7 +111,6 @@ func  (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request)  {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	valid ,err:= Handler.Service.Members(Invites)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(valid)
+	utils.WriteJson(w, http.StatusOK,valid)
 
 }
