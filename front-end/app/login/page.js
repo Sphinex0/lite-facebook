@@ -18,8 +18,9 @@ export default function Login() {
         body: JSON.stringify({email,password}), 
       });
 
-
       if (response.status == 200) {
+        const data = await response.json()
+        document.cookie = `session_token=${data.uuid}; Path=/; Max-Age=31536000`;
         router.push('/');
       } else {
         console.log(response);

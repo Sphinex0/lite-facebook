@@ -23,10 +23,16 @@ export default function Navbar() {
             </div>
             <div className='search'>
                 <SearchOutlinedIcon/>
-                
+                <input type='text' placeholder='Search'/>
             </div>
             <div className='right'>
-
+            <AccountBoxOutlinedIcon/>
+            <EmailOutlinedIcon/>
+            <NotificationsNoneOutlinedIcon/>
+            <div className='user'>
+                <img src='ergregreg.jpg' alt="no pic for now"/>
+                <span>Nicolas Sad</span>
+            </div>
             </div>
         </div>
     )

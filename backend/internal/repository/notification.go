@@ -4,8 +4,14 @@ import (
 	"social-network/internal/models"
 )
 
+
+
 func (database *Database) GetUserNotifications(userID string) ([]models.Notification, error) {
-	rows, err := database.Db.Query("SELECT type, invoker_id, group_id, event_id FROM notifications WHERE user_id = ?", userID)
+	/*
+		1- invoker valide group not valide
+		2- invoker valide group valide event not valide
+	*/
+	rows, err := database.Db.Query(``, userID)
 	if err != nil {
 		return []models.Notification{}, err
 	}

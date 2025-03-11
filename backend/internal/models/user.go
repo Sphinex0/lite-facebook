@@ -20,4 +20,5 @@ type UserInfo struct {
 	First_Name string `json:"first_name"`
 	Last_Name  string `json:"last_name"`
 	Image      string `json:"image"`
+	Uuid       string `json:"uuid"`
 }

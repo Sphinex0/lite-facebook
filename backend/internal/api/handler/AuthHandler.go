@@ -26,7 +26,7 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := H.Service.LoginUser(&user)
+	Uuid, err := H.Service.LoginUser(&user)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
@@ -37,8 +37,9 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		First_Name: user.First_Name,
 		Last_Name:  user.Last_Name,
 		Image:      user.Image,
+		Uuid: 		Uuid,
 	}
-
+	utils.SetSessionCookie(w, Uuid)
 	utils.WriteJson(w, http.StatusOK, userinfo)
 }
 
@@ -84,13 +85,18 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Proccess Data and Insert it
-	err = H.Service.RegisterUser(&user)
+	Uuid, err := H.Service.RegisterUser(&user)
 	if err != nil {
 		fmt.Println("yes", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	utils.WriteJson(w, http.StatusOK, "You'v loged in succesfuly")
+
+	User := models.UserInfo {
+		Uuid: Uuid,
+	}
+	utils.SetSessionCookie(w, Uuid)
+	utils.WriteJson(w, http.StatusOK, User)
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
