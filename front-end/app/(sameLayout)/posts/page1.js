@@ -1,12 +1,10 @@
 'use client'
 
 import { useState } from "react"
-import Posts from "./posts"
+import Posts from "./page"
 
 const Users = () => {
   const [data , setData] = useState([])
-
-
 
   const fetchPosts = async () => {
     try {
