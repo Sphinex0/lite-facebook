@@ -37,7 +37,7 @@ func CORS(next http.Handler) http.Handler {
 		// Set the CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, withCredentials")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
 		// If it's a pre-flight request (OPTIONS method), end the request here
@@ -63,7 +63,6 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 		})
 
 		cookie, err := r.Cookie("session_id")
-		fmt.Println(r.Cookies())
 		if Hasallowed == -1 {
 			if err != nil {
 				fmt.Println(err)
@@ -83,7 +82,6 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			}
 			ctx := context.WithValue(r.Context(), UserIDKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
-
 		} else {
 			if err == nil {
 				uuid, err := uuid.FromString(cookie.Value)

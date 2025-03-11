@@ -69,7 +69,7 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 			}
 		} else {
 			var err1 error
-			conversations[i].UserInfo, err1 = data.GetUserByID(*conv.Conversation.Entitie_two_group)
+			conversations[i].UserInfo, err1 = data.GetUserByID(*conv.Conversation.Entitie_two_user)
 			if err1 != nil {
 				fmt.Println(err1)
 			}

@@ -25,7 +25,7 @@ var (
 // handle messages of ws
 func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, ok := r.Context().Value(middlewares.UserIDKey).(models.User)
+		user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
 		if !ok {
 			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 			return
@@ -74,7 +74,7 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 				break
 			}
 			msg.Message.SenderID = user.ID
-			handleMessage(msg, h)
+			handleMessage(msg, h, conn)
 		}
 
 		notifyUserStatus(user.ID, "offline", conversations)
@@ -133,7 +133,7 @@ func cleanupConversationSubscriptions(userID int) {
 }
 
 // handle the message by type
-func handleMessage(msg models.WSMessage, h *Handler) {
+func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 	switch msg.Type {
 	case "new_message":
 		msg.Message.Content = strings.TrimSpace(msg.Message.Content)
@@ -158,6 +158,23 @@ func handleMessage(msg models.WSMessage, h *Handler) {
 		}
 
 		distributeMessage(msg, subscribers)
+	case "conversations":
+
+		conversations, err := h.Service.FetchConversations(msg.Message.SenderID)
+		if err != nil {
+			fmt.Println("Fetch conversations error:", err)
+			return
+		}
+
+		initialMsg := models.WSMessage{
+			Type:          "conversations",
+			Conversations: conversations,
+			OnlineUsers:   getOnlineUsers(conversations),
+		}
+		if err := conn.WriteJSON(initialMsg); err != nil {
+			fmt.Println("Initial message send error:", err)
+			return
+		}
 	}
 }
 
