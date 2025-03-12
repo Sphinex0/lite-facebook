@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"social-network/internal/models"
+	utils "social-network/pkg"
 
 	"github.com/gofrs/uuid/v5"
 	_ "github.com/mattn/go-sqlite3"
@@ -53,5 +54,10 @@ func GetUserByUuid(db *sql.DB, uuid uuid.UUID) (user models.UserInfo, err error)
 	if err = db.QueryRow("SELECT u.id,first_name,last_name,nickname,image FROM users u join sessions s on u.id = s.user_id  WHERE session_id = ? AND session_exp > ?", uuid.String(), time.Now().Unix()).Scan(&user.ID, &user.First_Name, &user.Last_Name, &user.Nickname, &user.Image); err != nil {
 		return
 	}
+	return
+}
+
+func (data *Database) GetUserByID(id int) (user models.UserInfo, err error) {
+	err = data.Db.QueryRow("SELECT u.id,first_name,last_name,nickname,image FROM users u  WHERE id = ? ", id).Scan(utils.GetScanFields(&user)...)
 	return
 }

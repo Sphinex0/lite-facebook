@@ -53,6 +53,7 @@ func (data *Database) IsFollow(user1 int, user2 int) (following bool) {
 		FROM followers
 		WHERE user_id = ?
 		AND follower = ?
+		AND status = "accepted"
     `,
 		user1,
 		user2).Scan(&count)

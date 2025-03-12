@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"slices"
 	"strings"
 	"sync"
 
@@ -14,122 +15,244 @@ import (
 )
 
 var (
-	clients   = make(map[string]*websocket.Conn)
-	clientsMu sync.RWMutex
+	userConnections = make(map[int][]*websocket.Conn)
+	userConnMu      sync.RWMutex
+
+	convSubscribers = make(map[int][]int)
+	convSubMu       sync.RWMutex
 )
 
-func (Handler *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc {
+// handle messages of ws
+func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//
-		cookie, err := r.Cookie("session_id")
-		if err != nil {
-			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-			return
-		}
-		session := cookie.Value
-
-		conn, err := upgrader.Upgrade(w, r, nil)
-		if err != nil {
-			fmt.Println("WebSocket Upgrade Error:", err)
-			utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
-			return
-		}
-
-		fmt.Println("WebSocket Connected")
-		defer conn.Close()
-
-		user, ok := r.Context().Value(middlewares.UserIDKey).(models.User)
+		user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
 		if !ok {
 			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 			return
 		}
-		key := fmt.Sprint(user.ID) + "_" + session
-		clientsMu.Lock()
-		clients[key] = conn
-		clientsMu.Unlock()
-		broadcastUserStatus()
-		defer removeClient(session)
+
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			fmt.Println("WebSocket upgrade error:", err)
+			return
+		}
+		defer conn.Close()
+
+		userConnMu.Lock()
+		userConnections[user.ID] = append(userConnections[user.ID], conn)
+		userConnMu.Unlock()
+
+		defer removeConnection(user.ID, conn)
+
+		conversations, err := h.Service.FetchConversations(user.ID)
+		if err != nil {
+			fmt.Println("Fetch conversations error:", err)
+			return
+		}
+
+		addUserToConversations(user.ID, conversations)
+
+		// Send initial data
+		initialMsg := models.WSMessage{
+			Type:          "conversations",
+			Conversations: conversations,
+			OnlineUsers:   getOnlineUsers(conversations),
+		}
+		if err := conn.WriteJSON(initialMsg); err != nil {
+			fmt.Println("Initial message send error:", err)
+			return
+		}
+
+		notifyUserStatus(user.ID, "online", conversations)
 
 		for {
 			var msg models.WSMessage
 			if err := conn.ReadJSON(&msg); err != nil {
-				fmt.Println("WebSocket Read Error:", err)
+				if websocket.IsUnexpectedCloseError(err) {
+					fmt.Printf("WebSocket closed: %v\n", err)
+				}
 				break
 			}
 			msg.Message.SenderID = user.ID
-			handleMessage(msg, conn, Handler)
+			handleMessage(msg, h, conn)
+		}
+
+		notifyUserStatus(user.ID, "offline", conversations)
+	}
+}
+
+// add user to conversations
+func addUserToConversations(userID int, conversations []models.ConversationsInfo) {
+	convSubMu.Lock()
+	defer convSubMu.Unlock()
+
+	for _, conv := range conversations {
+		convID := conv.Conversation.ID
+		subscribers := convSubscribers[convID]
+
+		if !slices.Contains(subscribers, userID) {
+			convSubscribers[convID] = append(subscribers, userID)
 		}
 	}
 }
 
-func handleMessage(msg models.WSMessage, conn *websocket.Conn, Handler *Handler) {
-	var err error
-	if msg.Kind == "private" {
-		switch msg.Type {
-		case "new_message":
-			msg.Message.Content = strings.TrimSpace(msg.Message.Content)
-			if len(msg.Message.Content) == 0 || len(msg.Message.Content) > 500 {
-				ErrorMessage(msg.Message.SenderID, conn)
-				return
-			}
+// Remove connection from user's connections
+func removeConnection(userID int, conn *websocket.Conn) {
+	userConnMu.Lock()
+	defer userConnMu.Unlock()
 
-			// if err := msg.Message.StoreMessage(); err != nil {
-			// 	fmt.Println("Message Store Error:", err)
-			// 	ErrorMessage(msg.SenderID, conn)
-			// 	return
-			// }
-
-			// distributeMessage(msg)
-		case "read":
-			// msg.Message.UpdateRead()
-		case "conversations":
-			msg.Type = "conversations"
-			clientsMu.RLock()
-			msg.OnlineUsers = getClientIDs()
-			clientsMu.RUnlock()
-			msg.Conversations, err = Handler.Service.FetchConversations(msg.Message.SenderID)
-			if err != nil {
-				fmt.Println("GetConversations Error:", err)
-				return
-			}
-			conn.WriteJSON(msg)
-		case "typing":
-			// distributeMessage(msg)
+	conns := userConnections[userID]
+	for i, c := range conns {
+		if c == conn {
+			userConnections[userID] = slices.Delete(conns, i, i+1)
+			break
 		}
-	} else if msg.Kind == "group" {
+	}
+
+	if len(userConnections[userID]) == 0 {
+		delete(userConnections, userID)
+		cleanupConversationSubscriptions(userID)
 	}
 }
 
-func broadcastUserStatus() {
-}
+// Remove user from conversations if last connection
+func cleanupConversationSubscriptions(userID int) {
+	convSubMu.Lock()
+	defer convSubMu.Unlock()
 
-func removeClient(session string) {
-	clientsMu.Lock()
-	if conn, ok := clients[session]; ok {
-		conn.Close()
-		delete(clients, session)
+	for convID, subscribers := range convSubscribers {
+		if index := slices.Index(subscribers, userID); index != -1 {
+			Tabupdated := slices.Delete(subscribers, index, index+1)
+			if len(Tabupdated) == 0 {
+				delete(convSubscribers, convID)
+			} else {
+				convSubscribers[convID] = Tabupdated
+			}
+		}
 	}
-	clientsMu.Unlock()
-
-	broadcastUserStatus()
 }
 
-func ParseIdUuid(id_session string) (id string, session string) {
-	tab := strings.Split(id_session, "_")
-	id, session = tab[0], tab[1]
-	return
-}
+// handle the message by type
+func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
+	switch msg.Type {
+	case "new_message":
+		msg.Message.Content = strings.TrimSpace(msg.Message.Content)
+		if len(msg.Message.Content) == 0 || len(msg.Message.Content) > 500 {
+			sendError(msg.Message.SenderID, "Invalid message content")
+			return
+		}
 
-func ErrorMessage(senderID int, conn *websocket.Conn) {
-	conn.WriteJSON(models.WSMessage{
-		Type: "error",
-	})
-}
+		convSubMu.RLock()
+		subscribers, ok := convSubscribers[msg.Message.ConversationID]
+		convSubMu.RUnlock()
 
-func getClientIDs() []string {
-	keys := make([]string, 0, len(clients))
-	for key := range clients {
-		keys = append(keys, key)
+		if !ok || !slices.Contains(subscribers, msg.Message.SenderID) {
+			sendError(msg.Message.SenderID, "Not authorized for this conversation")
+			return
+		}
+
+		if err := h.Service.CreateMessage(&msg.Message); err != nil {
+			fmt.Println("Create message error:", err)
+			sendError(msg.Message.SenderID, "Failed to send message")
+			return
+		}
+
+		distributeMessage(msg, subscribers)
+	case "conversations":
+
+		conversations, err := h.Service.FetchConversations(msg.Message.SenderID)
+		if err != nil {
+			fmt.Println("Fetch conversations error:", err)
+			return
+		}
+
+		initialMsg := models.WSMessage{
+			Type:          "conversations",
+			Conversations: conversations,
+			OnlineUsers:   getOnlineUsers(conversations),
+		}
+		if err := conn.WriteJSON(initialMsg); err != nil {
+			fmt.Println("Initial message send error:", err)
+			return
+		}
 	}
-	return keys
+}
+
+// Notify status
+func notifyUserStatus(userID int, status string, conversations []models.ConversationsInfo) {
+	msg := models.WSMessage{
+		Type:    status,
+		Message: models.Message{SenderID: userID},
+	}
+
+	var allSubscribers []int
+	convSubMu.RLock()
+	for _, conv := range conversations {
+		allSubscribers = append(allSubscribers, convSubscribers[conv.Conversation.ID]...)
+	}
+	convSubMu.RUnlock()
+
+	subscribers := uniqueInts(allSubscribers)
+	distributeMessage(msg, subscribers)
+}
+
+// destribute message for all
+func distributeMessage(msg models.WSMessage, receivers []int) {
+	userConnMu.RLock()
+	defer userConnMu.RUnlock()
+
+	for _, userID := range receivers {
+		if conns, ok := userConnections[userID]; ok {
+			for _, conn := range conns {
+				if err := conn.WriteJSON(msg); err != nil {
+					fmt.Println("Message distribution error:", err)
+				}
+			}
+		}
+	}
+}
+
+// get online users
+func getOnlineUsers(conversations []models.ConversationsInfo) []int {
+	userConnMu.RLock()
+	defer userConnMu.RUnlock()
+
+	var online []int
+	for _, conv := range conversations {
+		if conv.Conversation.Type == "private" {
+			if _, ok := userConnections[conv.UserInfo.ID]; ok {
+				online = append(online, conv.UserInfo.ID)
+			}
+		}
+	}
+	return online
+}
+
+// for errors
+func sendError(userID int, message string) {
+	userConnMu.RLock()
+	defer userConnMu.RUnlock()
+
+	if conns, ok := userConnections[userID]; ok {
+		errMsg := models.WSMessage{
+			Type:    "error",
+			Message: models.Message{Content: message},
+		}
+		for _, conn := range conns {
+			conn.WriteJSON(errMsg)
+		}
+	}
+}
+
+// Deduplicate subscribers
+func uniqueInts(slice []int) []int {
+	keys := make(map[int]bool)
+	list := []int{}
+	for _, entry := range slice {
+		if _, value := keys[entry]; !value {
+			keys[entry] = true
+			list = append(list, entry)
+		}
+	}
+	return list
 }
