@@ -1,3 +1,5 @@
+import Profile from "./_leftSide/profile";
+
 export default function MainLayout({ children }) {
   /**
    *         <main>
@@ -9,6 +11,8 @@ export default function MainLayout({ children }) {
     <main>
       <div className="container">
         <div className="left">
+          <Profile/>
+          {/* nav here */ }
           <p>left side</p>
         </div>
 

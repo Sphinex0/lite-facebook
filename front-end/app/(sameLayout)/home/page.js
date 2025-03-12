@@ -1,70 +1,51 @@
-"use client";
+'use client'
 
-import Link from 'next/link';
-import styles from './home.module.css'
-import Requests from './Requests';
-import { useState } from 'react';
+import { useEffect, useState } from "react"
+import Post from "./_components/post"
 
-const Home = () => {
+export default function Posts() {
+    const [posts, setPosts] = useState([])
 
-  const [screen, setScreen] = useState("");
-  const switchRequest = (sideNav)=>{
+    const fetchData = async () => {
+        try {
+            console.log("res")
+            const before = posts.length > 0 ? posts[posts.length - 1].article.created_at : Math.floor(Date.now() / 1000)
+            const response = await fetch("http://localhost:8080/api/posts", {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({ before })
+            })
 
-    console.log("yes")
-    setScreen("home")
-  }
-  return (
-    <div className={styles.container}>
-      <aside className={styles.sideNav}>
-        {screen == "home"? <Requests/>:""}
-        <ul>
-          
-        <Link href="/profile">
-          <li className={styles.navItem}>
-            <img className={styles.image}/>
-            <p className={styles.userName}>ADNANE ELMIR</p>
-          </li>
-          </Link>
-          <li className={styles.navItem} onClick={(e)=>switchRequest(e.target.parentElement.parentElement)}>
-            <img className={`${styles.image} ${styles.Request}`}/>
-            <p className={styles.userName}>Requests</p>
-          </li>
-          <li className={styles.navItem}>
-            <img className={`${styles.image} ${styles.group}`}/>
-            <p className={styles.userName} >Groups</p>
-          </li>
-          <li className={styles.navItem}>
-            <img className={styles.image}/>
-            <p className={styles.userName}>Event</p>
-          </li>
-        </ul>
-      </aside>
-      <section>
-        <div className={styles.post}>
-          <div className={styles.postHeader}>
-            <Link href="/profile">
-            <li className={styles.navItem}>
-              <img className={styles.image}/>
-              <p className={styles.userName}>ADNANE ELMIR</p>
-            </li>
-            </Link>
-          </div>
+            console.log("status:", response.status)
+            if (response.ok) {
+                const postsData = await response.json()
+                if (postsData) {
+                    setPosts([...posts, ...postsData])
+                    console.log(postsData)
+                }
+            }
 
-          <div className={styles.postBody}>
+        } catch (error) {
+            console.log(error)
+        }
 
-          </div>
+    }
 
-          <div className={styles.postFooter}>
+    useEffect(() => {
+        fetchData()
+        window.onscroll = ()=>{
+            console.log("here")
+            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+                fetchData()
+            }
+        }
+    }, [])
 
-          </div>
-
+    return (
+        <div className="feeds" >
+            {posts.map((postInfo, index) => {
+                return <Post postInfo={postInfo} key={index} />
+            })}
         </div>
-      </section>
-      <aside>
-
-      </aside>
-    </div>
-  )
+    )
 }
-
-export default Home;
