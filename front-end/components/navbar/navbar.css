@@ -1,3 +1,13 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+*{
+    margin: 0;
+    padding: 0;
+}
+
+:root{
+    --bg-color: #1877F2;
+}
+
 nav {
     display: flex;
     align-items: center;
@@ -11,8 +21,7 @@ nav {
 .nav-center {
     display: flex;
     align-items: center;
-    gap: 40px; /* Adjust the spacing between logo and icons */
-    flex: 1;
+    gap: 50px;
     justify-content: center;
 }
 
@@ -20,7 +29,6 @@ nav {
     display: flex;
     align-items: center;
     padding: 5px 10px;
-    width: 250px;
     font-size: 1.7rem;
     font-weight: 400;
     color: var(--bg-color);
@@ -29,7 +37,9 @@ nav {
 }
 
 .logo span {
-    color: rgb(92, 91, 91);
+    font-family: 'Poppins', sans-serif; /* Example bold font */
+    font-weight: bold;
+    color: var(--bg-color);
 }
 
 .search-container input {
@@ -55,7 +65,7 @@ nav {
 }
 
 .icons svg:hover {
-    color: #1877F2;
+    color: var(--bg-color);
 }
 
 /* Profile Image */
@@ -65,7 +75,12 @@ nav img {
     border-radius: 50%;
     object-fit: cover;
     cursor: pointer;
-    border: 2px solid #1877F2;
+    border: 2px solid var(--bg-color);
+}
+
+.nav-image {
+    width: 200px;  /* Uguale a nav img */
+    height: 10px; /* Uguale a nav img */
 }
 
 /* Responsive Design */
