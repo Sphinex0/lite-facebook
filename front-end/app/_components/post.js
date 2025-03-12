@@ -1,6 +1,6 @@
 import { Comment, ThumbDown, ThumbUp } from "@mui/icons-material"
 import { use, useState } from "react"
-import styles from './posts.module.css'
+import styles from './post.module.css'
 
 export default function Post({ postInfo }) {
     const [likes, setLikes] = useState(postInfo.likes)

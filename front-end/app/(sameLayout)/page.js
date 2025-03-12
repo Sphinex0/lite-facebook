@@ -2,9 +2,13 @@
 
 import { useEffect, useState } from "react"
 import Post from "../_components/post"
+import CreatePost from "../_components/createPost"
+import CreatePostModal from "../_components/createPostModal"
 
 export default function Posts() {
     const [posts, setPosts] = useState([])
+    const [modalDisplay, setModalDisplay] = useState(false)
+
 
     const fetchData = async () => {
         try {
@@ -43,13 +47,8 @@ export default function Posts() {
 
     return (
         <>
-            <form action="" class="create-post" onSubmit='return false'>
-                <div class="profile-photo">
-                    <img src="./images/profile-1.jpg" />
-                </div>
-                <input type="text" placeholder="What's on your mind, Diana ?" id="create-post" />
-                <input type="submit" value="Post" class="btn btn-primary" />
-            </form>
+            <CreatePost setModalDisplay={setModalDisplay} />
+            {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} /> : ""}
             <div className="feeds" >
                 {posts.map((postInfo, index) => {
                     return <Post postInfo={postInfo} key={index} />

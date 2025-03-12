@@ -1,9 +1,16 @@
 import React from 'react'
 
-const CreatePost = () => {
+const CreatePost = ({ setModalDisplay }) => {
+  const show = () => {
+    setModalDisplay(true)
+  }
+
   return (
-    <div>
-      
+    <div action="" className="create-post" onClick={show}>
+      <div className="profile-photo">
+        <img src="./images/profile-1.jpg" />
+      </div>
+      <div id="create-post" >What's on your mind, Diana ?</div>
     </div>
   )
 }

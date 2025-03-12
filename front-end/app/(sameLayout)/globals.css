@@ -292,20 +292,39 @@ main .container .left .profile {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-between; */
+    gap: 20px;
     margin-top: 1rem;
     background: var(--color-white);
     padding: 0.4rem var(--card-padding);
-    border-radius: var(--border-radius);
+    /* border-radius: var(--border-radius); */
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.middle .create-post input[type="text"] {
+.middle .create-post #create-post {
     width: 100%;
     justify-self: start;
     padding-left: 1rem;
     background: transparent;
     color: var(--color-dark);
     margin-right: 1rem;
+    color: #65686c;
+    background-color: #f0f2f5;
+
+    padding: 10px 30px;
+    border-radius: 20px;
+    width: 500px;
+
+}
+
+.middle .create-post *{
+    cursor: pointer;
+}
+
+.middle .create-post:hover{
+    filter: brightness(0.9);
 }
 
 /* =============== Feeds ============== */
@@ -494,7 +513,7 @@ main .container .right {
     text-align: center;
     display: grid;
     place-items: center;
-    display: none;
+    /* display: none; */
 }
 
 .customize-theme .card {
