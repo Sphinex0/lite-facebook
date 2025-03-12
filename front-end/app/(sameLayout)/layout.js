@@ -1,4 +1,5 @@
 import Profile from "./_leftSide/profile";
+import "./globals.css";
 
 export default function MainLayout({ children }) {
   /**
