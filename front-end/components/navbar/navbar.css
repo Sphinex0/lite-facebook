@@ -78,9 +78,15 @@ nav img {
     border: 2px solid var(--bg-color);
 }
 
-.nav-image {
-    width: 200px;  /* Uguale a nav img */
-    height: 10px; /* Uguale a nav img */
+.notification {
+    position: relative;
+}
+
+.notification .pop-out {
+    position: absolute;
+    left: 0;
+    top: 50px;
+    background: red;
 }
 
 /* Responsive Design */

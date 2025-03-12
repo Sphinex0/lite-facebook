@@ -1,11 +1,18 @@
 'use client'
 import './navbar.css'
+import ChatPopover from '@/components/popovers/chatpopover/page'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
-import GroupAddOutlinedIcon from '@mui/icons-material/GroupAddOutlined'
-import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined'
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
+import { useState } from 'react'
 
 export default function Navbar () {
+  const [bool, setbool] = useState(false)
+  function handleclick () {
+    setbool(!bool)
+  }
   return (
     <nav>
       {/* Search Bar (Right) */}
@@ -21,15 +28,17 @@ export default function Navbar () {
         </div>
         <div className='icons'>
           <HomeOutlinedIcon />
-          <GroupAddOutlinedIcon />
-          <PublicOutlinedIcon />
+          <GroupOutlinedIcon />
+          <div className='notification'>
+            <div onClick={handleclick}>
+              <NotificationsNoneOutlinedIcon />
+            </div>
+            <div className='pop-out none'>{bool && <ChatPopover />}</div>
+          </div>
+          <MailOutlinedIcon />
         </div>
       </div>
-
-      {/* Profile Image (End) */}
-      {/* <div className='nav-image'> */}
-        <img src='/images/profile-1.jpg' alt='Profile' />
-      {/* </div> */}
+      <img src='/images/profile-1.jpg' alt='Profile' />
     </nav>
   )
 }
