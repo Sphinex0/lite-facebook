@@ -8,3 +8,13 @@
 
 // coockie exeoiring in the update after login
 // add the session in the sessions table
+
+
+/ =>/posts
+/profile
+/profile/id
+/requests
+/groups
+/group/id
+/notifications
+
