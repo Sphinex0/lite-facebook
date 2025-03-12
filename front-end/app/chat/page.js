@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import styles from "./styles.module.css";
+import Message from "@/app/chat/_components/message";
 
 export default function Chat() {
     const [clientWorker, setClientWorker] = useState(null);
@@ -52,10 +53,16 @@ export default function Chat() {
 
     const handleSendMessage = (event) => {
         if (event.key !== "Enter" || !message.trim()) return;
-
+        
         workerPortRef.current?.postMessage({
             kind: "send",
-            payload: message
+            payload: {
+                type : "new_message",
+                message : {
+                    conversation_id : selectedConversation,
+                    content : message
+                }
+            }
         });
 
         setMessage("");
@@ -72,19 +79,22 @@ export default function Chat() {
                     <h4>{selectedConversation?.title || "Select a conversation"}</h4>
                 </div>
 
-                <div className={styles.chatBody} ref={chatEndRef}>
-                    {selectedConversation?.messages?.map((msg, index) => (
-                        <div key={`msg-${index}`} className={styles.message}>
-                            <div className={styles.messageHeader}>
-                                <span className={styles.userName}>
-                                    {msg.senderName}
-                                </span>
-                            </div>
-                            <div className={styles.messageContent}>
-                                {msg.content}
-                            </div>
-                        </div>
-                    ))}
+                <div className={styles.chatBody} >
+                    {
+                        selectedConversation?.messages?.map((msg, index) => (
+                            // <div key={`msg-${index}`} className={styles.message}>
+                            //     <div className={styles.messageHeader}>
+                            //         <span className={styles.userName}>
+                            //             {msg.senderName}
+                            //         </span>
+                            //     </div>
+                            //     <div className={styles.messageContent}>
+                            //         {msg.content}
+                            //     </div>
+                            // </div>
+                            <Message msg={msg} index={index} />
+                        ))
+                    }
                     <div ref={chatEndRef} />
                 </div>
 

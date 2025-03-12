@@ -37,7 +37,8 @@ self.onconnect = (event) => {
                 // }
             }
         } else if (data.kind == "sent") {
-
+            console.log("kkkkkkkkkkk")
+            console.log(data.payload)
         }
     }
 }

@@ -66,6 +66,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		}
 
 		// Save with a unique filename (e.g., user.UUID + filename)
+		// uuid.New() + "."
 		filePath = filepath.Join(uploadDir, handler.Filename)
 		dst, err := os.Create(filePath)
 		if err != nil {
@@ -107,3 +108,31 @@ func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	}
 	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
 }
+
+// func HandleImage(path string, file multipart.File, fileheader *multipart.FileHeader) string {
+// 	if fileheader.Size > maxFileSize {
+// 		return ""
+// 	}
+
+// 	buffer := make([]byte, fileheader.Size)
+// 	_, err := file.Read(buffer)
+// 	if err != nil {
+// 		return ""
+// 	}
+
+// 	extensions := []string{".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
+// 	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
+// 		return strings.HasSuffix(fileheader.Filename, ext)
+// 	})
+// 	if extIndex == -1 {
+// 		return ""
+// 	}
+
+// 	imageName, _ := uuid.NewV4()
+// 	err = os.WriteFile("../frontend/assets/images/"+path+"/"+imageName.String()+extensions[extIndex], buffer, 0o644) // Safer permissions
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		return ""
+// 	}
+// 	return imageName.String() + extensions[extIndex]
+// }
