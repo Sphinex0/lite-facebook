@@ -7,7 +7,20 @@ nav {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+/* Container for logo and icons */
+.nav-center {
+    display: flex;
+    align-items: center;
+    gap: 40px; /* Adjust the spacing between logo and icons */
+    flex: 1;
+    justify-content: center;
+}
+
 .logo {
+    display: flex;
+    align-items: center;
+    padding: 5px 10px;
+    width: 250px;
     font-size: 1.7rem;
     font-weight: 400;
     color: var(--bg-color);
@@ -16,44 +29,36 @@ nav {
 }
 
 .logo span {
-    color: var(--main-color);
+    color: rgb(92, 91, 91);
 }
 
-
-nav .search-container {
-    display: flex;
-    align-items: center;
-    background: #f0f2f5;
-    padding: 5px 10px;
-    border-radius: 20px;
-}
-
-nav input {
+.search-container input {
     border: none;
     outline: none;
     padding: 5px;
     margin-left: 8px;
     background: transparent;
     font-size: 14px;
-    width: 200px;
+    flex: 1;
 }
 
-nav .icons {
+.icons {
     display: flex;
     gap: 20px;
 }
 
-nav .icons svg {
+.icons svg {
     font-size: 24px;
     color: #333;
     cursor: pointer;
     transition: 0.3s;
 }
 
-nav .icons svg:hover {
+.icons svg:hover {
     color: #1877F2;
 }
 
+/* Profile Image */
 nav img {
     width: 40px;
     height: 40px;
@@ -71,16 +76,21 @@ nav img {
         padding: 15px;
     }
 
-    nav .search-container {
+    .search-container {
         width: 100%;
         margin: 10px 0;
     }
 
-    nav input {
+    .search-container input {
         width: 100%;
     }
 
-    nav .icons {
+    .nav-center {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .icons {
         justify-content: center;
         width: 100%;
     }

@@ -8,24 +8,25 @@ import PublicOutlinedIcon from '@mui/icons-material/PublicOutlined';
 export default function Navbar() {
   return (
     <nav>
-        <div className='logo'>
-      <span>Lite-Facebook</span>
+      {/* Search Bar (Right) */}
+      <div className='logo'>
+          <span>Lite-Facebook</span>
         </div>
 
-      {/* Search Bar */}
-      <div className="search-container">
-        <SearchOutlinedIcon />
-        <input type="search" placeholder="Search for friends, posts and groups" />
+      {/* Logo and Icons (Center) */}
+      <div className="nav-center">
+      <SearchOutlinedIcon />
+      <div className='search-container'>
+      <input type="search" placeholder="Search for friends, groups" />
+      </div>
+        <div className="icons">
+          <HomeOutlinedIcon />
+          <GroupAddOutlinedIcon />
+          <PublicOutlinedIcon />
+        </div>
       </div>
 
-      {/* Icons */}
-      <div className="icons">
-        <HomeOutlinedIcon />
-        <GroupAddOutlinedIcon />
-        <PublicOutlinedIcon />
-      </div>
-
-      {/* Profile Image */}
+      {/* Profile Image (End) */}
       <img src="/images/profile-1.jpg" alt="Profile" />
     </nav>
   );
