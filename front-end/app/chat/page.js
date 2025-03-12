@@ -7,6 +7,7 @@ export default function Chat() {
     const [clientWorker, setClientWorker] = useState(null);
     const [message, setMessage] = useState("");
     const [conversations, setConversations] = useState([]);
+    const [messages, setMessages] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
     const workerPortRef = useRef(null);
     const chatEndRef = useRef(null);
@@ -34,8 +35,9 @@ export default function Chat() {
             console.log("Received data:", data);
             if (data.type === "conversations") {
                 setConversations(data.conversations);
+            } else if (data.type === "new_message") {
+                setMessages((prev) => [...prev, data])
             }
-            // Add other message types here
         };
 
         port.addEventListener("message", messageHandler);
@@ -53,14 +55,14 @@ export default function Chat() {
 
     const handleSendMessage = (event) => {
         if (event.key !== "Enter" || !message.trim()) return;
-        
-        workerPortRef.current?.postMessage({
+        console.log("id =>>>>>>>>><<", selectedConversation.id)
+        workerPortRef.current.postMessage({
             kind: "send",
             payload: {
-                type : "new_message",
-                message : {
-                    conversation_id : selectedConversation,
-                    content : message
+                type: "new_message",
+                message: {
+                    conversation_id: selectedConversation.id,
+                    content: message
                 }
             }
         });
@@ -81,19 +83,25 @@ export default function Chat() {
 
                 <div className={styles.chatBody} >
                     {
-                        selectedConversation?.messages?.map((msg, index) => (
-                            // <div key={`msg-${index}`} className={styles.message}>
-                            //     <div className={styles.messageHeader}>
-                            //         <span className={styles.userName}>
-                            //             {msg.senderName}
-                            //         </span>
-                            //     </div>
-                            //     <div className={styles.messageContent}>
-                            //         {msg.content}
-                            //     </div>
-                            // </div>
-                            <Message msg={msg} index={index} />
-                        ))
+                        console.log(messages)}
+                    {
+                        // selectedConversation?.messages?.map((msg, index) => (
+                        // <div key={`msg-${index}`} className={styles.message}>
+                        //     <div className={styles.messageHeader}>
+                        //         <span className={styles.userName}>
+                        //             {msg.senderName}
+                        //         </span>
+                        //     </div>
+                        //     <div className={styles.messageContent}>
+                        //         {msg.content}
+                        //     </div>
+                        // </div>
+                        // ))
+                        selectedConversation ?
+                            messages.map((msg, key) => (
+                                <Message msg={msg} key={key} />
+                            ))
+                            : "please select conv"
                     }
                     <div ref={chatEndRef} />
                 </div>

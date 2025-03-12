@@ -49,6 +49,7 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			fmt.Println("Fetch conversations error:", err)
 			return
 		}
+		fmt.Println(conversations)
 
 		addUserToConversations(user.ID, conversations)
 
@@ -74,6 +75,7 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 				break
 			}
 			msg.Message.SenderID = user.ID
+			fmt.Println(msg)
 			handleMessage(msg, h, conn)
 		}
 
@@ -150,9 +152,15 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			sendError(msg.Message.SenderID, "Not authorized for this conversation")
 			return
 		}
-
-		if err := h.Service.CreateMessage(&msg.Message); err != nil {
+		var err error
+		if err = h.Service.CreateMessage(&msg.Message); err != nil {
 			fmt.Println("Create message error:", err)
+			sendError(msg.Message.SenderID, "Failed to send message")
+			return
+		}
+
+		if msg.UserInfo, err = h.Service.GetUserByID(msg.Message.SenderID); err != nil {
+			fmt.Println("Get user error", err)
 			sendError(msg.Message.SenderID, "Failed to send message")
 			return
 		}

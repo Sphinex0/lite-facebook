@@ -12,8 +12,9 @@ type Message struct {
 
 type WSMessage struct {
 	Message       Message             `json:"message"`
+	UserInfo      UserInfo            `json:"user_info"`
 	Type          string              `json:"type"`
 	Typing        bool                `json:"is_typing"`
 	Conversations []ConversationsInfo `json:"conversations"`
-	OnlineUsers   []int            `json:"online_users"`
+	OnlineUsers   []int               `json:"online_users"`
 }

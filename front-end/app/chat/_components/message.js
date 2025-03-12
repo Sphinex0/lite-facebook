@@ -1,15 +1,16 @@
 
 import styles from "../styles.module.css";
-export default function Message(msg, index) {
+export default function Message({ msg }) {
+    const { message, user_info } = msg
     return (
-        <div key={`msg-${index}`} className={styles.message}>
+        <div className={styles.message}>
             <div className={styles.messageHeader}>
                 <span className={styles.userName}>
-                    {msg.sender_id}
+                    {user_info.first_name} {user_info.last_name}
                 </span>
             </div>
             <div className={styles.messageContent}>
-                {msg.content}
+                {message.content}
             </div>
         </div>
     )
