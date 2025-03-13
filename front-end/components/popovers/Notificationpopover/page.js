@@ -1,5 +1,6 @@
 'use client'
 import './notification.css'
+import Link from 'next/link';
 
 export default function NotificationPop () {
   const notifications = [
@@ -104,7 +105,9 @@ export default function NotificationPop () {
             case "event-created":
             return (
               <div key={index} className="notification-div">
+              <Link href = {`/event/${notification.eventID}`}>
                 <h1>New event</h1>
+              </Link>
                 <p>{notification.invoker} Created an Event in {notification.group}</p>
               </div>
             );
