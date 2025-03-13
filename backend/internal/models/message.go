@@ -7,6 +7,7 @@ type Message struct {
 	SenderID       int    `json:"sender_id"`
 	Content        string `json:"content"`
 	Seen           int    `json:"seen"`
+	Image          string `json:"image"`
 	CreatedAt      int    `json:"created_at"`
 }
 

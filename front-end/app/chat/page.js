@@ -9,10 +9,12 @@ export default function Chat() {
     const [conversations, setConversations] = useState([]);
     const [messages, setMessages] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
+    const selectedConversationRef = useRef(selectedConversation);
     const workerPortRef = useRef(null);
     const chatEndRef = useRef(null);
+    const beforeRef = useRef(Math.floor(new Date().getTime() / 1000));
 
-    // Initialize 
+    // Initialize SharedWorker
     useEffect(() => {
         const worker = new SharedWorker("/sharedworker.js");
         workerPortRef.current = worker.port;
@@ -24,7 +26,31 @@ export default function Chat() {
         };
     }, []);
 
-    // Setup message handler
+    // Update selectedConversationRef and fetch message history
+    useEffect(() => {
+        console.log("hahna")
+        selectedConversationRef.current = selectedConversation;
+        const fetchMessages = async () => {
+            if (!selectedConversation) return;
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messageshestories`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ conversation_id: selectedConversation.id, before: beforeRef.current }),
+                credentials: "include",
+            });
+            if (res.ok) {
+                const data = await res.json() || [];
+                setMessages(data); // Set messages directly since we reset to [] on selection
+            } else {
+                console.error("Error fetching messages");
+            }
+        };
+        fetchMessages();
+    }, [selectedConversation]);
+
+    // Setup message handler for SharedWorker
     useEffect(() => {
         if (!workerPortRef.current) return;
 
@@ -32,11 +58,19 @@ export default function Chat() {
         port.start();
 
         const messageHandler = ({ data }) => {
-            console.log("Received data:", data);
-            if (data.type === "conversations") {
-                setConversations(data.conversations);
-            } else if (data.type === "new_message") {
-                setMessages((prev) => [...prev, data])
+            switch (data.type) {
+                case "conversations":
+                    setConversations(data.conversations);
+                    break;
+                case "new_message":
+                    if (selectedConversationRef.current?.id === data.message.conversation_id) {
+                        setMessages((prev) => [...prev, data]);
+                    } else {
+                        alert("mssage")
+                    }
+                    break;
+                default:
+                    console.warn("Unhandled message type:", data.type);
             }
         };
 
@@ -51,58 +85,65 @@ export default function Chat() {
     // Scroll to bottom when messages change
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [conversations]);
+    }, [messages]);
 
     const handleSendMessage = (event) => {
         if (event.key !== "Enter" || !message.trim()) return;
-        console.log("id =>>>>>>>>><<", selectedConversation.id)
         workerPortRef.current.postMessage({
             kind: "send",
             payload: {
                 type: "new_message",
                 message: {
                     conversation_id: selectedConversation.id,
-                    content: message
-                }
-            }
+                    content: message,
+                },
+            },
         });
-
         setMessage("");
     };
 
-    const handleSelectConversation = (conversation) => {
-        setSelectedConversation(conversation);
+    const handleSetSelectedConversation = (conversation) => {
+        if (selectedConversation?.id != conversation.id) {
+            setMessages([]);
+            beforeRef.current = Math.floor(new Date().getTime() / 1000)
+            setSelectedConversation(conversation);
+        }
     };
+
+    // Compute display title for the selected conversation
+    const selectedConversationInfo = conversations.find(
+        (c) => c.conversation.id === selectedConversation?.id
+    );
+    const displayTitle = selectedConversationInfo
+        ? selectedConversationInfo.group?.title ||
+        `${selectedConversationInfo.user_info?.first_name} ${selectedConversationInfo.user_info?.last_name}`
+        : "Select a conversation";
 
     return (
         <div className={styles.container}>
             <div className={styles.chatContainer}>
                 <div className={styles.chatHeader}>
-                    <h4>{selectedConversation?.title || "Select a conversation"}</h4>
+                    <h4>{displayTitle}</h4>
                 </div>
 
-                <div className={styles.chatBody} >
-                    {
-                        console.log(messages)}
-                    {
-                        // selectedConversation?.messages?.map((msg, index) => (
-                        // <div key={`msg-${index}`} className={styles.message}>
-                        //     <div className={styles.messageHeader}>
-                        //         <span className={styles.userName}>
-                        //             {msg.senderName}
-                        //         </span>
-                        //     </div>
-                        //     <div className={styles.messageContent}>
-                        //         {msg.content}
-                        //     </div>
-                        // </div>
-                        // ))
-                        selectedConversation ?
-                            messages.map((msg, key) => (
-                                <Message msg={msg} key={key} />
-                            ))
-                            : "please select conv"
-                    }
+                <div className={styles.chatBody}>
+                    {selectedConversation ? (
+                        messages.length > 0 ? (
+                            <>
+                                {messages.map((msg) => {
+                                    return <Message msg={msg} key={msg.message.id} />
+                                })}
+                            </>
+                        ) : (
+                            <div className={styles.emptyState}>
+                                No messages in this conversation
+                            </div>
+                        )
+                    ) : (
+                        <div className={styles.emptyState}>
+                            Please select a conversation
+                        </div>
+                    )}
                     <div ref={chatEndRef} />
                 </div>
 
@@ -118,15 +159,15 @@ export default function Chat() {
 
             <div className={styles.conversationsList}>
                 {conversations.map((conversationInfo) => {
-                    const { conversation, user_info, group } = conversationInfo
-                    const { id } = conversation
-                    const displayText = group.title || `${user_info.first_name} ${user_info.last_name}`;
+                    const { conversation, user_info, group } = conversationInfo;
+                    const displayText =
+                        group?.title || `${user_info?.first_name} ${user_info?.last_name}`;
                     return (
                         <div
-                            key={`conv-${id}`}
-                            className={`${styles.conversationItem} ${selectedConversation?.id === id ? styles.active : ""
+                            key={`conv-${conversation.id}`}
+                            className={`${styles.conversationItem} ${selectedConversation?.id === conversation.id ? styles.active : ""
                                 }`}
-                            onClick={() => handleSelectConversation(conversation)}
+                            onClick={() => handleSetSelectedConversation(conversation)}
                         >
                             <h5 className={styles.conversationTitle}>{displayText}</h5>
                         </div>

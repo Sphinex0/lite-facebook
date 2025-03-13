@@ -49,7 +49,6 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			fmt.Println("Fetch conversations error:", err)
 			return
 		}
-		fmt.Println(conversations)
 
 		addUserToConversations(user.ID, conversations)
 
@@ -263,4 +262,17 @@ func uniqueInts(slice []int) []int {
 		}
 	}
 	return list
+}
+
+func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.Request) {
+	_, data, err := Handler.AfterGet(w, r)
+	if err != nil {
+		return
+	}
+	messages, err := Handler.Service.FetchMessagesHestories(data.Before, data.ConversationID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, messages)
 }

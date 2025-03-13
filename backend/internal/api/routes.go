@@ -62,6 +62,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	}
 
 	mux.HandleFunc("/ws", handler.MessagesHandler(upgrader))
+	mux.HandleFunc("/api/messageshestories", handler.HandelMessagesHestories)
 
 	return mux
 }
