@@ -3,19 +3,38 @@ import { AddPhotoAlternate, Public, SentimentDissatisfiedSharp } from '@mui/icon
 import React, { useEffect, useState } from 'react'
 import styles from './createPostModal.module.css'
 
-const CreatePostModal = ({ setModalDisplay }) => {
+const CreatePostModal = ({ setModalDisplay , setPosts}) => {
   const [content, setContent] = useState("")
+  const [imagePreview, setImagePreview] = useState("")
+
   const hide = (e) => {
     if (e.target.classList.contains('customize-theme')) {
       setModalDisplay(false)
     }
   }
 
-  const addPost = (e) => {
+  const addPost = async(e) => {
     e.preventDefault()
-    const formData = new FormData(e.target)
-    console.log(formData)
-    setContent("")
+    try {
+      const formData = new FormData(e.target)
+      console.log(formData)
+      const response = await fetch("http://localhost:8080/api/articles/store", {
+          method: "POST",
+          credentials: "include",
+          body: formData
+      })
+
+      console.log("status:", response.status)
+      if (response.ok) {
+          const article = await response.json()
+          setPosts((prv)=>[{article,user_info:{}},...prv])
+          setModalDisplay(false) 
+          setContent("")
+      }
+
+  } catch (error) {
+      console.log(error)
+  }
   }
 
   useEffect(() => {
@@ -39,13 +58,25 @@ const CreatePostModal = ({ setModalDisplay }) => {
           onInput={(e)=>{setContent(e.target.textContent)}}>
               
           </div> */}
-          <textarea className={styles.textInput}
-            placeholder={"What's on your mind, Diana ?"}
-            value={content}
-            onInput={(e) => { setContent(e.target.textContent) }}>
+          <textarea name='content' className={styles.textInput}
+            placeholder={"What's on your mind, Diana ?"}>
           </textarea>
 
-          <input type="file" id='postImage' className={styles.fileInput} />
+          {imagePreview && <img src={imagePreview} />}
+          <input 
+          type="file" 
+          id='postImage'
+          onChange={(e)=>{
+            if (e.target.files[0]){
+              const file = e.target.files[0]
+              const reader = new FileReader()
+              reader.onloadend=()=>{
+                setImagePreview(reader.result)
+              }
+              reader.readAsDataURL(file)
+            }
+          }}
+          className={styles.fileInput} />
 
           <div className={styles.footer}>
             <label htmlFor="postImage">

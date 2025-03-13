@@ -25,7 +25,7 @@ export default function Posts() {
                 const postsData = await response.json()
                 if (postsData) {
                     setPosts([...posts, ...postsData])
-                    console.log(postsData)
+                    console.log(postsData[0])
                 }
             }
 
@@ -48,7 +48,7 @@ export default function Posts() {
     return (
         <>
             <CreatePost setModalDisplay={setModalDisplay} />
-            {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} /> : ""}
+            {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts}/> : ""}
             <div className="feeds" >
                 {posts.map((postInfo, index) => {
                     return <Post postInfo={postInfo} key={index} />

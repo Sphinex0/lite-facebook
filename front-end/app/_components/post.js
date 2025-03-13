@@ -1,12 +1,14 @@
 import { Comment, ThumbDown, ThumbUp } from "@mui/icons-material"
 import { use, useState } from "react"
 import styles from './post.module.css'
+import PostViewer from "./postViewer"
 
 export default function Post({ postInfo }) {
     const [likes, setLikes] = useState(postInfo.likes)
     const [disLikes, setDislikes] = useState(postInfo.disLikes)
     const [commentsCount, setCommentCount] = useState(postInfo.comments_count)
     const [likeState, setLikeState] = useState(postInfo.like) //0 1 -1
+    const [postViewDisplay, setPostViewDisplay] = useState(false)
     console.log(postInfo)
     const likePost = async (like, article_id) => {
         try {
@@ -135,8 +137,18 @@ export default function Post({ postInfo }) {
                         <span className={styles.footerText}>{disLikes}</span>
                     </span>
                     <span>
-                        <Comment className={styles.ArticleActionBtn}/> 
+                        <Comment className={styles.ArticleActionBtn} onClick={()=>setPostViewDisplay(true)}/> 
                         <span className={styles.footerText}>{commentsCount}</span>
+                        {postViewDisplay && (<PostViewer
+                                                    postInfo={postInfo}
+                                                    likes={likes}
+                                                    disLikes={disLikes}
+                                                    likeState={likeState}
+                                                    likePost={likePost}
+                                                    commentsCount = {commentsCount}
+                                                    setPostViewDisplay = {setPostViewDisplay}
+                                                />
+                                                )}
                     </span>
                 </div>
             </div>
