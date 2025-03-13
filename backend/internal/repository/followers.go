@@ -107,7 +107,7 @@ func (data *Database) GetFollowersIds(userID int) (followerIds []int, err error)
 	if err != nil {
 		return
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var user models.UserInfo
 		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
@@ -115,6 +115,7 @@ func (data *Database) GetFollowersIds(userID int) (followerIds []int, err error)
 		}
 		followerIds = append(followerIds, user.ID)
 	}
+	err = rows.Err()
 
 	return
 }
@@ -136,7 +137,7 @@ func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers
 	if err != nil {
 		return
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var user models.UserInfo
 		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
@@ -144,6 +145,7 @@ func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers
 		}
 		followers = append(followers, user)
 	}
+	err = rows.Err()
 
 	return
 }
@@ -163,7 +165,7 @@ func (data *Database) GetFollowings(user *models.UserInfo, before int) (followin
 	if err != nil {
 		return
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var user models.UserInfo
 		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
@@ -171,6 +173,7 @@ func (data *Database) GetFollowings(user *models.UserInfo, before int) (followin
 		}
 		followings = append(followings, user)
 	}
+	err = rows.Err()
 
 	return
 }
@@ -205,7 +208,7 @@ func (data *Database) GetFollowRequests(user *models.UserInfo, before int) (requ
 	if err != nil {
 		return
 	}
-
+	defer rows.Close()
 	for rows.Next() {
 		var user models.UserInfo
 		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
@@ -213,6 +216,7 @@ func (data *Database) GetFollowRequests(user *models.UserInfo, before int) (requ
 		}
 		requesters = append(requesters, user)
 	}
+	err = rows.Err()
 
 	return
 }

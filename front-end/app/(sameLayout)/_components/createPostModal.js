@@ -2,10 +2,12 @@
 import { AddPhotoAlternate, Public, SentimentDissatisfiedSharp } from '@mui/icons-material'
 import React, { useEffect, useState } from 'react'
 import styles from './createPostModal.module.css'
+import SelectFollower from './selectFollower'
 
-const CreatePostModal = ({ setModalDisplay , setPosts}) => {
+const CreatePostModal = ({ setModalDisplay, setPosts }) => {
   const [content, setContent] = useState("")
   const [imagePreview, setImagePreview] = useState("")
+  const [privacy, setPrivacy] = useState("")
 
   const hide = (e) => {
     if (e.target.classList.contains('customize-theme')) {
@@ -13,28 +15,36 @@ const CreatePostModal = ({ setModalDisplay , setPosts}) => {
     }
   }
 
-  const addPost = async(e) => {
+  const addPost = async (e) => {
     e.preventDefault()
     try {
       const formData = new FormData(e.target)
       console.log(formData)
       const response = await fetch("http://localhost:8080/api/articles/store", {
-          method: "POST",
-          credentials: "include",
-          body: formData
+        method: "POST",
+        credentials: "include",
+        body: formData
       })
 
       console.log("status:", response.status)
       if (response.ok) {
-          const article = await response.json()
-          setPosts((prv)=>[{article,user_info:{}},...prv])
-          setModalDisplay(false) 
-          setContent("")
+        const article = await response.json()
+        const newPost = {
+          article, // The article data from the server
+          user_info: {}, // Empty user_info as before
+          likes: 0, // Explicitly set initial likes
+          disLikes: 0, // Explicitly set initial dislikes
+          comments_count: 0, // Explicitly set initial comments count
+          like: 0, // Initial like state (0 = neutral)
+        };
+        setPosts((prv) => [newPost, ...prv]);
+        setModalDisplay(false)
+        setContent("")
       }
 
-  } catch (error) {
+    } catch (error) {
       console.log(error)
-  }
+    }
   }
 
   useEffect(() => {
@@ -46,37 +56,31 @@ const CreatePostModal = ({ setModalDisplay , setPosts}) => {
       <div className="card">
         <h2>Create post</h2>
         <form action="" className={styles.form} onSubmit={addPost}>
-          <select name='privacy' className={styles.selectPrivacy}>
+          <select name='privacy' className={styles.selectPrivacy} onChange={(e)=>setPrivacy(e.target.value)}>
             <option value="public"> Public</option>
             <option value="almost_private">Almost Private</option>
             <option value="private">Private</option>
           </select>
-
-          {/* <div contentEditable className={styles.textInput} 
-          onBlur={()=>{content == "" ? setContent("What's on your mind, Diana ?"):""}} 
-          onFocus={()=>content == "What's on your mind, Diana ?" ? setContent(""):""} 
-          onInput={(e)=>{setContent(e.target.textContent)}}>
-              
-          </div> */}
+        {privacy === "private" && <SelectFollower/>}
           <textarea name='content' className={styles.textInput}
             placeholder={"What's on your mind, Diana ?"}>
           </textarea>
 
           {imagePreview && <img src={imagePreview} />}
-          <input 
-          type="file" 
-          id='postImage'
-          onChange={(e)=>{
-            if (e.target.files[0]){
-              const file = e.target.files[0]
-              const reader = new FileReader()
-              reader.onloadend=()=>{
-                setImagePreview(reader.result)
+          <input
+            type="file"
+            id='postImage'
+            onChange={(e) => {
+              if (e.target.files[0]) {
+                const file = e.target.files[0]
+                const reader = new FileReader()
+                reader.onloadend = () => {
+                  setImagePreview(reader.result)
+                }
+                reader.readAsDataURL(file)
               }
-              reader.readAsDataURL(file)
-            }
-          }}
-          className={styles.fileInput} />
+            }}
+            className={styles.fileInput} />
 
           <div className={styles.footer}>
             <label htmlFor="postImage">
