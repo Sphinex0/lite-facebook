@@ -13,6 +13,9 @@ import (
 )
 
 func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
+	// utils.SetSessionCookie(w, "550e8400-e29b-41d4-a716-446655440000")
+	// utils.WriteJson(w, 200, "nice")
+	// return
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
@@ -22,10 +25,10 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
-
+	fmt.Println(user)
 	err := H.Service.LoginUser(&user)
 	if err != nil {
-		fmt.Println("err", err.Error())
+		fmt.Println("err1", err)
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}

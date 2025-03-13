@@ -45,3 +45,36 @@ func (S *Service) GetGroupsById(Group *models.Group) (*models.Group, error) {
 
 	return Group, nil
 }
+
+func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
+	rows, err := S.Database.Getmember(GroupId)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	fmt.Println(rows)
+
+	Group :=make(map[string]int )
+	for rows.Next() {
+		var groupIDScan int
+		if err := rows.Scan(&groupIDScan); err != nil {
+			fmt.Println("Error scanning row:", err)
+			return nil, err
+		}
+		Group["id"] = groupIDScan
+
+	}
+
+	var groups []models.Group
+
+	for _, v := range Group {
+		var group models.Group
+		rowGroupe:= S.Database.GetGroupById(v)
+		if err := rowGroupe.Scan(utils.GetScanFields(&group)...); err != nil {
+			return nil, fmt.Errorf("error scanning group data: %v", err)
+		}
+		groups = append(groups, group)
+	}
+	
+	return groups,nil
+}

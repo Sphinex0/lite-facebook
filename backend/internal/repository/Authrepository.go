@@ -2,6 +2,7 @@ package repository
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
 	"social-network/internal/models"
@@ -16,7 +17,8 @@ func (data *Database) CheckMailAndPaswdvalidity(email string, Password string) (
 	if err != nil {
 		return 0, errors.New("invalide coredentials")
 	}
-
+	fmt.Println([]byte(dbpswd))
+	fmt.Println([]byte(Password))
 	err = bcrypt.CompareHashAndPassword([]byte(dbpswd), []byte(Password))
 	if err != nil {
 		return 0, errors.New("incorrect password")
