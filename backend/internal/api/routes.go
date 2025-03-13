@@ -15,6 +15,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/login", handler.Login)
 	mux.HandleFunc("/api/signup", handler.Signup)
 	mux.HandleFunc("/api/logout", handler.Logout)
+	mux.HandleFunc("/api/checkuser", handler.CheckUserValidity)
 
 	// profile
 	mux.HandleFunc("/api/user", handler.GetUser)

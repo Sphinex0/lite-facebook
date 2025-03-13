@@ -1,6 +1,6 @@
 'use client'
 import './navbar.css'
-import ChatPopover from '@/components/popovers/chatpopover/page'
+import NotificationPop from '@/components/popovers/Notificationpopover/page'
 import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
@@ -13,6 +13,7 @@ export default function Navbar () {
   function handleclick () {
     setbool(!bool)
   }
+
   return (
     <nav>
       {/* Search Bar (Right) */}
@@ -33,7 +34,7 @@ export default function Navbar () {
             <div onClick={handleclick}>
               <NotificationsNoneOutlinedIcon />
             </div>
-            <div className='pop-out none'>{bool && <ChatPopover />}</div>
+            <div className='pop-out none'>{bool && <NotificationPop />}</div>
           </div>
           <MailOutlinedIcon />
         </div>

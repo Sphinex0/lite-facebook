@@ -1,0 +1,86 @@
+:root {
+    --main-color: #1877F2;
+    --second-color: #4490f3; /* Fixed typo */
+}
+
+.notification-container {
+    width: 300px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 15px;
+    margin: 10px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    overflow-x: hidden;
+    scrollbar-width: thin;
+    scrollbar-color: var(--second-color) #f1f1f1;
+}
+
+.notification-container .accepte {
+    background-color: var(--second-color);
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 5px;
+}
+
+.notification-container .accepte:hover {
+    background-color: var(--main-color);
+}
+
+.notification-container .refuse {
+    background-color: #a5a1a1;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 5px;
+}
+
+.notification-container .refuse:hover {
+    background-color: #747070;
+}
+
+
+/* Custom scrollbar styling for WebKit-based browsers */
+.notification-container::-webkit-scrollbar {
+    width: 6px;
+}
+
+.notification-container::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.notification-container::-webkit-scrollbar-thumb {
+    background: var(--second-color);
+    border-radius: 10px;
+}
+
+.notification-container::-webkit-scrollbar-thumb:hover {
+    background: var(--main-color);
+}
+
+
+/*notification div*/
+.notification-div{
+    border: 2px solid #0e0d0d;
+    background: white;
+    padding: 12px;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    height: 100px;
+}
