@@ -1,20 +1,25 @@
 .container {
     display: grid;
-    grid-template-columns: 2fr 1fr ;
-    height: 100vh;
-    max-width: 800px;
+    grid-template-columns: 2fr 1fr;
+    height: 90vh;
+    /* max-width: 800px; */
     margin: 0 auto;
     background-color: #f5f5f5;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .chatContainer {
     /* flex: 0; */
     display: flex;
     flex-direction: column;
-    border-right: 1px solid #e0e0e0;
+    /* border-right: 1px solid #e0e0e0; */
     background-color: #ffffff;
-    height: 100vh;
+    margin: 8px;
+    border-radius: 10px;
+    /* overflow: auto; */
+    height: 88vh;
+    position: relative;
+    /* height: 100vh; */
 }
 
 .chatHeader {
@@ -41,7 +46,7 @@
     padding: 0.8rem;
     border-radius: 8px;
     background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .messageHeader {
@@ -59,13 +64,23 @@
     line-height: 1.4;
 }
 
+.groupInputs {
+    display: grid;
+    grid-template-columns: auto 100px;
+    border-top: 1px solid #e0e0e0;
+    background-color: #ececec;
+}
+
 .chatInput {
     padding: 1rem;
     border: none;
-    border-top: 1px solid #e0e0e0;
     font-size: 1rem;
     outline: none;
     transition: background-color 0.3s ease;
+    /* width: 90%; */
+    background-color: #f8f9fa;
+    margin-block: 4px;
+    border-radius: 4px;
 }
 
 .chatInput:focus {
@@ -82,6 +97,9 @@
     overflow-y: auto;
     background-color: #ffffff;
     padding: 1rem;
+    /* background-color: red; */
+    margin: 8px;
+    border-radius: 10px;
 }
 
 .conversationItem {
@@ -135,4 +153,44 @@
 
 ::-webkit-scrollbar-thumb:hover {
     background: #95a5a6;
+}
+
+.inputFile {
+    display: none;
+}
+
+.addImageInChat {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    margin-block: 4px;
+}
+
+/* styles.module.css */
+.imagePreview {
+    width: 150px;
+    height: auto;
+    margin: 10px auto;
+    border-radius: 5px;
+}
+
+.Parent {
+    width: 100%;
+    background-color: #e6e4e44b;
+    padding: 5px 20px 2 20;
+    position: absolute;
+    bottom: 70px;
+    backdrop-filter: blur(5px);
+}
+
+.Parent div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.Parent div * {
+    cursor: pointer;
+    background-color: #d8d8d848;
+    margin: 5px;
+    border-radius: 5px;
 }

@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"slices"
@@ -67,6 +68,20 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 
 		for {
 			var msg models.WSMessage
+			typeMessage, message, err := conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err) {
+					fmt.Printf("WebSocket closed: %v\n", err)
+				}
+				break
+			}
+
+			if typeMessage == websocket.BinaryMessage {
+				fmt.Println(message)
+			} else if typeMessage == websocket.TextMessage {
+				json.Unmarshal(message, &msg)
+			}
+
 			if err := conn.ReadJSON(&msg); err != nil {
 				if websocket.IsUnexpectedCloseError(err) {
 					fmt.Printf("WebSocket closed: %v\n", err)

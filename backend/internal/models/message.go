@@ -9,6 +9,7 @@ type Message struct {
 	Seen           int    `json:"seen"`
 	Image          string `json:"image"`
 	CreatedAt      int    `json:"created_at"`
+	ModifiedAt     int    `json:"modified_at"`
 }
 
 type WSMessage struct {

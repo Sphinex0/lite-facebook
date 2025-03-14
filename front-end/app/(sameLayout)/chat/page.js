@@ -1,7 +1,9 @@
 "use client";
 import { useEffect, useState, useRef } from "react";
 import styles from "./styles.module.css";
-import Message from "@/app/chat/_components/message";
+import Message from "@/app/(sameLayout)/chat/_components/message";
+import { AddPhotoAlternate, Cancel, Send } from "@mui/icons-material";
+import Image from "next/image";
 
 export default function Chat() {
     const [clientWorker, setClientWorker] = useState(null);
@@ -9,11 +11,13 @@ export default function Chat() {
     const [conversations, setConversations] = useState([]);
     const [messages, setMessages] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
+    const [img, setImage] = useState(null)
     const selectedConversationRef = useRef(selectedConversation);
     const workerPortRef = useRef(null);
     const chatEndRef = useRef(null);
     const beforeRef = useRef(Math.floor(new Date().getTime() / 1000));
     const conversationsRef = useRef(conversations)
+    const combinadeRef = useRef(null)
 
     // Initialize SharedWorker
     useEffect(() => {
@@ -29,7 +33,7 @@ export default function Chat() {
 
     useEffect(() => {
         conversationsRef.current = conversations
-    },[conversations])
+    }, [conversations])
 
     useEffect(() => {
         selectedConversationRef.current = selectedConversation;
@@ -66,11 +70,9 @@ export default function Chat() {
                     setConversations(data.conversations);
                     break;
                 case "new_message":
-                    console.log("New message data", data);
                     const conversationId = data.message.conversation_id;
                     const topCnv = conversationsRef.current.find(cnv => cnv.conversation.id === conversationId);
-                    console.log(topCnv);
-                    
+
                     if (topCnv) {
                         const newConversations = [
                             topCnv,
@@ -117,6 +119,45 @@ export default function Chat() {
         setMessage("");
     };
 
+    const SendFile = () => {
+        combinadeRef && workerPortRef.current.postMessage({
+            kind: "send",
+            payload: combinadeRef,
+        });
+        CancelFile()
+    }
+    const CancelFile = () => {
+        combinadeRef.current = null
+        setImage(null)
+    }
+
+    const HandelImage = (file) => {
+        setImage(URL.createObjectURL(file));
+        const reader = new FileReader()
+        const onloadFile = (e) => {
+
+            const metadata = {
+                type: "image",
+                message: {
+                    conversation_id: selectedConversation.id,
+                },
+            }
+            const metadataStr = JSON.stringify(metadata)
+            const methaDataLen = new Uint8Array([metadataStr.length])
+            const fileData = e.target.result
+            const totalLenght = 4 + metadataStr.length + fileData.byteLength
+            const combinade = new Uint8Array(totalLenght)
+            combinade.set(new Uint8Array(methaDataLen.buffer), 0)
+            combinade.set(new Uint8Array(new TextEncoder().encode(metadataStr)), 4)
+            combinade.set(new Uint8Array(fileData), metadataStr.length + 4)
+            console.log(combinade)
+            combinadeRef.current = combinade
+        }
+        reader.onloadend = onloadFile
+        reader.readAsArrayBuffer(file)
+
+    }
+
     const handleSetSelectedConversation = (conversation) => {
         if (selectedConversation?.id != conversation.id) {
             setMessages([]);
@@ -161,14 +202,38 @@ export default function Chat() {
                     <div ref={chatEndRef} />
                 </div>
 
-                <input
-                    className={styles.chatInput}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    onKeyDown={handleSendMessage}
-                    placeholder="Type your message..."
-                    disabled={!selectedConversation}
-                />
+                {
+                    img && (
+                        <div className={styles.Parent}>
+                            <img className={styles.imagePreview} src={img} alt="image" />
+                            <div>
+                                <button onClick={CancelFile} > <Cancel /> </button>
+                                <button onClick={SendFile} > <Send /> </button>
+                            </div>
+                        </div>
+                    )
+                }
+
+                <div className={styles.groupInputs}>
+                    <input
+                        className={styles.chatInput}
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                        onKeyDown={handleSendMessage}
+                        placeholder="Type your message..."
+                        disabled={!selectedConversation}
+                    />
+                    <label htmlFor="addImageInChat" className={`${styles.addImageInChat}`}>
+                        <AddPhotoAlternate />
+                    </label>
+                    <input
+                        disabled={!selectedConversation}
+                        id="addImageInChat"
+                        className={styles.inputFile}
+                        onChange={(event) => HandelImage(event.target.files[0])}
+                        type="file"
+                    />
+                </div>
             </div>
 
             <div className={styles.conversationsList}>
