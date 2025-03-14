@@ -20,6 +20,7 @@ func CORS(next http.Handler) http.Handler {
 		// List of allowed origins (you can modify it based on your needs)
 		allowedOrigins := []string{
 			"http://localhost:3000",
+			"http://10.1.8.6:3000",
 		}
 
 		// Get the `Origin` header from the request
@@ -35,7 +36,7 @@ func CORS(next http.Handler) http.Handler {
 		}
 		// Set the CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
 		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 
@@ -44,6 +45,7 @@ func CORS(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
+
 		// Call the next handler
 		next.ServeHTTP(w, r)
 	})
@@ -80,7 +82,6 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			}
 			ctx := context.WithValue(r.Context(), UserIDKey, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
-
 		} else {
 			if err == nil {
 				uuid, err := uuid.FromString(cookie.Value)

@@ -5,7 +5,7 @@ import (
 )
 
 func (service *Service) FetchConversations(id int) (conversations []models.ConversationsInfo, err error) {
-	service.Database.GetConversations(id)
+	conversations, err = service.Database.GetConversations(id)
 	return
 }
 

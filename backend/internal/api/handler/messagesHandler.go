@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"slices"
@@ -25,7 +26,7 @@ var (
 // handle messages of ws
 func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, ok := r.Context().Value(middlewares.UserIDKey).(models.User)
+		user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
 		if !ok {
 			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 			return
@@ -67,6 +68,20 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 
 		for {
 			var msg models.WSMessage
+			typeMessage, message, err := conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err) {
+					fmt.Printf("WebSocket closed: %v\n", err)
+				}
+				break
+			}
+
+			if typeMessage == websocket.BinaryMessage {
+				fmt.Println(message)
+			} else if typeMessage == websocket.TextMessage {
+				json.Unmarshal(message, &msg)
+			}
+
 			if err := conn.ReadJSON(&msg); err != nil {
 				if websocket.IsUnexpectedCloseError(err) {
 					fmt.Printf("WebSocket closed: %v\n", err)
@@ -74,7 +89,8 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 				break
 			}
 			msg.Message.SenderID = user.ID
-			handleMessage(msg, h)
+			fmt.Println(msg)
+			handleMessage(msg, h, conn)
 		}
 
 		notifyUserStatus(user.ID, "offline", conversations)
@@ -133,7 +149,7 @@ func cleanupConversationSubscriptions(userID int) {
 }
 
 // handle the message by type
-func handleMessage(msg models.WSMessage, h *Handler) {
+func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 	switch msg.Type {
 	case "new_message":
 		msg.Message.Content = strings.TrimSpace(msg.Message.Content)
@@ -150,14 +166,37 @@ func handleMessage(msg models.WSMessage, h *Handler) {
 			sendError(msg.Message.SenderID, "Not authorized for this conversation")
 			return
 		}
-
-		if err := h.Service.CreateMessage(&msg.Message); err != nil {
+		var err error
+		if err = h.Service.CreateMessage(&msg.Message); err != nil {
 			fmt.Println("Create message error:", err)
 			sendError(msg.Message.SenderID, "Failed to send message")
 			return
 		}
 
+		if msg.UserInfo, err = h.Service.GetUserByID(msg.Message.SenderID); err != nil {
+			fmt.Println("Get user error", err)
+			sendError(msg.Message.SenderID, "Failed to send message")
+			return
+		}
+
 		distributeMessage(msg, subscribers)
+	case "conversations":
+
+		conversations, err := h.Service.FetchConversations(msg.Message.SenderID)
+		if err != nil {
+			fmt.Println("Fetch conversations error:", err)
+			return
+		}
+
+		initialMsg := models.WSMessage{
+			Type:          "conversations",
+			Conversations: conversations,
+			OnlineUsers:   getOnlineUsers(conversations),
+		}
+		if err := conn.WriteJSON(initialMsg); err != nil {
+			fmt.Println("Initial message send error:", err)
+			return
+		}
 	}
 }
 
@@ -238,4 +277,17 @@ func uniqueInts(slice []int) []int {
 		}
 	}
 	return list
+}
+
+func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.Request) {
+	_, data, err := Handler.AfterGet(w, r)
+	if err != nil {
+		return
+	}
+	messages, err := Handler.Service.FetchMessagesHestories(data.Before, data.ConversationID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, messages)
 }

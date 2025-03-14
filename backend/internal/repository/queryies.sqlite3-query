@@ -1399,5 +1399,40 @@ WHERE
 ORDER BY
     A.created_at DESC
 LIMIT
-    10
+    10;
+
+SELECT
+    C.*
+FROM
+    conversations C
+WHERE
+    (
+        C.type = 'private'
+        AND (
+            C.entitie_one = ?
+            OR C.entitie_two_user = ?
+        )
+    )
+    OR (
+        C.type = 'group'
+        AND EXISTS (
+            SELECT
+                1
+            FROM
+                invites I
+            WHERE
+                I.group_id = C.entitie_two_group
+                AND (
+                    I.receiver = ?
+                    OR I.sender = ?
+                )
+                AND I.status = 'accepted'
+        )
+    )
 ;
+
+SELECT *
+		FROM messages M
+		WHERE M.conversation_id = 1
+		AND M.created_at < 1741881292
+		ORDER BY M.created_at , M.id

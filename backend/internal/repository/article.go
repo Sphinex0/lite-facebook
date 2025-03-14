@@ -170,7 +170,14 @@ func (data *Database) GetComments(id, before, parent int) (article_views []model
 		var article_view models.ArticleView
 		tab := utils.GetScanFields(&article_view.UserInfo)
 		tab = append(tab, utils.GetScanFields(&article_view.Article)...)
-		tab = append(tab, &article_view.Likes, &article_view.DisLikes, &article_view.CommentsCount, &article_view.Like)
+		tab = append(tab,
+			&article_view.Likes,
+			&article_view.DisLikes,
+			&article_view.CommentsCount,
+			&article_view.GroupName,
+			&article_view.GroupImage,
+			&article_view.Like,
+		)
 
 		err1 := rows.Scan(tab...)
 		if err1 != nil {
@@ -219,7 +226,14 @@ func (data *Database) GetPostsByGroup(id, group_id, before int) (article_views [
 		var article_view models.ArticleView
 		tab := utils.GetScanFields(&article_view.UserInfo)
 		tab = append(tab, utils.GetScanFields(&article_view.Article)...)
-		tab = append(tab, &article_view.Likes, &article_view.DisLikes, &article_view.CommentsCount, &article_view.Like)
+		tab = append(tab,
+			&article_view.Likes,
+			&article_view.DisLikes,
+			&article_view.CommentsCount,
+			&article_view.GroupName,
+			&article_view.GroupImage,
+			&article_view.Like,
+		)
 
 		err1 := rows.Scan(tab...)
 		if err1 != nil {

@@ -42,11 +42,40 @@ func (data *Database) VerifyConversation(id1, id2 int, type_obj string) (err err
 
 func (data *Database) GetConversations(id int) (conversations []models.ConversationsInfo, err error) {
 	query := `
-		SELECT *
-		FROM conversations
-		WHERE entitie_one = ? OR entitie_two_user = ?
+		SELECT
+			C.*
+		FROM
+			conversations C
+		WHERE
+			(
+				C.type = 'private'
+				AND (
+					C.entitie_one = ?
+					OR C.entitie_two_user = ?
+				)
+			)
+			OR (
+				C.type = 'group'
+				AND (
+					C.entitie_one = ?
+					OR
+					EXISTS (
+					SELECT
+						1
+					FROM
+						invites I
+					WHERE
+						I.group_id = C.entitie_two_group
+						AND (
+							I.receiver = ?
+							OR I.sender = ?
+						)
+						AND I.status = 'accepted'
+					)
+				)
+			)
 	`
-	rows, err := data.Db.Query(query, id, id)
+	rows, err := data.Db.Query(query, id, id, id, id, id)
 	if err != nil {
 		return
 	}
@@ -69,7 +98,11 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 			}
 		} else {
 			var err1 error
-			conversations[i].UserInfo, err1 = data.GetUserByID(*conv.Conversation.Entitie_two_group)
+			idUser := conv.Conversation.Entitie_one
+			if id == idUser {
+				idUser = *conv.Conversation.Entitie_two_user
+			}
+			conversations[i].UserInfo, err1 = data.GetUserByID(idUser)
 			if err1 != nil {
 				fmt.Println(err1)
 			}

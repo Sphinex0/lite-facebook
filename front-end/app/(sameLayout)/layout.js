@@ -20,10 +20,10 @@ export default function MainLayout({ children }) {
         <div className="middle">
           {children}
         </div>
-
+{/* 
         <div className="right">
         <p>right side</p>
-        </div>
+        </div> */}
       </div>
     </main>
   );
