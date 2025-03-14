@@ -13,6 +13,7 @@ export default function Chat() {
     const workerPortRef = useRef(null);
     const chatEndRef = useRef(null);
     const beforeRef = useRef(Math.floor(new Date().getTime() / 1000));
+    const conversationsRef = useRef(conversations)
 
     // Initialize SharedWorker
     useEffect(() => {
@@ -26,9 +27,11 @@ export default function Chat() {
         };
     }, []);
 
-    // Update selectedConversationRef and fetch message history
     useEffect(() => {
-        console.log("hahna")
+        conversationsRef.current = conversations
+    },[conversations])
+
+    useEffect(() => {
         selectedConversationRef.current = selectedConversation;
         const fetchMessages = async () => {
             if (!selectedConversation) return;
@@ -42,7 +45,7 @@ export default function Chat() {
             });
             if (res.ok) {
                 const data = await res.json() || [];
-                setMessages(data); // Set messages directly since we reset to [] on selection
+                setMessages(data);
             } else {
                 console.error("Error fetching messages");
             }
@@ -63,10 +66,22 @@ export default function Chat() {
                     setConversations(data.conversations);
                     break;
                 case "new_message":
-                    if (selectedConversationRef.current?.id === data.message.conversation_id) {
-                        setMessages((prev) => [...prev, data]);
+                    console.log("New message data", data);
+                    const conversationId = data.message.conversation_id;
+                    const topCnv = conversationsRef.current.find(cnv => cnv.conversation.id === conversationId);
+                    console.log(topCnv);
+                    
+                    if (topCnv) {
+                        const newConversations = [
+                            topCnv,
+                            ...conversationsRef.current.filter(cnv => cnv.conversation.id !== conversationId)
+                        ];
+                        setConversations(newConversations);
+                    }
+                    if (selectedConversationRef.current?.id === conversationId) {
+                        setMessages((prev) => [...prev, data]); // Use data.message if API differs
                     } else {
-                        alert("mssage")
+                        alert("message");
                     }
                     break;
                 default:
@@ -109,7 +124,6 @@ export default function Chat() {
             setSelectedConversation(conversation);
         }
     };
-
     // Compute display title for the selected conversation
     const selectedConversationInfo = conversations.find(
         (c) => c.conversation.id === selectedConversation?.id
