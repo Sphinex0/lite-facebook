@@ -59,12 +59,13 @@ func (Handler *Handler) GetGroups(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
 	var Groups models.Group
 	err := utils.ParseBody(r, &Groups)
+	fmt.Println(Groups.ID)
 	group, err := Handler.Service.GetGroupsById(&Groups)
 	if err != nil {
 		fmt.Println(err)

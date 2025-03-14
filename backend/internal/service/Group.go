@@ -78,3 +78,4 @@ func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
 	
 	return groups,nil
 }
+
