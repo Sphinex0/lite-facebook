@@ -1,3 +1,4 @@
+import { timeAgo } from '@/app/helpers'
 import React from 'react'
 
 const UserInfo = ({ userInfo, articleInfo }) => {
@@ -8,7 +9,11 @@ const UserInfo = ({ userInfo, articleInfo }) => {
             </div>
             <div className="ingo">
                 <h3>{userInfo.first_name} {userInfo.last_name}</h3>
-                {articleInfo && <small>{timeAgo(articleInfo.created_at)}</small>}
+                {articleInfo &&
+                    <>
+                        <small>{articleInfo.privacy}</small> . <small>{timeAgo(articleInfo.created_at)}</small>
+                    </>
+                }
             </div>
         </div>
     )

@@ -130,7 +130,7 @@ func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers
 		WHERE user_id = ?
 		AND status = "accepted"
 		AND modified_at < ?
-
+		LIMIT 10
     `,
 		user.ID,
 		before)
@@ -159,6 +159,7 @@ func (data *Database) GetFollowings(user *models.UserInfo, before int) (followin
 		ON f.user_id = u.id
 		WHERE f.follower = ?
 		AND status = "accepted"
+		LIMIT 20
     `,
 		user.ID,
 		before)
@@ -186,6 +187,7 @@ func (data *Database) GetPendingFollowByUsers(follow *models.Follower) (err erro
 		WHERE user_id = ?
 		AND follower = ?
 		AND status = "pending"
+		LIMIT 20
     `,
 		follow.UserID, follow.Follower).Scan(&follow.ID, &follow.UserID, &follow.Follower)
 
@@ -202,6 +204,7 @@ func (data *Database) GetFollowRequests(user *models.UserInfo, before int) (requ
 		WHERE user_id = ?
 		AND status = "pending"
 		AND modified_at < ?
+		LIMIT 20
     `,
 		user.ID,
 		before)

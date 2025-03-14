@@ -1,9 +1,9 @@
-'use client'
 import { Comment, Preview, PrivacyTip, Public, ThumbDown, ThumbUp } from "@mui/icons-material"
 import { use, useEffect, useState } from "react"
 import styles from './post.module.css'
 import PostViewer from "./postViewer"
 import { likeArticle, timeAgo } from "@/app/helpers"
+import UserInfo from "./userInfo"
 
 export default function Post({ postInfo }) {
     const [likes, setLikes] = useState(postInfo.likes || 0); // Fallback to 0 if undefined
@@ -21,18 +21,11 @@ export default function Post({ postInfo }) {
     return (
         <div className="feed">
             <div className="head">
-                <div className="user">
-                    <div className="profile-photo">
-                        <img src="./images/profile-13.jpg" />
-                    </div>
-                    <div className="ingo">
-                        <h3>{postInfo.user_info.first_name} {postInfo.user_info.last_name}</h3>
-                        <small>{timeAgo(postInfo.article.created_at)}</small>
-                    </div>
-                </div>
+
+                <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article}/>
             </div>
             
-            <Public/> {postInfo.article.privacy}
+            
             <div  className={styles.content}>{postInfo.article.content}</div>
 
 

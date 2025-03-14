@@ -22,11 +22,7 @@
 .addFile:hover{
     background-color: #ccc;
 }
-.imagePreview{
-    width: 100px;
-    height: auto;
-    border-radius: 4px;
-}
+
 
 .content{
     white-space: pre-wrap;

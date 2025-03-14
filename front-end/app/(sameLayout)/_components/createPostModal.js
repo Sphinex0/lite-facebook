@@ -3,6 +3,7 @@ import { AddPhotoAlternate, Public, SentimentDissatisfiedSharp } from '@mui/icon
 import React, { useEffect, useState } from 'react'
 import styles from './createPostModal.module.css'
 import SelectFollower from './selectFollower'
+import { addArticle } from '@/app/helpers'
 
 const CreatePostModal = ({ setModalDisplay, setPosts }) => {
   const [content, setContent] = useState("")
@@ -16,35 +17,12 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
   }
 
   const addPost = async (e) => {
-    e.preventDefault()
-    try {
-      const formData = new FormData(e.target)
-      console.log(formData)
-      const response = await fetch("http://localhost:8080/api/articles/store", {
-        method: "POST",
-        credentials: "include",
-        body: formData
-      })
-
-      console.log("status:", response.status)
-      if (response.ok) {
-        const article = await response.json()
-        const newPost = {
-          article, // The article data from the server
-          user_info: {}, // Empty user_info as before
-          likes: 0, // Explicitly set initial likes
-          disLikes: 0, // Explicitly set initial dislikes
-          comments_count: 0, // Explicitly set initial comments count
-          like: 0, // Initial like state (0 = neutral)
-        };
-        setPosts((prv) => [newPost, ...prv]);
-        setModalDisplay(false)
-        setContent("")
-      }
-
-    } catch (error) {
-      console.log(error)
+    const added = await addArticle(e,setPosts, {})
+    if (added){
+      setModalDisplay(false)
+      setContent("")
     }
+
   }
 
   useEffect(() => {
@@ -66,7 +44,7 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
             placeholder={"What's on your mind, Diana ?"}>
           </textarea>
 
-          {imagePreview && <img src={imagePreview} />}
+          {imagePreview && <img src={imagePreview}  className="imagePreview"  />}
           <input
             type="file"
             id='postImage'

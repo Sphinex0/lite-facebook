@@ -3,12 +3,12 @@ import styles from "./selectFollower.module.css"
 import UserInfo from './userInfo'
 const SelectFollower = () => {
     const [followers, setFollowers] = useState([])
+    const container = useRef(null)
     const before = useRef(Math.floor(Date.now() / 1000))
 
-    const fetchFollowers = async () => {
+    const fetchFollowers = async (first = false) => {
         try {
-            //const before = posts.length > 0 ? posts[posts.length - 1].article.created_at : Math.floor(Date.now() / 1000)
-            console.log(before, followers)
+
             const response = await fetch("http://localhost:8080/api/followers", {
                 method: "POST",
                 credentials: "include",
@@ -18,9 +18,13 @@ const SelectFollower = () => {
             console.log("status:", response.status)
             if (response.ok) {
                 const followersData = await response.json()
-                if (followersData) {
-                    setFollowers((prv) => [...prv, ...followersData])
-                    before.current = followersData[followersData.length-1].modified_at
+                if (followersData != followers) {
+                    if (first) {
+                        setFollowers(followersData)
+                    } else {
+                        setFollowers((prv) => [...prv, ...followersData])
+                    }
+                    before.current = followersData[followersData.length - 1].modified_at
                 }
                 console.log(followersData)
             }
@@ -31,19 +35,22 @@ const SelectFollower = () => {
 
     }
 
-    useEffect(()=>{
-        console.log("hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  ")
-        fetchFollowers()
-    },[])
+    useEffect(() => {
+        fetchFollowers(true)
+        container.O
+    }, [])
 
 
-  return (
-    <div className={styles.container}>
-        {followers.map((userInfo)=>{
-            return <UserInfo userInfo={userInfo} key={userInfo.id}/>
-        })}
-    </div>
-  )
+    return (<>
+        <h3>choose who can see your post:</h3>
+        <div className={styles.container} ref={container}>
+            {followers.map((userInfo) => {
+                return <div className={styles.fullUser} key={`user${userInfo.id}`}><label htmlFor={`user${userInfo.id}`}><UserInfo userInfo={userInfo} key={userInfo.id} /></label> <input type='checkbox' id={`user${userInfo.id}`} name='users' value={userInfo.id} /></div>
+            })}
+        </div>
+    </>
+
+    )
 }
 
 export default SelectFollower

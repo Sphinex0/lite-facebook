@@ -33,7 +33,6 @@ func CORS(next http.Handler) http.Handler {
 				break
 			}
 		}
-		fmt.Println(allowOrigin,origin)
 		// Set the CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
@@ -62,7 +61,6 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 		})
 
 		cookie, err := r.Cookie("session_id")
-		fmt.Println(r.Cookies())
 		if Hasallowed == -1 {
 			if err != nil {
 				fmt.Println(err)

@@ -11,9 +11,7 @@ export default function Posts() {
     const before = useRef(Math.floor(Date.now() / 1000))
 
     const fetchData = async () => {
-        console.log("Posts rendering");
         try {
-            //const before = posts.length > 0 ? posts[posts.length - 1].article.created_at : Math.floor(Date.now() / 1000)
             console.log(before, posts)
             const response = await fetch("http://localhost:8080/api/posts", {
                 method: "POST",
@@ -38,7 +36,6 @@ export default function Posts() {
     }
 
     useEffect(() => {
-        console.log("######################################################################################")
         fetchData()
         window.onscroll = () => {
             console.log("here")
