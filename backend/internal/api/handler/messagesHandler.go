@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -77,9 +78,33 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			}
 
 			if typeMessage == websocket.BinaryMessage {
-				fmt.Println(message)
+				fmt.Println(len(message))
+				if len(message) < 4 {
+					fmt.Println("short")
+					continue
+				}
+				idLen := binary.LittleEndian.Uint32(message[0:4])
+				fmt.Println(idLen)
+				if len(message) < int(idLen) + 4 {
+					fmt.Println("short dfdf")
+					continue
+				}
+				fmt.Println("idLen" , idLen)
+				err = json.Unmarshal(message[4:4+idLen], &msg)
+				if err != nil {
+					fmt.Printf("error n json: %v\n", err)
+					break
+				}
+				fmt.Println(msg)
+				
+
 			} else if typeMessage == websocket.TextMessage {
-				json.Unmarshal(message, &msg)
+				err = json.Unmarshal(message, &msg)
+				if err != nil {
+					fmt.Printf("error n json: %v\n", err)
+					break
+				}
+				fmt.Println(message)
 			}
 
 			if err := conn.ReadJSON(&msg); err != nil {
