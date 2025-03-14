@@ -1,8 +1,9 @@
-import { ThumbUp, ThumbDown, Comment } from "@mui/icons-material";
+import { ThumbUp, ThumbDown } from "@mui/icons-material";
 import styles from './post.module.css';
 import { timeAgo } from "@/app/helpers";
 import CreateComment from "./createComment";
 import { useEffect, useRef, useState } from "react";
+import Comment from "./comment";
 
 export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setPostViewDisplay }) {
   const [comments, setComments] = useState([])
@@ -15,19 +16,26 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
   }
 
 
-  const fetchComments = async () => {
+  const fetchComments = async (first = false) => {
     try {
       const response = await fetch("http://localhost:8080/api/comments", {
         method: "POST",
         credentials: "include",
-        body: JSON.stringify({ before: before.current , parent: postInfo.article.id})
+        body: JSON.stringify({ before: before.current, parent: postInfo.article.id })
       })
 
       console.log("status:", response.status)
       if (response.ok) {
         const commentsData = await response.json()
+        console.log(commentsData)
         if (commentsData) {
-          setComments((prv) => [...prv, ...commentsData])
+
+          if (first) {
+            setComments(commentsData)
+          } else {
+            setComments((prv) => [...prv, ...commentsData])
+          }
+
           before.current = commentsData[commentsData.length - 1].article.created_at
           console.log("last created at", commentsData[commentsData.length - 1].article.created_at)
         }
@@ -40,7 +48,7 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
   }
   useEffect(() => {
     console.log("fetch coments")
-    fetchComments()
+    fetchComments(true)
   }, [])
   return (
     <div className="customize-theme" onClick={hide}>
@@ -80,14 +88,17 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
         </div>
 
         <p style={{ textAlign: "left" }}>Comments :</p>
-        <CreateComment setComments={setComments} parent={postInfo.article.id}/>
+        <CreateComment setComments={setComments} parent={postInfo.article.id} />
         <div className="comments">
-          {comments.length === 0 ? <h5> no comments yet</h5> : comments.map((comment) => (
-            <div key={comment.article.content} className="comment">
-              <p>{comment}</p>
-              <div style={{ whiteSpace: 'pre-wrap' }}>{comment}</div>
-            </div>
-          ))}
+          {comments.length === 0 ? <h5> no comments yet</h5> : comments.map((comment) => {
+            // <div key={comment.article.id} className="comment">
+            //   <p>{comment}</p>
+            //   <div style={{ whiteSpace: 'pre-wrap' }}>{comment}</div>
+            // </div>
+            return <Comment key={comment.article.id} commentInfo={comment.article}/>
+          }
+
+          )}
         </div>
       </div>
     </div>
