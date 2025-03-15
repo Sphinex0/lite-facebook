@@ -41,5 +41,6 @@ func Routes(db *sql.DB) *http.ServeMux {
 	// notification
 	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
 
+
 	return mux
 }

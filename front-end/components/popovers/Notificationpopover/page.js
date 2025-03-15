@@ -23,53 +23,6 @@ export default function NotificationPop () {
       group: 'knowledge',
       invoker: 'mustafa'
     },
-    {
-      type: 'follow-request',
-      invoker: 'hamza'
-    },
-    {
-      type: 'invitation-request',
-      invoker: 'ayoub',
-      group: 'programming'
-    },
-    {
-      type: 'joine',
-      invoker: 'imad',
-      group: 'fitness'
-    },
-    {
-      type: 'follow-request',
-      invoker: 'hamza'
-    },
-    {
-      type: 'invitation-request',
-      invoker: 'ayoub',
-      group: 'programming'
-    },
-    {
-      type: 'joine',
-      invoker: 'imad',
-      group: 'fitness'
-    },
-    {
-      type: 'event-created',
-      group: 'knowledge',
-      invoker: 'mustafa'
-    },
-    {
-      type: 'follow-request',
-      invoker: 'hamza'
-    },
-    {
-      type: 'invitation-request',
-      invoker: 'ayoub',
-      group: 'programming'
-    },
-    {
-      type: 'joine',
-      invoker: 'imad',
-      group: 'fitness'
-    },
   ]
   return (
     <div className="notification-container">

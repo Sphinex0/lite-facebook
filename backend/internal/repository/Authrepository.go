@@ -83,6 +83,14 @@ func CheckIfUserExistsById[T int | string](usrID T, Db *sql.DB) bool {
 	return err == nil
 }
 
+func CheckGroupIfExistsById(GroupId int, Db *sql.DB) bool {
+	var exists bool
+
+	err := Db.QueryRow("SELECT EXISTS(SELECT id FROM groups WHERE id = ?)", GroupId).Scan(&exists)
+
+	return err == nil
+}
+
 func (database *Database) CheckExpiredCookie(uid string, date time.Time) bool {
 	var expired time.Time
 	database.Db.QueryRow("SELECT session_exp FROM sessions WHERE uuid = ?", uid).Scan(&expired)

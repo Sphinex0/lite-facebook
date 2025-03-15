@@ -18,17 +18,29 @@ func (S *Service) GetUserNotifications(usrId string) ([]models.Notification, (er
 
 func (s *Service) AddNotification(notification models.Notification) error {
 	switch notification.Type {
-	case "follow-request", "invitation-request":
+	case "follow-request":
 		if !repository.CheckIfUserExistsById(notification.InvokerID,s.Database.Db) || !repository.CheckIfUserExistsById(notification.UserID,s.Database.Db) {
 			return errors.New("invalid users")
 		}
+	case "invitation-request":
+		if !repository.CheckIfUserExistsById(notification.InvokerID,s.Database.Db) || !repository.CheckIfUserExistsById(notification.UserID,s.Database.Db) || !repository.CheckGroupIfExistsById(notification.GroupID, s.Database.Db){
+			return errors.New("invalid users or a group")
+		} 
 
 	case "event-created":
-		if !s.Database.CheckIfEventExists(notification.EventID) {
+		if !s.Database.CheckIfEventExists(notification.EventID) || !repository.CheckIfUserExistsById(notification.InvokerID, s.Database.Db) || !repository.CheckGroupIfExistsById(notification.GroupID, s.Database.Db){
 			return errors.New("invalid event")
 		}
-	}
 	
+	case "join":
+		if !repository.CheckGroupIfExistsById(notification.GroupID, s.Database.Db) || !repository.CheckIfUserExistsById(notification.UserID, s.Database.Db) {
+			return errors.New("invalide user or group")
+		}
+
+	default:
+		return errors.New("invalide type")
+	}
+
 	err := s.Database.InsertNotification(notification); if err != nil {
 		return err
 	}
