@@ -63,7 +63,6 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 		})
 
 		cookie, err := r.Cookie("session_token")
-		fmt.Println(cookie.Value)
 		if Hasallowed == -1 {
 			if err != nil {
 				fmt.Println(err)
