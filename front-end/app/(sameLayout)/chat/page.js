@@ -2,8 +2,8 @@
 import { useEffect, useState, useRef } from "react";
 import styles from "./styles.module.css";
 import Message from "@/app/(sameLayout)/chat/_components/message";
-import { AddPhotoAlternate, Cancel, Send } from "@mui/icons-material";
-import Image from "next/image";
+import { AddPhotoAlternate, Cancel, EmojiEmotions, Send } from "@mui/icons-material";
+import { emojis } from "./_components/emojis";
 
 export default function Chat() {
     const [clientWorker, setClientWorker] = useState(null);
@@ -12,12 +12,15 @@ export default function Chat() {
     const [messages, setMessages] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [img, setImage] = useState(null)
+    const [emoji, setEmoji] = useState(false)
     const selectedConversationRef = useRef(selectedConversation);
     const workerPortRef = useRef(null);
     const chatEndRef = useRef(null);
     const beforeRef = useRef(Math.floor(new Date().getTime() / 1000));
     const conversationsRef = useRef(conversations)
     const combinadeRef = useRef(null)
+
+
 
     // Initialize SharedWorker
     useEffect(() => {
@@ -32,6 +35,7 @@ export default function Chat() {
     }, []);
 
     useEffect(() => {
+        console.log("conversations => ", conversations)
         conversationsRef.current = conversations
     }, [conversations])
 
@@ -67,23 +71,52 @@ export default function Chat() {
         const messageHandler = ({ data }) => {
             switch (data.type) {
                 case "conversations":
-                    setConversations(data.conversations);
+                    const onlineUsers = data.online_users;
+                    setConversations(data.conversations.map(conv => {
+                        // Fixed: Handle group conversations properly
+                        if (conv.user_info) {
+                            return {
+                                ...conv,
+                                user_info: {
+                                    ...conv.user_info,
+                                    online: onlineUsers?.includes(conv.user_info.id)
+                                }
+                            };
+                        }
+                        return conv; // Keep group conversations as-is
+                    }));
                     break;
-                case "new_message":
-                    const conversationId = data.message.conversation_id;
-                    const topCnv = conversationsRef.current.find(cnv => cnv.conversation.id === conversationId);
 
-                    if (topCnv) {
-                        const newConversations = [
-                            topCnv,
-                            ...conversationsRef.current.filter(cnv => cnv.conversation.id !== conversationId)
-                        ];
-                        setConversations(newConversations);
-                    }
+                case "online":
+                case "offline":
+                    // Fixed: Assuming server sends user ID in data.message.user_id
+                    setConversations(prev => prev.map(conv => {
+                        if (conv.user_info?.id === data.message.user_id) {
+                            return {
+                                ...conv,
+                                user_info: {
+                                    ...conv.user_info,
+                                    online: data.type === "online"
+                                }
+                            };
+                        }
+                        return conv;
+                    }));
+                    break;
+
+                case "new_message":
+                    // Fixed: Use data.message instead of data
+                    const msg = data.message;
+                    const conversationId = msg.conversation_id;
+
+                    setConversations(prev => {
+                        const conversation = prev.find(c => c.conversation.id === conversationId);
+                        if (!conversation) return prev;
+                        return [conversation, ...prev.filter(c => c.conversation.id !== conversationId)];
+                    });
+
                     if (selectedConversationRef.current?.id === conversationId) {
-                        setMessages((prev) => [...prev, data]); // Use data.message if API differs
-                    } else {
-                        alert("message");
+                        setMessages(prev => [...prev, msg]); // Fixed: Use msg instead of data
                     }
                     break;
                 default:
@@ -98,6 +131,7 @@ export default function Chat() {
             port.removeEventListener("message", messageHandler);
         };
     }, []);
+
 
     // Scroll to bottom when messages change
     useEffect(() => {
@@ -137,7 +171,7 @@ export default function Chat() {
 
         reader.onloadend = (e) => {
             const metadata = {
-                type: "image",
+                type: file.name,
                 message: {
                     conversation_id: selectedConversation.id,
                 },
@@ -157,11 +191,10 @@ export default function Chat() {
 
             const combined = new Uint8Array(totalLength);
 
-            combined.set(new Uint8Array(metadataLength.buffer), 0); 
-            combined.set(encodedMetadata, 4); 
-            combined.set(fileData, 4 + encodedMetadata.byteLength); 
+            combined.set(new Uint8Array(metadataLength.buffer), 0);
+            combined.set(encodedMetadata, 4);
+            combined.set(fileData, 4 + encodedMetadata.byteLength);
 
-            console.log("Combined data:", combined);
             combinadeRef.current = combined;
         };
 
@@ -177,7 +210,7 @@ export default function Chat() {
     };
     // Compute display title for the selected conversation
     const selectedConversationInfo = conversations.find(
-        (c) => c.conversation.id === selectedConversation?.id
+        (c) => c?.conversation.id === selectedConversation?.id
     );
     const displayTitle = selectedConversationInfo
         ? selectedConversationInfo.group?.title ||
@@ -190,7 +223,6 @@ export default function Chat() {
                 <div className={styles.chatHeader}>
                     <h4>{displayTitle}</h4>
                 </div>
-
                 <div className={styles.chatBody}>
                     {selectedConversation ? (
                         messages.length > 0 ? (
@@ -224,6 +256,26 @@ export default function Chat() {
                     )
                 }
 
+                {
+                    emoji && (
+                        <div className={styles.Emojis}>
+                            {
+                                emojis.map((emo) => {
+                                    return <div
+                                        className={styles.Emoji}
+                                        key={emo}
+                                        onClick={() => {
+                                            setMessage((prev) => prev + emo)
+                                        }}
+                                    >
+                                        {emo}
+                                    </div>
+                                })
+                            }
+                        </div>
+                    )
+                }
+
                 <div className={styles.groupInputs}>
                     <input
                         className={styles.chatInput}
@@ -233,9 +285,14 @@ export default function Chat() {
                         placeholder="Type your message..."
                         disabled={!selectedConversation}
                     />
-                    <label htmlFor="addImageInChat" className={`${styles.addImageInChat}`}>
-                        <AddPhotoAlternate />
-                    </label>
+                    <div className={`${styles.addImageInChat}`}>
+                        <label htmlFor="addImageInChat" >
+                            <AddPhotoAlternate />
+                        </label>
+                        <label className={``} onClick={() => setEmoji((prev) => !prev)}>
+                            <EmojiEmotions />
+                        </label>
+                    </div>
                     <input
                         disabled={!selectedConversation}
                         id="addImageInChat"
@@ -258,7 +315,13 @@ export default function Chat() {
                                 }`}
                             onClick={() => handleSetSelectedConversation(conversation)}
                         >
-                            <h5 className={styles.conversationTitle}>{displayText}</h5>
+                            <h5 className={styles.conversationTitle}>
+                                {
+                                    user_info.online && " online "
+                                }
+                                {displayText}
+
+                            </h5>
                         </div>
                     );
                 })}

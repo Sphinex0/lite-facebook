@@ -44,9 +44,6 @@
 .message {
     margin-bottom: 1.5rem;
     padding: 0.8rem;
-    border-radius: 8px;
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .messageHeader {
@@ -60,8 +57,10 @@
 }
 
 .messageContent {
-    color: #4a4a4a;
-    line-height: 1.4;
+    color: #2c2c2c;
+    padding: 5px;
+    margin-inline: 10px;
+    background-color: #f1f1f1;
 }
 
 .groupInputs {
@@ -163,6 +162,8 @@
     padding: 1rem;
     background-color: #f8f9fa;
     margin-block: 4px;
+    display: flex;
+    justify-content: space-around;
 }
 
 /* styles.module.css */
@@ -192,5 +193,45 @@
     cursor: pointer;
     background-color: #d8d8d848;
     margin: 5px;
+    border-radius: 5px;
+}
+
+.messageImage {
+    width: 50%;
+    height: auto;
+    border-radius: 5px;
+    border: 1px solid rgb(148, 148, 148);
+    padding: 4px;
+    margin-inline: 10px;
+
+    background-color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.Emojis {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    height: 200px;
+    overflow: auto;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.Emoji {
+    font-size: xx-large;
+    background-color: rgba(240, 240, 240, 0.178);
+    margin: 5px;
+    padding: 2px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.Emoji:hover {
+    font-size: xx-large;
+    background-color: rgba(240, 240, 240, 0.616);
+    margin: 5px;
+    padding: 2px;
     border-radius: 5px;
 }

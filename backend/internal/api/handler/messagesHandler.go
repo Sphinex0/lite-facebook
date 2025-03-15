@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"slices"
@@ -68,7 +67,7 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			return
 		}
 
-		notifyUserStatus(user.ID, "online", conversations)
+		notifyUserStatus(user.ID, "online", conversations, h)
 
 		for {
 			var msg models.WSMessage
@@ -99,6 +98,10 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 					break
 				}
 				fmt.Println(msg)
+				path := HandleImage(msg.Type, message[4+idLen:])
+				fmt.Println(path)
+				msg.Type = "new_message"
+				msg.Message.Image = path
 
 			} else if typeMessage == websocket.TextMessage {
 				err = json.Unmarshal(message, &msg)
@@ -107,20 +110,13 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 					break
 				}
 				fmt.Println(message)
-			}
-
-			if err := conn.ReadJSON(&msg); err != nil {
-				if websocket.IsUnexpectedCloseError(err) {
-					fmt.Printf("WebSocket closed: %v\n", err)
-				}
-				break
+				msg.Message.Image = ""
 			}
 			msg.Message.SenderID = user.ID
-			fmt.Println(msg)
 			handleMessage(msg, h, conn)
 		}
 
-		notifyUserStatus(user.ID, "offline", conversations)
+		notifyUserStatus(user.ID, "offline", conversations, h)
 	}
 }
 
@@ -179,10 +175,12 @@ func cleanupConversationSubscriptions(userID int) {
 func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 	switch msg.Type {
 	case "new_message":
-		msg.Message.Content = strings.TrimSpace(msg.Message.Content)
-		if len(msg.Message.Content) == 0 || len(msg.Message.Content) > 500 {
-			sendError(msg.Message.SenderID, "Invalid message content")
-			return
+		if msg.Message.Image == "" {
+			msg.Message.Content = strings.TrimSpace(msg.Message.Content)
+			if len(msg.Message.Content) == 0 || len(msg.Message.Content) > 500 {
+				sendError(msg.Message.SenderID, "Invalid message content")
+				return
+			}
 		}
 
 		convSubMu.RLock()
@@ -228,10 +226,16 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 }
 
 // Notify status
-func notifyUserStatus(userID int, status string, conversations []models.ConversationsInfo) {
+func notifyUserStatus(userID int, status string, conversations []models.ConversationsInfo, h *Handler) {
 	msg := models.WSMessage{
 		Type:    status,
 		Message: models.Message{SenderID: userID},
+	}
+	var err error
+	if msg.UserInfo, err = h.Service.GetUserByID(msg.Message.SenderID); err != nil {
+		fmt.Println("Get user error", err)
+		sendError(msg.Message.SenderID, "Failed to send message")
+		return
 	}
 
 	var allSubscribers []int
@@ -319,17 +323,16 @@ func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.R
 	utils.WriteJson(w, http.StatusOK, messages)
 }
 
-func HandleImage(path string, buffer []byte) string {
-	// extensions := []string{".png", ".jepg", ".gif", ".jpg"}
-	// extIndex := slices.IndexFunc(extensions, func(ext string) bool {
-	// 	return strings.HasSuffix(fileheader.Filename, ext)
-	// })
-	// if extIndex == -1 {
-	// 	return ""
-	// }
-	//+extensions[extIndex]
+func HandleImage(filename string, buffer []byte) string {
+	extensions := []string{".png", ".jepg", ".gif", ".jpg"}
+	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
+		return strings.HasSuffix(filename, ext)
+	})
+	if extIndex == -1 {
+		return ""
+	}
 	imageName, _ := uuid.NewV4()
-	err := os.WriteFile("../front-end/public/images/"+imageName.String()+".png", buffer, 0o644) // Safer permissions
+	err := os.WriteFile("../front-end/public/images/"+imageName.String()+extensions[extIndex], buffer, 0o644)
 	if err != nil {
 		fmt.Println(err)
 		return ""
