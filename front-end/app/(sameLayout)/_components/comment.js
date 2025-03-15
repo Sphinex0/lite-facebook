@@ -1,28 +1,30 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styles from "./comment.module.css"
+import Pstyles from "./post.module.css"
 import { ThumbDown, ThumbUp } from '@mui/icons-material';
 import { likeArticle } from '@/app/helpers';
+import UserInfo from './userInfo';
 const Comment = ({ commentInfo }) => {
-  const [likes, setLikes] = useState(postInfo.likes || 0); // Fallback to 0 if undefined
-  const [disLikes, setDislikes] = useState(postInfo.disLikes || 0);
-  const [likeState, setLikeState] = useState(postInfo.like || 0);
-
-
+  const [likes, setLikes] = useState(commentInfo.likes || 0); // Fallback to 0 if undefined
+  const [disLikes, setDislikes] = useState(commentInfo.disLikes || 0);
+  const [likeState, setLikeState] = useState(commentInfo.like || 0);
+  console.log(commentInfo)
+  
   return (
-    <div key={commentInfo.id} className="comment">
-      <p>{commentInfo.author}</p>
-      <div className={styles.content}>{commentInfo.content}</div>
+    <div className={styles.comment}>
+      <UserInfo userInfo={commentInfo.user_info} articleInfo={commentInfo.article}/>
+      <div className={styles.content}>{commentInfo.article.content}</div>
 
-      {commentInfo.image && <img src="./images/feed-1.jpg" />}
+      {commentInfo.article.image && <img src="./images/feed-1.jpg" />}
 
 
       <div className="action-button">
         <div className="action-buttons">
           <span>
-            <ThumbUp onClick={() => { likeArticle(1, commentInfo.id) }} className={`${likeState == 1 ? styles.blue : ""} ${styles.ArticleActionBtn}`} />
+            <ThumbUp onClick={() => { likeArticle(1, commentInfo.article.id,setLikes,setDislikes,likeState,setLikeState ) }} className={`${likeState == 1 ? Pstyles.blue : ""} ${Pstyles.ArticleActionBtn}`} />
             <span className={styles.footerText}>{likes}</span>
 
-            <ThumbDown onClick={() => { likeArticle(-1, commentInfo.id) }} className={`${likeState == -1 ? styles.red : ""} ${styles.ArticleActionBtn}`} />
+            <ThumbDown onClick={() => { likeArticle(-1, commentInfo.article.id,setLikes,setDislikes,likeState,setLikeState ) }} className={`${likeState == -1 ? Pstyles.red : ""} ${Pstyles.ArticleActionBtn}`} />
             <span className={styles.footerText}>{disLikes}</span>
           </span>
 

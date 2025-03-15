@@ -62,12 +62,12 @@ export const timeAgo = (unixTimestamp) => {
 }
 
 
-export const likeArticle = async (like, article_id, setLikes, setDislikes, likeState, setLikeState, parent, group) => {
+export const likeArticle = async (like, article_id, setLikes, setDislikes, likeState, setLikeState) => {
     try {
         const response = await fetch("http://localhost:8080/api/reactions/store", {
             method: "POST",
             credentials: "include",
-            body: JSON.stringify({ like, article_id, parent, group })
+            body: JSON.stringify({ like, article_id })
         })
 
         console.log("status:", response.status)

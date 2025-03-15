@@ -1,4 +1,5 @@
 import Profile from "./_leftSide/profile";
+import SideBar from "./_leftSide/sideBar";
 import "./globals.css";
 
 export default function MainLayout({ children }) {
@@ -14,7 +15,9 @@ export default function MainLayout({ children }) {
         <div className="left">
           <Profile/>
           {/* nav here */ }
-          <p>left side</p>
+          <SideBar/>
+          <label className="btn btn-primary">Create Post</label>
+
         </div>
 
         <div className="middle">

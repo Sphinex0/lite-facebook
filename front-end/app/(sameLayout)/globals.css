@@ -191,14 +191,18 @@ main .container .left .profile {
     background: var(--color-light);
 }
 
-.left .sidebar i {
+.left .sidebar svg {
     font-size: 1.4rem;
     color: var(--color-grey);
     margin-left: 2rem;
     position: relative;
 }
 
-.left .sidebar i .notification-count {
+.left .sidebar .i {
+    position: relative;
+}
+
+.left .sidebar .notification-count {
     background: var(--color-danger);
     color: white;
     font-size: 0.7rem;
@@ -219,7 +223,7 @@ main .container .left .profile {
     background: var(--color-light);
 }
 
-.left .sidebar .active i,
+.left .sidebar .active svg,
 .left .sidebar .active h3 {
     color: var(--color-primary);
 }
@@ -529,8 +533,12 @@ main .container .left .profile {
     border-radius: var(--card-border-radius);
     width: 50%;
     box-shadow: 0 0 1rem var(--color-primary);
+    max-height: 100vh;
 }
-
+.comments{
+    overflow: auto;
+    height: 300px;
+}
 
 
 /* ================= 

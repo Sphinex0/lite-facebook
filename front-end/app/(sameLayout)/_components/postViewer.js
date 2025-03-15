@@ -4,6 +4,7 @@ import { timeAgo } from "@/app/helpers";
 import CreateComment from "./createComment";
 import { useEffect, useRef, useState } from "react";
 import Comment from "./comment";
+import UserInfo from "./userInfo";
 
 export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setPostViewDisplay }) {
   const [comments, setComments] = useState([])
@@ -56,17 +57,9 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
         <h2>Post</h2>
         <div className="feed">
           <div className="head">
-            <div className="user">
-              <div className="profile-photo">
-                <img src="./images/profile-13.jpg" />
-              </div>
-              <div className="ingo">
-                <h3>{postInfo.user_info.first_name} {postInfo.user_info.last_name}</h3>
-                <small>{timeAgo(postInfo.article.created_at)}</small>
-              </div>
-            </div>
+            <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article}/>
           </div>
-          <div className={styles.content}>{postInfo.article.content}</div>
+          <div className={`${styles.content} ${styles.PreviewContent}`}>{postInfo.article.content}</div>
 
           {postInfo.article.image && <img src="./images/feed-1.jpg" />}
 
@@ -95,7 +88,7 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
             //   <p>{comment}</p>
             //   <div style={{ whiteSpace: 'pre-wrap' }}>{comment}</div>
             // </div>
-            return <Comment key={comment.article.id} commentInfo={comment.article}/>
+            return <Comment key={comment.article.id} commentInfo={comment}/>
           }
 
           )}
