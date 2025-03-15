@@ -1,9 +1,9 @@
 -- +migrate Up
 CREATE TABLE notifications (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    user_id INTEGER NOT NULL,
+    user_id INTEGER,
     type TEXT,
-    invoker_id INTEGER NOT NULL,
+    invoker_id INTEGER,
     group_id INTEGER,
     event_id INTEGER,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,

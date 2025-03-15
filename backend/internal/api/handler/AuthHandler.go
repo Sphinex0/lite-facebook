@@ -7,9 +7,12 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"time"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
+
+	"github.com/mattn/go-sqlite3"
 )
 
 func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -23,20 +26,16 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err := H.Service.LoginUser(&user)
+	Uuid, err := H.Service.LoginUser(&user)
 	if err != nil {
-		fmt.Println("err", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	userinfo := models.UserInfo{
-		Nickname:   user.Nickname,
-		First_Name: user.First_Name,
-		Last_Name:  user.Last_Name,
-		Image:      user.Image,
+	userinfo, err := H.Service.Database.GetuserInfo(user.ID); if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, "internal server error")
 	}
-
+	utils.SetSessionCookie(w, Uuid)
 	utils.WriteJson(w, http.StatusOK, userinfo)
 }
 
@@ -83,13 +82,17 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Proccess Data and Insert it
-	err = H.Service.RegisterUser(&user)
+	Uuid, err := H.Service.RegisterUser(&user)
 	if err != nil {
 		fmt.Println("yes", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
-	utils.WriteJson(w, http.StatusOK, "You'v loged in succesfuly")
+
+	user.Uuid = Uuid
+	utils.SetSessionCookie(w, Uuid)
+	fmt.Println("user", user)
+	utils.WriteJson(w, http.StatusOK, user)
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
@@ -106,30 +109,39 @@ func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
 }
 
-// func HandleImage(path string, file multipart.File, fileheader *multipart.FileHeader) string {
-// 	if fileheader.Size > maxFileSize {
-// 		return ""
-// 	}
+func (H *Handler) CheckUserValidity(w http.ResponseWriter, r *http.Request) {
+	var Authorized bool
+	// parse user uid
+	userUID, err := r.Cookie("session_token")
+	if err != nil {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
 
-// 	buffer := make([]byte, fileheader.Size)
-// 	_, err := file.Read(buffer)
-// 	if err != nil {
-// 		return ""
-// 	}
+	// Get Info Data
+	Authorized, err = H.Service.GetInfoData(userUID.Value)
+	if err != nil {
+		if err == sqlite3.ErrLocked {
+			utils.WriteJson(w, http.StatusLocked, struct {
+				Message string `json:"message"`
+			}{Message: "Database Locked"})
+			return
+		}
 
-// 	extensions := []string{".png", ".jpg", ".jpeg", ".gif", ".webp", ".svg"}
-// 	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
-// 		return strings.HasSuffix(fileheader.Filename, ext)
-// 	})
-// 	if extIndex == -1 {
-// 		return ""
-// 	}
+		utils.WriteJson(w, http.StatusInternalServerError, struct {
+			Message string `json:"message"`
+		}{Message: "Internal Server Error"})
+		return
+	}
 
-// 	imageName, _ := uuid.NewV4()
-// 	err = os.WriteFile("../frontend/assets/images/"+path+"/"+imageName.String()+extensions[extIndex], buffer, 0o644) // Safer permissions
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return ""
-// 	}
-// 	return imageName.String() + extensions[extIndex]
-// }
+	if !H.Service.Database.CheckExpiredCookie(userUID.Value, time.Now()) {
+		Authorized = false
+		err = H.Service.DeleteSessionCookie(w, userUID.Value)
+		if err != nil {
+			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+			return
+		}
+	}
+
+	utils.WriteJson(w, http.StatusOK, Authorized)
+}
