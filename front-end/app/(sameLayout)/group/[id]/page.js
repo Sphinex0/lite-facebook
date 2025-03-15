@@ -68,22 +68,6 @@ export default function ShowGroup({ params }) {
     </div>
 
   </div>
-
-
-    // <div>
-    //   <h1>Group ID: {id}</h1>
-    //   {groupData ? (
-    //     <div>
-    //       <h2>Group Information:</h2>
-    //       <h1 >{groupData.title}</h1>
-    //       <span >{groupData.description}</span><br />
-    //       <span >{new Date(groupData.created_at * 1000).toLocaleDateString()}</span>
-    //       {/* <span >281 followers</span><br /> */}
-    //     </div>
-    //   ) : (
-    //     <p>No group data found.</p>
-    //   )}
-    // </div>
   );
 
 }
