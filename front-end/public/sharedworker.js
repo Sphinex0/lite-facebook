@@ -44,6 +44,14 @@ self.onconnect = (event) => {
             } else {
                 console.error('WebSocket is not open');
             }
+        } else if (kind == "image") {
+            if (socket && socket.readyState == WebSocket.OPEN) {
+                console.log("soket hya ", socket)
+                console.log("payload", payload)
+                socket.send(payload)
+            } else {
+                console.error('WebSocket is not open');
+            }
         }
     }
 }
