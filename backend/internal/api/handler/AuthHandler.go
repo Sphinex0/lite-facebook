@@ -29,15 +29,20 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	
+
 	Uuid, err := H.Service.LoginUser(&user)
 	if err != nil {
+		fmt.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
-
+	// fmt.Println(user)
 	userinfo, err := H.Service.Database.GetuserInfo(user.ID); if err != nil {
+		fmt.Println("err",err)
 		utils.WriteJson(w, http.StatusInternalServerError, "internal server error")
 	}
+	userinfo.Uuid=Uuid
 	utils.SetSessionCookie(w, Uuid)
 	utils.WriteJson(w, http.StatusOK, userinfo)
 }
