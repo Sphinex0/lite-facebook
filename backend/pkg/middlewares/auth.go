@@ -20,6 +20,7 @@ func CORS(next http.Handler) http.Handler {
 		// List of allowed origins (you can modify it based on your needs)
 		allowedOrigins := []string{
 			"http://localhost:3000",
+			"http://10.1.8.6:3000",
 		}
 
 		// Get the `Origin` header from the request
@@ -33,7 +34,6 @@ func CORS(next http.Handler) http.Handler {
 				break
 			}
 		}
-		fmt.Println(allowOrigin,origin)
 		// Set the CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")

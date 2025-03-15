@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"slices"
@@ -67,6 +68,20 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 
 		for {
 			var msg models.WSMessage
+			typeMessage, message, err := conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err) {
+					fmt.Printf("WebSocket closed: %v\n", err)
+				}
+				break
+			}
+
+			if typeMessage == websocket.BinaryMessage {
+				fmt.Println(message)
+			} else if typeMessage == websocket.TextMessage {
+				json.Unmarshal(message, &msg)
+			}
+
 			if err := conn.ReadJSON(&msg); err != nil {
 				if websocket.IsUnexpectedCloseError(err) {
 					fmt.Printf("WebSocket closed: %v\n", err)
@@ -74,6 +89,7 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 				break
 			}
 			msg.Message.SenderID = user.ID
+			fmt.Println(msg)
 			handleMessage(msg, h, conn)
 		}
 
@@ -150,9 +166,15 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			sendError(msg.Message.SenderID, "Not authorized for this conversation")
 			return
 		}
-
-		if err := h.Service.CreateMessage(&msg.Message); err != nil {
+		var err error
+		if err = h.Service.CreateMessage(&msg.Message); err != nil {
 			fmt.Println("Create message error:", err)
+			sendError(msg.Message.SenderID, "Failed to send message")
+			return
+		}
+
+		if msg.UserInfo, err = h.Service.GetUserByID(msg.Message.SenderID); err != nil {
+			fmt.Println("Get user error", err)
 			sendError(msg.Message.SenderID, "Failed to send message")
 			return
 		}
@@ -255,4 +277,17 @@ func uniqueInts(slice []int) []int {
 		}
 	}
 	return list
+}
+
+func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.Request) {
+	_, data, err := Handler.AfterGet(w, r)
+	if err != nil {
+		return
+	}
+	messages, err := Handler.Service.FetchMessagesHestories(data.Before, data.ConversationID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, messages)
 }

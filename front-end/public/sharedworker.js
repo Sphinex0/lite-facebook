@@ -9,8 +9,8 @@ self.onconnect = (event) => {
     // console.log(ports)   
     port.onmessage = (event) => {
         // console.log(event)
-        const { data } = event
-        if (data.kind == "connect") {
+        const { kind, payload } = event.data
+        if (kind == "connect") {
             if (!socket) {
                 socket = new WebSocket("http://localhost:8080/ws")
                 console.log(socket)
@@ -36,9 +36,14 @@ self.onconnect = (event) => {
                 //     socket.send({ type: "conversations" })
                 // }
             }
-        } else if (data.kind == "sent") {
-            console.log("kkkkkkkkkkk")
-            console.log(data.payload)
+        } else if (kind == "send") {
+            console.log("payload => ", payload)
+            if (socket && socket.readyState == WebSocket.OPEN) {
+                console.log("soket hya ", socket)
+                socket.send(JSON.stringify(payload))
+            } else {
+                console.error('WebSocket is not open');
+            }
         }
     }
 }

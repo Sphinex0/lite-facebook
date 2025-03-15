@@ -12,7 +12,8 @@ type ArticleView struct {
 }
 
 type Data struct {
-	Before  int `json:"before"`
-	Parent  int `json:"parent"`
-	GroupID int `json:"group_id"`
+	Before         int `json:"before"`
+	Parent         int `json:"parent"`
+	GroupID        int `json:"group_id"`
+	ConversationID int `json:"conversation_id"`
 }

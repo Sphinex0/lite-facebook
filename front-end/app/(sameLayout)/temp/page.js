@@ -130,7 +130,7 @@ const Users = () => {
       <button onClick={() => login()}>login</button>
       <button onClick={() => fetchPosts()}>get posts</button>
       <button onClick={() => fetchComments()}>get comments</button>
-      <button onClick={() => fetchFollowers()}>get followers</button>
+      {/* <button onClick={() => fetchFollowers()}>get followers</button> */}
       <button onClick={() => fetchFollowings()}>get followings</button>
       <button onClick={() => fetchFollowRequests()}>get follow -requests</button>
       <div>

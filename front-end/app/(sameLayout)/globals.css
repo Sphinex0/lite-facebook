@@ -1,7 +1,8 @@
-*{
+* {
     box-sizing: border-box;
 }
-body{
+
+body {
     font-family: sans-serif;
     padding: 0;
     margin: 0;
@@ -35,7 +36,9 @@ body{
 
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     outline: 0;
@@ -146,7 +149,7 @@ main {
 
 main .container {
     display: grid;
-    grid-template-columns: 18vw auto  20vw;
+    grid-template-columns: 18vw auto;
     column-gap: 2rem;
     position: relative;
 }
@@ -188,14 +191,18 @@ main .container .left .profile {
     background: var(--color-light);
 }
 
-.left .sidebar i {
+.left .sidebar svg {
     font-size: 1.4rem;
     color: var(--color-grey);
     margin-left: 2rem;
     position: relative;
 }
 
-.left .sidebar i .notification-count {
+.left .sidebar .i {
+    position: relative;
+}
+
+.left .sidebar .notification-count {
     background: var(--color-danger);
     color: white;
     font-size: 0.7rem;
@@ -216,7 +223,7 @@ main .container .left .profile {
     background: var(--color-light);
 }
 
-.left .sidebar .active i, 
+.left .sidebar .active svg,
 .left .sidebar .active h3 {
     color: var(--color-primary);
 }
@@ -273,7 +280,7 @@ main .container .left .profile {
     transform: rotate(45deg);
 }
 
-.left .notifications-popup > div {
+.left .notifications-popup>div {
     display: flex;
     align-items: start;
     gap: 1rem;
@@ -292,20 +299,39 @@ main .container .left .profile {
     width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    /* justify-content: space-between; */
+    gap: 20px;
     margin-top: 1rem;
     background: var(--color-white);
     padding: 0.4rem var(--card-padding);
-    border-radius: var(--border-radius);
+    /* border-radius: var(--border-radius); */
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
 }
 
-.middle .create-post input[type="text"] {
+.middle .create-post #create-post {
     width: 100%;
     justify-self: start;
     padding-left: 1rem;
     background: transparent;
     color: var(--color-dark);
     margin-right: 1rem;
+    color: #65686c;
+    background-color: #f0f2f5;
+
+    padding: 10px 30px;
+    border-radius: 20px;
+    /* width: 500px; */
+
+}
+
+.middle .create-post * {
+    cursor: pointer;
+}
+
+.middle .create-post:hover {
+    filter: brightness(0.9);
 }
 
 /* =============== Feeds ============== */
@@ -323,12 +349,17 @@ main .container .left .profile {
     justify-content: space-between;
 }
 
-.middle .feed .user {
+.user {
     display: flex;
     gap: 1rem;
 }
+.imagePreview{
+    width: 100px;
+    height: auto;
+    border-radius: 4px;
+}
 
-.middle .feed .photo {
+.photo {
     border-radius: var(--card-border-radius);
     overflow: hidden;
     margin: 0.7rem 0;
@@ -352,7 +383,7 @@ main .container .left .profile {
     width: 1.4rem;
     height: 1.4rem;
     display: block;
-    border-radius:50%;
+    border-radius: 50%;
     overflow: hidden;
     border: 2px solid var(--color-white);
     margin-left: -0.6rem;
@@ -367,14 +398,13 @@ main .container .left .profile {
 }
 
 /* =============== Right ============== */
-main .container .right {
+/* main .container .right {
     height: max-content;
     position: sticky;
     top: var(--sticky-top-right);
     bottom: 0;
-}
-
-/* =============== Messages ============== */
+} */
+/* 
 .right .messages {
     background: var(--color-white);
     border-radius: var(--card-border-radius);
@@ -454,7 +484,7 @@ main .container .right {
     right: 0;
 }
 
-/* =============== Friend Requests ============== */
+
 .right .friend-requests {
     margin-top: 1rem;
 }
@@ -480,7 +510,7 @@ main .container .right {
 .right .request .action {
     display: flex;
     gap: 1rem;
-}
+} */
 
 /* =============== Theme Customization ============== */
 .customize-theme {
@@ -494,146 +524,22 @@ main .container .right {
     text-align: center;
     display: grid;
     place-items: center;
-    display: none;
+    /* display: none; */
 }
 
 .customize-theme .card {
     background: var(--color-white);
     padding: 3rem;
     border-radius: var(--card-border-radius);
-    width:50%;
+    width: 50%;
     box-shadow: 0 0 1rem var(--color-primary);
+    max-height: 100vh;
+}
+.comments{
+    overflow: auto;
+    height: 300px;
 }
 
-/* =============== Font Size ============== */
-.customize-theme .font-size {
-    margin-top: 5rem;
-}
-
-.customize-theme .font-size > div {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--color-light);
-    padding: var(--search-padding);
-    border-radius: var(--card-border-radius);
-}
-
-.customize-theme .choose-size {
-    background: var(--color-secondary);
-    height: 0.3rem;
-    width: 100%;
-    margin: 0 1rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.customize-theme .choose-size span {
-    width: 1rem;
-    height: 1rem;
-    background: var(--color-secondary);
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-.customize-theme .choose-size span.active {
-    background: var(--color-primary);
-}
-
-/* =============== Color ============== */
-.customize-theme .color {
-    margin-top: 2rem;
-}
-
-.customize-theme .choose-color {
-    background: var(--color-light);
-    padding: var(--search-padding);
-    border-radius: var(--card-border-radius);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.customize-theme .choose-color span {
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 50%;
-}
-
-.customize-theme .choose-color span:nth-child(1) {
-    background: hsl(233, 60%, 16%);
-}
-
-.customize-theme .choose-color span:nth-child(2) {
-    background: hsl(52, 75%, 60%);
-}
-
-.customize-theme .choose-color span:nth-child(3) {
-    background: hsl(352, 75%, 60%);
-}
-
-.customize-theme .choose-color span:nth-child(4) {
-    background: hsl(152, 75%, 60%);
-}
-
-.customize-theme .choose-color span:nth-child(5) {
-    background: hsl(202, 75%, 60%);
-}
-
-.customize-theme .choose-color span.active {
-    border: 5px solid var(--color-secondary);
-}
-
-/* =============== Background ============== */
-.customize-theme .background {
-    margin-top: 2rem;
-}
-
-.customize-theme .choose-bg {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1.5rem;
-}
-
-.customize-theme .choose-bg > div {
-    padding: var(--card-padding);
-    width: 100%;
-    display: flex;
-    align-items: center;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 0.4rem;
-    cursor: pointer;
-}
-
-.customize-theme .choose-bg > div.active {
-    border: 2px solid var(--color-primary);
-}
-
-.customize-theme .choose-bg .bg-1 {
-    background: white;
-    color: black;
-}
-
-.customize-theme .choose-bg .bg-2 {
-    background: hsl(252, 30%, 17%);
-    color: white;
-}
-
-.customize-theme .choose-bg .bg-3 {
-    background: hsl(252, 30%, 10%);
-    color: white;
-}
-
-.customize-theme .choose-bg > div span {
-    width: 2rem;
-    height: 2rem;
-    border: 2px solid var(--color-grey);
-    border-radius: 50%;
-    margin-right: 1rem;
-}
 
 /* ================= 
 MEDIA QUERIES FOR SMALL LAPTOP AND BIG TABLETS 
@@ -645,7 +551,7 @@ MEDIA QUERIES FOR SMALL LAPTOP AND BIG TABLETS
     }
 
     main .container {
-        grid-template-columns: 5rem auto 30vw;
+        grid-template-columns: 5rem auto;
         gap: 1rem;
     }
 
@@ -693,7 +599,7 @@ MEDIA QUERIES FOR SMALL TABLETS AND MOBILE PHONES
     }
 
     /* Notification Popup */
-    .left .notifications-popup { 
+    .left .notifications-popup {
         position: absolute;
         left: -20rem;
         width: 20rem;
@@ -710,11 +616,12 @@ MEDIA QUERIES FOR SMALL TABLETS AND MOBILE PHONES
         grid-column: 1/3;
     }
 
-    main .container .right {
+    /* main .container .right {
         display: none;
-    }
+    } */
 
     .customize-theme .card {
-        width: 80vw; 
+        width: 80vw;
     }
 }
+

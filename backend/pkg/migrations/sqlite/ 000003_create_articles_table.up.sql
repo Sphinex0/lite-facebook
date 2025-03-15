@@ -6,7 +6,7 @@ CREATE TABLE
         content TEXT NOT NULL,
         privacy TEXT NOT NULL,
         created_at INTEGER NOT NULL,
-        modified_at INTEGER,
+        modified_at INTEGER NOT NULL,
         image TEXT,
         parent INTEGER,
         group_id INTEGER,
