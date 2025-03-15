@@ -66,7 +66,6 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		filePath = filepath.Join(uploadDir, handler.Filename)
 		dst, err := os.Create(filePath)
 		if err != nil {
-			fmt.Println(err)
 			utils.WriteJson(w, http.StatusInternalServerError, "Could not save file")
 			return
 		}
@@ -89,10 +88,16 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Uuid = Uuid
+	// some data that will make it easy for the front-end devs
+	userinfo := models.UserInfo {
+		First_Name: user.First_Name,
+		Last_Name: user.Last_Name,
+		Image: user.Image,
+		Uuid: Uuid,
+	}
+
 	utils.SetSessionCookie(w, Uuid)
-	fmt.Println("user", user)
-	utils.WriteJson(w, http.StatusOK, user)
+	utils.WriteJson(w, http.StatusOK, userinfo)
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
