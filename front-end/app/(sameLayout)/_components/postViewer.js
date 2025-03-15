@@ -1,13 +1,14 @@
-import { ThumbUp, ThumbDown } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, OpenInNew } from "@mui/icons-material";
 import styles from './post.module.css';
-import { timeAgo } from "@/app/helpers";
+import { timeAgo, useOnVisible } from "@/app/helpers";
 import CreateComment from "./createComment";
 import { useEffect, useRef, useState } from "react";
 import Comment from "./comment";
 import UserInfo from "./userInfo";
 
-export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setPostViewDisplay }) {
+export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setCommentCount, setPostViewDisplay }) {
   const [comments, setComments] = useState([])
+  const lastElementRef = useRef(null)
   const before = useRef(Math.floor(Date.now() / 1000))
 
   const hide = (e) => {
@@ -51,6 +52,9 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
     console.log("fetch coments")
     fetchComments(true)
   }, [])
+  useOnVisible(lastElementRef, fetchComments)
+
+
   return (
     <div className="customize-theme" onClick={hide}>
       <div className="card">
@@ -61,7 +65,7 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
           </div>
           <div className={`${styles.content} ${styles.PreviewContent}`}>{postInfo.article.content}</div>
 
-          {postInfo.article.image && <img src="./images/feed-1.jpg" />}
+          {postInfo.article.image &&<div className={styles.imageHolder}> <img className={styles.image} src="./images/feed-1.jpg" /> <a href="./images/feed-1.jpg" target="_blank" className={styles.OpenInNew}><OpenInNew/></a> </div>}
 
           <div className="action-button">
             <div className="action-buttons">
@@ -81,17 +85,14 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
         </div>
 
         <p style={{ textAlign: "left" }}>Comments :</p>
-        <CreateComment setComments={setComments} parent={postInfo.article.id} />
+        <CreateComment setComments={setComments} setCommentCount={setCommentCount} parent={postInfo.article.id} />
         <div className="comments">
           {comments.length === 0 ? <h5> no comments yet</h5> : comments.map((comment) => {
-            // <div key={comment.article.id} className="comment">
-            //   <p>{comment}</p>
-            //   <div style={{ whiteSpace: 'pre-wrap' }}>{comment}</div>
-            // </div>
-            return <Comment key={comment.article.id} commentInfo={comment}/>
+            return <Comment key={comment.article.id} commentInfo={comment} reference={lastElementRef}/>
           }
 
           )}
+
         </div>
       </div>
     </div>

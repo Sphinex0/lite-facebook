@@ -44,3 +44,18 @@
     margin-right: 5px;
     padding-inline: 5px;
 }
+
+.actionButtons{
+    display: flex;
+
+}
+
+@media screen and (max-width: 992px){
+    .content{
+        margin: 10px 10px;
+    }
+    .form{
+        flex-direction: column;
+    }
+
+}

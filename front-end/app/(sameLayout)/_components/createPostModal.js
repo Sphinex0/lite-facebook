@@ -17,8 +17,8 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
   }
 
   const addPost = async (e) => {
-    const added = await addArticle(e,setPosts, {})
-    if (added){
+    const added = await addArticle(e, setPosts, {})
+    if (added) {
       setModalDisplay(false)
       setContent("")
     }
@@ -34,17 +34,17 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
       <div className="card">
         <h2>Create post</h2>
         <form action="" className={styles.form} onSubmit={addPost}>
-          <select name='privacy' className={styles.selectPrivacy} onChange={(e)=>setPrivacy(e.target.value)}>
+          <select name='privacy' className={styles.selectPrivacy} onChange={(e) => setPrivacy(e.target.value)}>
             <option value="public"> Public</option>
             <option value="almost_private">Almost Private</option>
             <option value="private">Private</option>
           </select>
-        {privacy === "private" && <SelectFollower/>}
+          {privacy === "private" && <SelectFollower />}
           <textarea name='content' className={styles.textInput}
             placeholder={"What's on your mind, Diana ?"}>
           </textarea>
 
-          {imagePreview && <img src={imagePreview}  className="imagePreview"  />}
+          {imagePreview && <img src={imagePreview} className="imagePreview" />}
           <input
             type="file"
             id='postImage'
@@ -56,6 +56,8 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
                   setImagePreview(reader.result)
                 }
                 reader.readAsDataURL(file)
+              } else {
+                setImagePreview("")
               }
             }}
             className={styles.fileInput} />

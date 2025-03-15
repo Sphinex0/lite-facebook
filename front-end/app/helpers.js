@@ -1,3 +1,5 @@
+import { useEffect, useRef } from "react";
+
 async function Checkuservalidity() {
     try {
         const response = await fetch("/checkuser")
@@ -137,3 +139,31 @@ export const addArticle = async(e,setAtricle, {parent, group}) => {
         }
       
 }
+
+export const useOnVisible = (ref, callback, once = true, threshold = 0.1) => {
+    const observerRef = useRef(null);
+    
+    useEffect(() => {
+        console.log("heress",ref)
+      if (!ref.current) return;
+  
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            callback();
+            if (once) {
+              observer.disconnect();
+            }
+          }
+        },
+        { threshold }
+      );
+  
+      observer.observe(ref.current);
+      observerRef.current = observer; // Store the observer
+  
+      return () => {
+        observer.disconnect(); // Cleanup
+      };
+    }, [ref, callback, once, threshold]);
+  };

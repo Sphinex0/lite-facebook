@@ -4,10 +4,13 @@ import { useEffect, useRef, useState } from "react"
 import Post from "./_components/post"
 import CreatePost from "./_components/createPost"
 import CreatePostModal from "./_components/createPostModal"
+import { useOnVisible } from "../helpers"
 
 export default function Posts() {
     const [posts, setPosts] = useState([])
     const [modalDisplay, setModalDisplay] = useState(false)
+
+    const lastPostElementRef = useRef(null)
     const before = useRef(Math.floor(Date.now() / 1000))
 
     const fetchData = async () => {
@@ -37,15 +40,10 @@ export default function Posts() {
 
     useEffect(() => {
         fetchData()
-        window.onscroll = () => {
-            console.log("here")
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-                fetchData()
-            }
-        }
+
     }, [])
 
-
+    useOnVisible(lastPostElementRef, fetchData)
 
 
 
@@ -55,11 +53,13 @@ export default function Posts() {
             {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} /> : ""}
             <div className="feeds" >
                 {console.log("all posts", posts)}
-                {posts.map((postInfo) => {
+                {posts.map((postInfo, index) => {
+                    if (index == posts.length - 1) {
+                        return <Post postInfo={postInfo} key={postInfo.article.id} reference={lastPostElementRef} />
+                    }
                     return <Post postInfo={postInfo} key={postInfo.article.id} />
                 })}
             </div>
         </>
-
-    )
+)
 }

@@ -30,3 +30,21 @@
     max-height: 300px;
     overflow: auto;
 }
+
+.image{
+    margin: auto;
+    width: auto;
+    max-height: 300px;
+}
+
+.OpenInNew{
+    color: white;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.imageHolder{
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.616);
+}

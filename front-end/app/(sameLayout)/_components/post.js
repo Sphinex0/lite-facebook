@@ -5,7 +5,7 @@ import PostViewer from "./postViewer"
 import { likeArticle, timeAgo } from "@/app/helpers"
 import UserInfo from "./userInfo"
 
-export default function Post({ postInfo }) {
+export default function Post({ postInfo , reference}) {
     const [likes, setLikes] = useState(postInfo.likes || 0); // Fallback to 0 if undefined
     const [disLikes, setDislikes] = useState(postInfo.disLikes || 0);
     const [commentsCount, setCommentCount] = useState(postInfo.comments_count || 0);
@@ -19,9 +19,8 @@ export default function Post({ postInfo }) {
 
 
     return (
-        <div className="feed">
+        <div className="feed" ref={reference}>
             <div className="head">
-
                 <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article}/>
             </div>
             
@@ -51,6 +50,7 @@ export default function Post({ postInfo }) {
                             likeState={likeState}
                             likePost={likePost}
                             commentsCount={commentsCount}
+                            setCommentCount={setCommentCount}
                             setPostViewDisplay={setPostViewDisplay}
                         />
                         )}
