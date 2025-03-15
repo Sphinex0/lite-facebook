@@ -32,12 +32,8 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userinfo := models.UserInfo{
-		Nickname:   user.Nickname,
-		First_Name: user.First_Name,
-		Last_Name:  user.Last_Name,
-		Image:      user.Image,
-		Uuid: 		Uuid,
+	userinfo, err := H.Service.Database.GetuserInfo(user.ID); if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, "internal server error")
 	}
 	utils.SetSessionCookie(w, Uuid)
 	utils.WriteJson(w, http.StatusOK, userinfo)
@@ -87,16 +83,14 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	// Proccess Data and Insert it
 	Uuid, err := H.Service.RegisterUser(&user)
 	if err != nil {
-		fmt.Println("yes", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	User := models.UserInfo {
-		Uuid: Uuid,
-	}
+	user.Uuid = Uuid
 	utils.SetSessionCookie(w, Uuid)
-	utils.WriteJson(w, http.StatusOK, User)
+	fmt.Println("user", user)
+	utils.WriteJson(w, http.StatusOK, user)
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {

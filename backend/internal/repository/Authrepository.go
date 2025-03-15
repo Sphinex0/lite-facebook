@@ -97,3 +97,20 @@ func (database *Database) CheckExpiredCookie(uid string, date time.Time) bool {
 
 	return date.Compare(expired) <= -1
 }
+
+func (database *Database) GetuserInfo(userId int) (models.UserInfo ,error) {
+	var userInfo models.UserInfo
+	err := database.Db.QueryRow("SELECT id, Nickname, First_Name, Last_Name, Image, Uuid FROM users WHERE id = ?", userId).Scan(&userInfo.ID, &userInfo.Nickname, &userInfo.First_Name,
+		 &userInfo.Last_Name, &userInfo.Image, &userInfo.Uuid); if err != nil {
+		return models.UserInfo{}, err
+	}
+	return userInfo, nil
+}
+/*type UserInfo struct {
+	ID         int    `json:"id"`
+	Nickname   string `json:"nickname"`
+	First_Name string `json:"first_name"`
+	Last_Name  string `json:"last_name"`
+	Image      string `json:"image"`
+	Uuid       string `json:"uuid"`
+}*/

@@ -12,6 +12,7 @@ type User struct {
 	AboutMe    string `json:"about"`
 	Privacy    string `json:"privacy"`
 	CreatedAt  string `json:"created_at"`
+	Uuid       string `json:"uuid"`
 }
 
 type UserInfo struct {

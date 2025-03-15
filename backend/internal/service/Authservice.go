@@ -27,15 +27,17 @@ func (S *Service) LoginUser(User *models.User) (string, error) {
 	}
 
 	// chefk password and email validity
-	usrId, err := S.Database.CheckMailAndPaswdvalidity(User.Email, User.Password)
+	id, err := S.Database.CheckMailAndPaswdvalidity(User.Email, User.Password)
 	if err != nil {
 		return "", err
 	}
+
+	User.ID = id
 	// generate new uuid
 	Uuid := GenerateUuid()
 
 	// Update uuid
-	S.Database.AddUuid(Uuid, usrId)
+	S.Database.AddUuid(Uuid, User.ID)
 	return Uuid, nil
 }
 
