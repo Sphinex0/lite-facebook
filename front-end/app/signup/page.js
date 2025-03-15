@@ -34,18 +34,18 @@ export default function SignupPage() {
       data.append(i , form[i])
       
     }
-    // data.append([...form])
+
     try {
       const response = await fetch("http://localhost:8080/api/signup", {
         method: "POST",
         body: data, // Send form data as a JSON string
       });
-
-
+      
       if (response.status == 200) {
         // If the response is ok, navigate to the homepage
-        console.log("wewis");
-        
+        const data = await response.json()
+        document.cookie = `session_token=${data.uuid}; Path=/; Max-Age=31536000`;
+        console.log(data);
         router.push('/');
       } else {
         // Handle failure (you might want to show an error message)

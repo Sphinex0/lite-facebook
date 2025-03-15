@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -36,7 +37,7 @@ func (database *Database) AddUuid(Uuid string, userId int) error {
 
 func (Database *Database) GetUser(uid string) (int, error) {
 	var id int
-	err := Database.Db.QueryRow("SELECT id FROM users WHERE uuid = ?", uid).Scan(&id)
+	err := Database.Db.QueryRow("SELECT id FROM sessions WHERE uuid = ?", uid).Scan(&id)
 	if err != nil {
 		return 0, err
 	}
@@ -75,3 +76,43 @@ func (database *Database) DeleteCookieFromdb(uuid string) error {
 	}
 	return nil
 }
+
+func CheckIfUserExistsById[T int | string](usrID T, Db *sql.DB) bool {
+	var exists bool
+
+	err := Db.QueryRow("SELECT EXISTS(SELECT id FROM users WHERE usrid = ?)", usrID).Scan(&exists)
+
+	return err == nil
+}
+
+func CheckGroupIfExistsById(GroupId int, Db *sql.DB) bool {
+	var exists bool
+
+	err := Db.QueryRow("SELECT EXISTS(SELECT id FROM groups WHERE id = ?)", GroupId).Scan(&exists)
+
+	return err == nil
+}
+
+func (database *Database) CheckExpiredCookie(uid string, date time.Time) bool {
+	var expired time.Time
+	database.Db.QueryRow("SELECT session_exp FROM sessions WHERE uuid = ?", uid).Scan(&expired)
+
+	return date.Compare(expired) <= -1
+}
+
+func (database *Database) GetuserInfo(userId int) (models.UserInfo ,error) {
+	var userInfo models.UserInfo
+	err := database.Db.QueryRow("SELECT id, Nickname, First_Name, Last_Name, Image, Uuid FROM users WHERE id = ?", userId).Scan(&userInfo.ID, &userInfo.Nickname, &userInfo.First_Name,
+		 &userInfo.Last_Name, &userInfo.Image, &userInfo.Uuid); if err != nil {
+		return models.UserInfo{}, err
+	}
+	return userInfo, nil
+}
+/*type UserInfo struct {
+	ID         int    `json:"id"`
+	Nickname   string `json:"nickname"`
+	First_Name string `json:"first_name"`
+	Last_Name  string `json:"last_name"`
+	Image      string `json:"image"`
+	Uuid       string `json:"uuid"`
+}*/
