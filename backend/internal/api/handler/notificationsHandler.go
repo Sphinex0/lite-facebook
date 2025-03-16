@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	utils "social-network/pkg"
 )
@@ -12,14 +13,12 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var usrId string
-	err := utils.ParseBody(r, &usrId)
-	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, "bad request")
+	user, ok := utils.GetUserFromContext(r.Context()); if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
 		return
 	}
-
-	notifications,err := H.Service.GetUserNotifications(usrId); if err != nil {
+	id := strconv.Itoa(user.ID)
+	notifications,err := H.Service.GetUserNotifications(id); if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}

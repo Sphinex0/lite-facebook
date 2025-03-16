@@ -58,6 +58,7 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			Conversations: conversations,
 			OnlineUsers:   getOnlineUsers(conversations),
 		}
+		
 		if err := conn.WriteJSON(initialMsg); err != nil {
 			fmt.Println("Initial message send error:", err)
 			return

@@ -1,10 +1,12 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
 	"reflect"
+	"social-network/internal/models"
 	"strings"
 )
 
@@ -69,11 +71,11 @@ func GetExecFields(s interface{}, excludeFields ...string) []interface{} {
 
 func SetSessionCookie(w http.ResponseWriter, uuid string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session_token",
-		Value:  uuid,
-		Path:   "/",
+		Name:     "session_token",
+		Value:    uuid,
+		Path:     "/",
 		HttpOnly: true,
-		MaxAge: 31536000,
+		MaxAge:   31536000,
 	})
 }
 
@@ -92,4 +94,13 @@ func Length(a, b int, e string) bool {
 
 func Placeholders(n int) string {
 	return strings.Repeat("?,", n)[:2*n-1]
+}
+
+type ContextKey string
+
+const UserIDKey ContextKey = "user"
+
+func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
+	user, ok := ctx.Value(UserIDKey).(models.UserInfo)
+	return user, ok
 }

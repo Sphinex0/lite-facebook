@@ -1,18 +1,14 @@
 package handler
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
-
-	"github.com/mattn/go-sqlite3"
 )
 
 func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
@@ -32,7 +28,8 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userinfo, err := H.Service.Database.GetuserInfo(user.ID); if err != nil {
+	userinfo, err := H.Service.Database.GetuserInfo(user.ID)
+	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, "internal server error")
 	}
 	utils.SetSessionCookie(w, Uuid)
@@ -89,11 +86,11 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// some data that will make it easy for the front-end devs
-	userinfo := models.UserInfo {
+	userinfo := models.UserInfo{
 		First_Name: user.First_Name,
-		Last_Name: user.Last_Name,
-		Image: user.Image,
-		Uuid: Uuid,
+		Last_Name:  user.Last_Name,
+		Image:      user.Image,
+		Uuid:       Uuid,
 	}
 
 	utils.SetSessionCookie(w, Uuid)
@@ -101,52 +98,15 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	var Uuid string
-	err := json.NewDecoder(r.Body).Decode(&Uuid)
-	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, "bad request")
+	user, ok := utils.GetUserFromContext(r.Context())
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
+		return
 	}
-	err = H.Service.DeleteSessionCookie(w, Uuid)
+	err:= H.Service.DeleteSessionCookie(w, user.Uuid)
 	if err != nil {
 		utils.WriteJson(w, http.StatusOK, err.Error())
 		return
 	}
 	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
-}
-
-func (H *Handler) CheckUserValidity(w http.ResponseWriter, r *http.Request) {
-	var Authorized bool
-	// parse user uid
-	userUID, err := r.Cookie("session_token")
-	if err != nil {
-		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-		return
-	}
-
-	// Get Info Data
-	Authorized, err = H.Service.GetInfoData(userUID.Value)
-	if err != nil {
-		if err == sqlite3.ErrLocked {
-			utils.WriteJson(w, http.StatusLocked, struct {
-				Message string `json:"message"`
-			}{Message: "Database Locked"})
-			return
-		}
-
-		utils.WriteJson(w, http.StatusInternalServerError, struct {
-			Message string `json:"message"`
-		}{Message: "Internal Server Error"})
-		return
-	}
-
-	if !H.Service.Database.CheckExpiredCookie(userUID.Value, time.Now()) {
-		Authorized = false
-		err = H.Service.DeleteSessionCookie(w, userUID.Value)
-		if err != nil {
-			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
-			return
-		}
-	}
-
-	utils.WriteJson(w, http.StatusOK, Authorized)
 }

@@ -19,7 +19,6 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/login", handler.Login)
 	mux.HandleFunc("/api/signup", handler.Signup)
 	mux.HandleFunc("/api/logout", handler.Logout)
-	mux.HandleFunc("/api/checkuser", handler.CheckUserValidity)
 
 	// profile
 	mux.HandleFunc("/api/user", handler.GetUser)
@@ -61,15 +60,16 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/follow", handler.HandleFollow)                     // post {"user_id":2}
 	mux.HandleFunc("/api/follow/decision", handler.HandleFollowRequest)     // post {"follower":2,"status":"accepted"}
 
+	// notification
+	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
+	
 	// websocket
-
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
 
 	mux.HandleFunc("/ws", handler.MessagesHandler(upgrader))
-	// notification
-	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
+
 
 
 
