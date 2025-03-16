@@ -1,33 +1,45 @@
-"use client";
+'use client'
 import './navbar.css'
-import Link from "next/link";
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
-import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
-import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import NotificationPop from '@/components/popovers/Notificationpopover/page'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
+import { useState } from 'react'
 
-export default function Navbar() {
-    return (
-        <div className='navbar'>
-            <div className='left'>
-            <Link href="/" style={{textDecoration:"none"}}>
-            <span>Lite-Facebook</span>
-            <HomeOutlinedIcon/>
-            <DarkModeOutlinedIcon/>
-            <GridViewOutlinedIcon/>
-            </Link>
-            </div>
-            <div className='search'>
-                <SearchOutlinedIcon/>
-                
-            </div>
-            <div className='right'>
+export default function Navbar () {
+  const [bool, setbool] = useState(false)
+  function handleclick () {
+    setbool(!bool)
+  }
 
-            </div>
+  return (
+    <nav>
+      {/* Search Bar (Right) */}
+      <div className='logo'>
+        <span>Lite-Facebook</span>
+      </div>
+
+      {/* Logo and Icons (Center) */}
+      <div className='nav-center'>
+        <SearchOutlinedIcon />
+        <div className='search-container'>
+          <input type='search' placeholder='Search for friends, groups' />
         </div>
-    )
+        <div className='icons'>
+          <HomeOutlinedIcon />
+          <GroupOutlinedIcon />
+          <div className='notification'>
+            <div onClick={handleclick}>
+              <NotificationsNoneOutlinedIcon />
+            </div>
+            <div className='pop-out none'>{bool && <NotificationPop />}</div>
+          </div>
+          <MailOutlinedIcon />
+        </div>
+      </div>
+      <img src='/images/profile-1.jpg' alt='Profile' />
+    </nav>
+  )
 }

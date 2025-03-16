@@ -1,9 +1,12 @@
 package handler
 
 import (
+	"encoding/binary"
 	"encoding/json"
 	"fmt"
+	"mime/multipart"
 	"net/http"
+	"os"
 	"slices"
 	"strings"
 	"sync"
@@ -12,6 +15,7 @@ import (
 	utils "social-network/pkg"
 	"social-network/pkg/middlewares"
 
+	"github.com/gofrs/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -77,9 +81,32 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			}
 
 			if typeMessage == websocket.BinaryMessage {
-				fmt.Println(message)
+				fmt.Println(len(message))
+				if len(message) < 4 {
+					fmt.Println("short")
+					continue
+				}
+				idLen := binary.LittleEndian.Uint32(message[0:4])
+				fmt.Println(idLen)
+				if len(message) < int(idLen)+4 {
+					fmt.Println("short dfdf")
+					continue
+				}
+				fmt.Println("idLen", idLen)
+				err = json.Unmarshal(message[4:4+idLen], &msg)
+				if err != nil {
+					fmt.Printf("error n json: %v\n", err)
+					break
+				}
+				fmt.Println(msg)
+
 			} else if typeMessage == websocket.TextMessage {
-				json.Unmarshal(message, &msg)
+				err = json.Unmarshal(message, &msg)
+				if err != nil {
+					fmt.Printf("error n json: %v\n", err)
+					break
+				}
+				fmt.Println(message)
 			}
 
 			if err := conn.ReadJSON(&msg); err != nil {
@@ -290,4 +317,22 @@ func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.R
 		return
 	}
 	utils.WriteJson(w, http.StatusOK, messages)
+}
+
+func HandleImage(path string, buffer []byte) string {
+	// extensions := []string{".png", ".jepg", ".gif", ".jpg"}
+	// extIndex := slices.IndexFunc(extensions, func(ext string) bool {
+	// 	return strings.HasSuffix(fileheader.Filename, ext)
+	// })
+	// if extIndex == -1 {
+	// 	return ""
+	// }
+	//+extensions[extIndex]
+	imageName, _ := uuid.NewV4()
+	err := os.WriteFile("../front-end/public/images/"+imageName.String()+".png", buffer, 0o644) // Safer permissions
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return imageName.String() + extensions[extIndex]
 }

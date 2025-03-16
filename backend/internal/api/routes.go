@@ -17,6 +17,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/login", handler.Login)
 	mux.HandleFunc("/api/signup", handler.Signup)
 	mux.HandleFunc("/api/logout", handler.Logout)
+	mux.HandleFunc("/api/checkuser", handler.CheckUserValidity)
 
 	// profile
 	mux.HandleFunc("/api/user", handler.GetUser)
@@ -33,15 +34,18 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/groups/store", handler.AddGroup)
 	mux.HandleFunc("/api/groups", handler.GetGroups)
 	mux.HandleFunc("/api/group", handler.GetGroup)
+	mux.HandleFunc("/api/members", handler.GetMember)
 
 	// Invites
 	mux.HandleFunc("/api/invite/store", handler.AddInvite)
 	mux.HandleFunc("/api/invite/decision", handler.HandleInviteRequest)
 	mux.HandleFunc("/api/invites", handler.GetInvites)
+	mux.HandleFunc("/api/invites/members", handler.GetMembers)
 
 	// Events
 	mux.HandleFunc("/api/Event/store", handler.AddEvent)
-	// mux.HandleFunc("/api/Event/decision", handler.)
+	mux.HandleFunc("/api/Events", handler.GetEvents)
+	mux.HandleFunc("/api/Event", handler.GetEvent)
 
 	// Events_options
 
@@ -62,7 +66,9 @@ func Routes(db *sql.DB) *http.ServeMux {
 	}
 
 	mux.HandleFunc("/ws", handler.MessagesHandler(upgrader))
-	mux.HandleFunc("/api/messageshestories", handler.HandelMessagesHestories)
+	// notification
+	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
+
 
 	return mux
 }

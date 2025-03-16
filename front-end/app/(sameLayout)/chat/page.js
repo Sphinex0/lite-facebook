@@ -121,8 +121,8 @@ export default function Chat() {
 
     const SendFile = () => {
         combinadeRef && workerPortRef.current.postMessage({
-            kind: "send",
-            payload: combinadeRef,
+            kind: "image",
+            payload: combinadeRef.current,
         });
         CancelFile()
     }
@@ -133,30 +133,40 @@ export default function Chat() {
 
     const HandelImage = (file) => {
         setImage(URL.createObjectURL(file));
-        const reader = new FileReader()
-        const onloadFile = (e) => {
+        const reader = new FileReader();
 
+        reader.onloadend = (e) => {
             const metadata = {
                 type: "image",
                 message: {
                     conversation_id: selectedConversation.id,
                 },
-            }
-            const metadataStr = JSON.stringify(metadata)
-            const methaDataLen = new Uint8Array([metadataStr.length])
-            const fileData = e.target.result
-            const totalLenght = 4 + metadataStr.length + fileData.byteLength
-            const combinade = new Uint8Array(totalLenght)
-            combinade.set(new Uint8Array(methaDataLen.buffer), 0)
-            combinade.set(new Uint8Array(new TextEncoder().encode(metadataStr)), 4)
-            combinade.set(new Uint8Array(fileData), metadataStr.length + 4)
-            console.log(combinade)
-            combinadeRef.current = combinade
-        }
-        reader.onloadend = onloadFile
-        reader.readAsArrayBuffer(file)
+            };
 
-    }
+            const metadataStr = JSON.stringify(metadata);
+            const encodedMetadata = new TextEncoder().encode(metadataStr);
+
+            const metadataLength = new Uint32Array([encodedMetadata.byteLength]);
+
+            const fileData = new Uint8Array(e.target.result);
+
+            const totalLength =
+                4 +
+                encodedMetadata.byteLength +
+                fileData.byteLength;
+
+            const combined = new Uint8Array(totalLength);
+
+            combined.set(new Uint8Array(metadataLength.buffer), 0); 
+            combined.set(encodedMetadata, 4); 
+            combined.set(fileData, 4 + encodedMetadata.byteLength); 
+
+            console.log("Combined data:", combined);
+            combinadeRef.current = combined;
+        };
+
+        reader.readAsArrayBuffer(file);
+    };
 
     const handleSetSelectedConversation = (conversation) => {
         if (selectedConversation?.id != conversation.id) {

@@ -62,7 +62,7 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			return strings.Contains(r.URL.Path, ext)
 		})
 
-		cookie, err := r.Cookie("session_id")
+		cookie, err := r.Cookie("session_token")
 		if Hasallowed == -1 {
 			if err != nil {
 				fmt.Println(err)
@@ -71,12 +71,14 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			}
 			uuid, err := uuid.FromString(cookie.Value)
 			if err != nil {
+				fmt.Println(err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}
 
 			user, err := repository.GetUserByUuid(db, uuid)
 			if err != nil {
+				fmt.Println(err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}
