@@ -95,7 +95,7 @@ func (Handler *Handler) GetInvites(w http.ResponseWriter, r *http.Request) {
 
 
 func  (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request)  {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}

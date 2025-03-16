@@ -130,8 +130,8 @@ export const addArticle = async(e,setAtricle, {parent, group}) => {
             };
             setAtricle((prv) => [newArticle, ...prv]);
             return true
-            setModalDisplay(false)
-            setContent("")
+            // setModalDisplay(false)
+            // setContent("")
           }
     
         } catch (error) {
@@ -167,3 +167,35 @@ export const useOnVisible = (ref, callback, once = true, threshold = 0.1) => {
       };
     }, [ref, callback, once, threshold]);
   };
+
+
+export const joinGroup = async(groupID, setIsAllowed)=>{
+    try {
+
+        const response = await fetch("http://localhost:8080/api/articles/store", {
+          method: "POST",
+          credentials: "include",
+          body: formData
+        })
+  
+        console.log("status:", response.status)
+        if (response.ok) {
+          const article = await response.json()
+          const newArticle = {
+            article, // The article data from the server
+            user_info: {}, // Empty user_info as before
+            likes: 0, // Explicitly set initial likes
+            disLikes: 0, // Explicitly set initial dislikes
+            comments_count: 0, // Explicitly set initial comments count
+            like: 0, // Initial like state (0 = neutral)
+          };
+          setAtricle((prv) => [newArticle, ...prv]);
+          return true
+          // setModalDisplay(false)
+          // setContent("")
+        }
+  
+      } catch (error) {
+        console.log(error)
+      }
+}

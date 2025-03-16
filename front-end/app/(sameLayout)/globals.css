@@ -308,6 +308,9 @@ main .container .left .profile {
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
+    max-width: 700px;
+    margin-inline:auto;
+
 }
 
 .middle .create-post #create-post {
@@ -342,7 +345,11 @@ main .container .left .profile {
     margin: 1rem 0;
     font-size: 0.85rem;
     line-height: 1.5;
+    max-width: 700px;
+    margin-inline: auto;
+
 }
+
 
 .middle .feed .head {
     display: flex;
@@ -398,13 +405,13 @@ main .container .left .profile {
 }
 
 /* =============== Right ============== */
-/* main .container .right {
+main .container .right {
     height: max-content;
     position: sticky;
     top: var(--sticky-top-right);
     bottom: 0;
-} */
-/* 
+}
+
 .right .messages {
     background: var(--color-white);
     border-radius: var(--card-border-radius);
@@ -427,13 +434,14 @@ main .container .left .profile {
     margin-bottom: 1rem;
 }
 
-.right .messages .category {
+.groups .category {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
+    cursor: pointer;
 }
 
-.right .messages .category h6 {
+.groups .category h6 {
     width: 100%;
     text-align: center;
     border-bottom: 4px solid var(--color-light);
@@ -441,7 +449,7 @@ main .container .left .profile {
     font-size: 0.75rem;
 }
 
-.right .messages .category .active {
+.groups .category .active {
     border-color: var(--color-dark);
 }
 
@@ -510,7 +518,7 @@ main .container .left .profile {
 .right .request .action {
     display: flex;
     gap: 1rem;
-} */
+}
 
 /* =============== Theme Customization ============== */
 .customize-theme {

@@ -85,7 +85,7 @@ func (Handler *Handler) HandelGetPostsByGroup(w http.ResponseWriter, r *http.Req
 	}
 	err = Handler.Service.VerifyGroup(data.GroupID, user.ID)
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
 		return
 	}
 	article_views, err := Handler.Service.FetchPostsByGroup(user.ID, data.GroupID, data.Before)

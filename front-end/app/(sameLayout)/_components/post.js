@@ -4,6 +4,7 @@ import styles from './post.module.css'
 import PostViewer from "./postViewer"
 import { likeArticle, timeAgo } from "@/app/helpers"
 import UserInfo from "./userInfo"
+import Link from "next/link"
 
 export default function Post({ postInfo , reference}) {
     const [likes, setLikes] = useState(postInfo.likes || 0); // Fallback to 0 if undefined
@@ -20,6 +21,8 @@ export default function Post({ postInfo , reference}) {
 
     return (
         <div className="feed" ref={reference}>
+            
+            {postInfo.group_name ?<div> <strong> Group </strong>: {<Link href={`/groups/${postInfo.article.group_id}`}>{postInfo.group_name}</Link>}</div> : ""}
             <div className="head">
                 <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article}/>
             </div>

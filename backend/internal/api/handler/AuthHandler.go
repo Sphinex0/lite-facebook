@@ -42,7 +42,6 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("err",err)
 		utils.WriteJson(w, http.StatusInternalServerError, "internal server error")
 	}
-	userinfo.Uuid=Uuid
 	utils.SetSessionCookie(w, Uuid)
 	utils.WriteJson(w, http.StatusOK, userinfo)
 }
@@ -97,7 +96,6 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user.Uuid = Uuid
 	utils.SetSessionCookie(w, Uuid)
 	fmt.Println("user", user)
 	utils.WriteJson(w, http.StatusOK, user)

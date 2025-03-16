@@ -12,7 +12,6 @@ type User struct {
 	AboutMe    string `json:"about"`
 	Privacy    string `json:"privacy"`
 	CreatedAt  string `json:"created_at"`
-	Uuid       string `json:"uuid"`
 }
 
 type UserInfo struct {
@@ -21,5 +20,4 @@ type UserInfo struct {
 	First_Name string `json:"first_name"`
 	Last_Name  string `json:"last_name"`
 	Image      string `json:"image"`
-	Uuid       string `json:"uuid"`
 }

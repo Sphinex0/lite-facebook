@@ -5,6 +5,7 @@ import CreateComment from "./createComment";
 import { useEffect, useRef, useState } from "react";
 import Comment from "./comment";
 import UserInfo from "./userInfo";
+import Link from "next/link";
 
 export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setCommentCount, setPostViewDisplay }) {
   const [comments, setComments] = useState([])
@@ -18,12 +19,13 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
   }
 
 
-  const fetchComments = async (first = false) => {
+  const fetchComments = async (signal) => {
     try {
       const response = await fetch("http://localhost:8080/api/comments", {
         method: "POST",
         credentials: "include",
-        body: JSON.stringify({ before: before.current, parent: postInfo.article.id })
+        body: JSON.stringify({ before: before.current, parent: postInfo.article.id }),
+        signal
       })
 
       console.log("status:", response.status)
@@ -32,11 +34,9 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
         console.log(commentsData)
         if (commentsData) {
 
-          if (first) {
-            setComments(commentsData)
-          } else {
+
             setComments((prv) => [...prv, ...commentsData])
-          }
+          
 
           before.current = commentsData[commentsData.length - 1].article.created_at
           console.log("last created at", commentsData[commentsData.length - 1].article.created_at)
@@ -49,8 +49,9 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
 
   }
   useEffect(() => {
-    console.log("fetch coments")
-    fetchComments(true)
+    const controller = new AbortController()
+    fetchComments(controller.signal)
+    return ()=>controller.abort()
   }, [])
   useOnVisible(lastElementRef, fetchComments)
 
@@ -60,6 +61,7 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
       <div className="card">
         <h2>Post</h2>
         <div className="feed">
+        {postInfo.group_name ?<div> <strong> Group </strong>: {<Link href={`/groups/${postInfo.article.group_id}`}>{postInfo.group_name}</Link>}</div> : ""}
           <div className="head">
             <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article}/>
           </div>

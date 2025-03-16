@@ -4,7 +4,6 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	"mime/multipart"
 	"net/http"
 	"os"
 	"slices"
@@ -334,5 +333,5 @@ func HandleImage(path string, buffer []byte) string {
 		fmt.Println(err)
 		return ""
 	}
-	return imageName.String() + extensions[extIndex]
+	return imageName.String()// + extensions[extIndex]
 }
