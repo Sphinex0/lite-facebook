@@ -112,4 +112,6 @@ func (rl *RateLimiter) GetUserID(userUID string, db *sql.DB) (int, error) {
 	return userID, nil
 }
 
-
+var (
+	CreateArticleLimiter = NewRateLimiter()
+)

@@ -3,8 +3,10 @@ package api
 import (
 	"database/sql"
 	"net/http"
+	"time"
 
 	"social-network/internal/api/handler"
+	"social-network/pkg/ratelimiter"
 
 	"github.com/gorilla/websocket"
 )
@@ -24,9 +26,10 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/user/update", handler.UpdateUser)
 
 	// articls
-	mux.HandleFunc("/api/posts", handler.HandelGetPosts)                 // post {"before":184525547}
-	mux.HandleFunc("/api/comments", handler.HandelGetComments)           // post {"before":184525547, "parent":4}
-	mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle)   // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
+	mux.HandleFunc("/api/posts", handler.HandelGetPosts)       // post {"before":184525547}
+	mux.HandleFunc("/api/comments", handler.HandelGetComments) // post {"before":184525547, "parent":4}
+	Createarticle := ratelimiter.CreateArticleLimiter.RateMiddleware(http.HandlerFunc(handler.HandelCreateArticle), 10, 2*time.Second, db)
+	mux.Handle("/api/articles/store", Createarticle)                 // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
 	mux.HandleFunc("/api/reactions/store", handler.HandelCreateReaction) // post {"like":1|-1, "article_id":4}
 	mux.HandleFunc("/api/group/posts", handler.HandelGetPostsByGroup)    // post {"before":184525547,"group_id":1}
 
@@ -69,5 +72,12 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
 
 
+
+	go func() {
+		for {
+			time.Sleep(120 * time.Minute)
+			ratelimiter.CreateArticleLimiter.RemoveSleepUsers()
+		}
+	}()
 	return mux
 }
