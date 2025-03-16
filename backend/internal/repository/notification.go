@@ -23,7 +23,6 @@ WHERE
 	if err != nil {
 		return []models.Notification{}, err
 	}
-	defer rows.Close()
 
 	var notifications []models.Notification
 	for rows.Next() {
@@ -38,7 +37,8 @@ WHERE
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-	// count unseen notifications
+	rows.Close()
+
 	return notifications, nil
 }
 
@@ -57,4 +57,10 @@ func (database *Database) InsertNotification(notification models.Notification) e
 		return err
 	}
 	return nil
+}
+
+func (database *Database) CountUnSeenNotifications(userID string) (int, error) {
+	var num int
+	err := database.Db.QueryRow("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND seen = 0", userID).Scan(&num)
+	return num, err
 }

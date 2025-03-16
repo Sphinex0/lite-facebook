@@ -12,5 +12,4 @@ type Notification struct {
 	EventID   int `json:"event_id"`
 	EventName   int `json:"event_name"`
 	Seen      bool  `json:"seen"`
-	Count     string `json:"count"`
 }

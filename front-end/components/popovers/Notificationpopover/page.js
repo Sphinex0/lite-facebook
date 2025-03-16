@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Link from 'next/link'; // Assuming you're using Next.js
+import Link from 'next/link';
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
