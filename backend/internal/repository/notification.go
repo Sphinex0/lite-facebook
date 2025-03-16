@@ -38,7 +38,7 @@ WHERE
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
-
+	// count unseen notifications
 	return notifications, nil
 }
 

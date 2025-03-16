@@ -25,3 +25,9 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 
 	utils.WriteJson(w, http.StatusOK, notifications)
 }
+
+func (H *Handler) MarkNotificationAsSeen(w http.ResponseWriter, r *http.Request) {
+	// get the notification id from body
+	// check it if exists
+	// mark as seen
+}

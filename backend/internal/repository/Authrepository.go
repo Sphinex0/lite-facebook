@@ -106,11 +106,3 @@ func (database *Database) GetuserInfo(userId int) (models.UserInfo ,error) {
 	}
 	return userInfo, nil
 }
-/*type UserInfo struct {
-	ID         int    `json:"id"`
-	Nickname   string `json:"nickname"`
-	First_Name string `json:"first_name"`
-	Last_Name  string `json:"last_name"`
-	Image      string `json:"image"`
-	Uuid       string `json:"uuid"`
-}*/
