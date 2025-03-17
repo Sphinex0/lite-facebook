@@ -2,7 +2,7 @@
 import { createContext, useEffect, useRef, useState } from "react";
 import Profile from "./_leftSide/profile";
 import SideBar from "./_leftSide/sideBar";
-import "./globals.css";
+import "./main.css";
 
 export const Context = createContext()
 

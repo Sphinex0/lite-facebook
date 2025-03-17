@@ -1,12 +1,29 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
+
+	"social-network/internal/models"
+
+	"github.com/gofrs/uuid/v5"
 )
+
+type contextKey string
+
+const UserIDKey contextKey = "userID"
+
+const UserCookie contextKey = "cookie"
 
 func WriteJson(w http.ResponseWriter, statuscode int, Data any) error {
 	w.WriteHeader(statuscode)
@@ -69,12 +86,11 @@ func GetExecFields(s interface{}, excludeFields ...string) []interface{} {
 
 func SetSessionCookie(w http.ResponseWriter, uuid string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session_token",
-		Value:  uuid,
-		Path:   "/",
+		Name:     "session_token",
+		Value:    uuid,
+		Path:     "/",
 		HttpOnly: true,
-		MaxAge: 31536000,
-		SameSite: http.SameSiteLaxMode,
+		MaxAge:   31536000,
 	})
 }
 
@@ -93,4 +109,43 @@ func Length(a, b int, e string) bool {
 
 func Placeholders(n int) string {
 	return strings.Repeat("?,", n)[:2*n-1]
+}
+
+// type ContextKey string
+
+// const UserIDKey ContextKey = "user"
+
+func GetUserFromContext(ctx context.Context) (user models.UserInfo, uuidCookie string, ok bool) {
+	user, ok = ctx.Value(UserIDKey).(models.UserInfo)
+	if !ok {
+		return
+	}
+	uuidCookie, ok = ctx.Value(UserCookie).(string)
+	return
+}
+
+func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileHeader) (string, error) {
+	if _, err := os.Stat(UploadDir); os.IsNotExist(err) {
+		os.Mkdir(UploadDir, os.ModePerm)
+	}
+
+	randomstr := GenerateUuid()
+	fmt.Println(randomstr + handler.Filename)
+	filePath := filepath.Join(UploadDir, randomstr+handler.Filename)
+	dst, err := os.Create(filePath)
+	if err != nil {
+		return "", errors.New("could not save file")
+	}
+	defer dst.Close()
+
+	_, err = io.Copy(dst, file)
+	if err != nil {
+		return "", errors.New("failed to save file")
+	}
+
+	return filePath, nil
+}
+
+func GenerateUuid() string {
+	return uuid.Must(uuid.NewV4()).String()
 }

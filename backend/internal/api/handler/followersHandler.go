@@ -7,7 +7,6 @@ import (
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
-	"social-network/pkg/middlewares"
 )
 
 // send follow / unfollow
@@ -17,7 +16,7 @@ func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
@@ -55,7 +54,7 @@ func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return

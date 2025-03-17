@@ -6,10 +6,11 @@
 
 :root {
     --main-color: #1877F2;
-    --second-color: #4490f3; /* Fixed typo */
+    --second-color: #4490f3;
 }
 
 .notification-container {
+    position: relative;
     width: 300px;
     height: 500px;
     display: flex;
@@ -89,4 +90,29 @@
     border-radius: 8px;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     height: 100px;
+}
+
+/*notification count*/
+.notification-wrapper {
+    position: relative; 
+    display: inline-block; 
+}
+
+.count {
+    position: absolute;
+    top: 8px;
+    right: 14px; 
+    background: red;
+    color: white;
+    padding: 2px 5px;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 17px; 
+    height: 17px; 
+    cursor: pointer;
+    z-index: 10;
 }

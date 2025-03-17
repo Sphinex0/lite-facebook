@@ -2,7 +2,9 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
+	"social-network/internal/models"
 	utils "social-network/pkg"
 )
 
@@ -12,17 +14,50 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	var usrId string
-	err := utils.ParseBody(r, &usrId)
+	user, _, ok := utils.GetUserFromContext(r.Context())
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
+		return
+	}
+
+	id := strconv.Itoa(user.ID)
+	notifications, count, err := H.Service.GetUserNotifications(id)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}
 
-	notifications,err := H.Service.GetUserNotifications(usrId); if err != nil {
+	response := struct {
+		Notifications []models.Notification `json:"notifications"`
+		Unseen        int                   `json:"unseen"`
+	}{
+		Notifications: notifications,
+		Unseen:        count,
+	}
+
+	utils.WriteJson(w, http.StatusOK, response)
+}
+
+func (H *Handler) MarkNotificationAsSeen(w http.ResponseWriter, r *http.Request) {
+	// get the notification id from body
+	var ntfID int
+	err := utils.ParseBody(r, ntfID)
+	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}
 
-	utils.WriteJson(w, http.StatusOK, notifications)
+	user,_, ok := utils.GetUserFromContext(r.Context())
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
+		return
+	}
+
+	err = H.Service.MarkAsseen(ntfID, user.ID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, "Marked succesfuly")
 }

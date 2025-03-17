@@ -11,4 +11,5 @@ type Notification struct {
 	GroupTitle  int `json:"group_title"`
 	EventID   int `json:"event_id"`
 	EventName   int `json:"event_name"`
+	Seen      bool  `json:"seen"`
 }

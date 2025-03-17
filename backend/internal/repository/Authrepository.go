@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"time"
 
 	"social-network/internal/models"
@@ -18,8 +17,7 @@ func (data *Database) CheckMailAndPaswdvalidity(email string, Password string) (
 	if err != nil {
 		return 0, errors.New("invalide coredentials")
 	}
-	fmt.Println([]byte(dbpswd))
-	fmt.Println([]byte(Password))
+
 	err = bcrypt.CompareHashAndPassword([]byte(dbpswd), []byte(Password))
 	if err != nil {
 		return 0, errors.New("incorrect password")
@@ -101,20 +99,10 @@ func (database *Database) CheckExpiredCookie(uid string, date time.Time) bool {
 }
 
 func (database *Database) GetuserInfo(userId int) (models.UserInfo ,error) {
-	fmt.Println(userId)
 	var userInfo models.UserInfo
 	err := database.Db.QueryRow("SELECT id, Nickname, First_Name, Last_Name, Image FROM users WHERE id = ?", userId).Scan(&userInfo.ID, &userInfo.Nickname, &userInfo.First_Name,
 		 &userInfo.Last_Name, &userInfo.Image); if err != nil {
 		return models.UserInfo{}, err
 	}
-
 	return userInfo, nil
 }
-/*type UserInfo struct {
-	ID         int    `json:"id"`
-	Nickname   string `json:"nickname"`
-	First_Name string `json:"first_name"`
-	Last_Name  string `json:"last_name"`
-	Image      string `json:"image"`
-	Uuid       string `json:"uuid"`
-}*/

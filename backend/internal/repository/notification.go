@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"fmt"
 	"social-network/internal/models"
 )
 
@@ -23,7 +24,6 @@ WHERE
 	if err != nil {
 		return []models.Notification{}, err
 	}
-	defer rows.Close()
 
 	var notifications []models.Notification
 	for rows.Next() {
@@ -38,6 +38,7 @@ WHERE
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
+	rows.Close()
 
 	return notifications, nil
 }
@@ -57,4 +58,26 @@ func (database *Database) InsertNotification(notification models.Notification) e
 		return err
 	}
 	return nil
+}
+
+func (database *Database) CountUnSeenNotifications(userID string) (int, error) {
+	var num int
+	err := database.Db.QueryRow("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND seen = 0", userID).Scan(&num)
+	return num, err
+}
+
+func (database *Database) CheckNotifValidation(ntfId int) bool {
+	var exists bool
+	query := `SELECT EXISTS(SELECT 1 FROM notifications WHERE id = ?)`
+	err := database.Db.QueryRow(query, ntfId).Scan(&exists)
+	if err != nil {
+		fmt.Println("err checknotification", err)
+		return false
+	}
+	return exists
+}
+
+func (database *Database) MarkAsseen(ntfId, userID int) error {
+	_, err := database.Db.Exec(`UPDATE notifications SET seen = 1 WHERE id = ? AND user_id = ?`, ntfId, userID)
+	return err
 }
