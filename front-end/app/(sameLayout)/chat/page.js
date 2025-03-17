@@ -296,8 +296,6 @@ export default function Chat() {
             <div className={styles.conversationsList}>
                 {conversations.map((conversationInfo) => {
                     const { conversation, user_info, group } = conversationInfo;
-                    const displayText =
-                        group?.title || `${user_info?.first_name} ${user_info?.last_name}`;
                     return (
                         <div
                             key={`conv-${conversation.id}`}

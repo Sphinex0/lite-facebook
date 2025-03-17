@@ -1,11 +1,13 @@
 import { timeAgo } from '@/app/helpers'
 import React from 'react'
 
-const UserInfo = ({ userInfo, articleInfo, group , online }) => {
+const UserInfo = ({ userInfo, articleInfo, group }) => {
     return (
         <div className="user">
             <div className="profile-photo">
-                <img src={`./images/${userInfo.image || group.image || "profile-13.jpg"}`} />
+                <img
+                    src={`./images/${(userInfo && userInfo.image) || (group && group.image)|| "profile-13.jpg"}`}
+                    className={userInfo && (userInfo.online ? "online" : "offline")} />
             </div>
             <div className="ingo">
                 <h3>
