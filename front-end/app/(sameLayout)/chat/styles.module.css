@@ -1,3 +1,4 @@
+
 .container {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -125,6 +126,37 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.styles.userImage {
+    width: 100px;
+}
+
+.conversationPreview {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #bdc3c7;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #95a5a6;
 }
 
 .inputFile {

@@ -37,6 +37,8 @@ func (data *Database) AcceptInviteRequest(Invite *models.Invite) error {
 		return err
 	}
 	res1, err1 := res.RowsAffected()
+	fmt.Println(err1)
+	fmt.Println(res1)
 	if res1 == 0 || err1 != nil {
 		return fmt.Errorf("not fount")
 	}
@@ -71,13 +73,33 @@ func (data *Database) Saveinvite(Invite *models.Invite) (int, error) {
 	return id, nil
 }
 
-
 func (data *Database) GetallInvite(id int) (*sql.Rows, error) {
-    res, err := data.Db.Query(`
+	res, err := data.Db.Query(`
 	SELECT * FROM invites WHERE 
-	(sender = ? OR receiver = ?) AND status = "pending"` ,id ,id)
-    if err != nil {
-        return nil, err
-    }
-    return res, nil
+	(sender = ? OR receiver = ?) AND status = "pending"`, id, id)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (data *Database) Getallmembers(id int) (*sql.Rows, error) {
+	res, err := data.Db.Query(`
+	SELECT * FROM invites WHERE group_id = ? AND status = "accepted"`, id, id)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+func (data *Database) GetUsers(Id int) (models.User, error) {
+	
+	var user models.User
+	row := data.Db.QueryRow("SELECT * FROM users WHERE id = ?", Id)
+	if  err := row.Scan(utils.GetScanFields(&user)...); err != nil {
+		fmt.Println("/api/invites/members",err)
+		return models.User{}, err
+	}
+	
+	return user, nil
 }

@@ -1,33 +1,103 @@
-"use client";
+'use client'
 import './navbar.css'
-import Link from "next/link";
-import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined';
-import DarkModeOutlinedIcon from '@mui/icons-material/DarkModeOutlined';
-import WbSunnyOutlinedIcon from '@mui/icons-material/WbSunnyOutlined';
-import GridViewOutlinedIcon from '@mui/icons-material/GridViewOutlined';
-import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
-import AccountBoxOutlinedIcon from '@mui/icons-material/AccountBoxOutlined';
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined';
+import NotificationPop from '@/components/popovers/Notificationpopover/page'
+import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
+import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
+import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
+import { useEffect, useState } from 'react'
 
-export default function Navbar() {
-    return (
-        <div className='navbar'>
-            <div className='left'>
-            <Link href="/" style={{textDecoration:"none"}}>
-            <span>Lite-Facebook</span>
-            <HomeOutlinedIcon/>
-            <DarkModeOutlinedIcon/>
-            <GridViewOutlinedIcon/>
-            </Link>
-            </div>
-            <div className='search'>
-                <SearchOutlinedIcon/>
-                
-            </div>
-            <div className='right'>
+export default function Navbar () {
+  const [bool, setbool] = useState(false)
+  function handleclick () {
+    setbool(!bool)
+  }
+  const [notifications, setNotifications] = useState([
+    {
+      type: 'follow-request',
+      invoker: 'hamza'
+    },
+    {
+      type: 'invitation-request',
+      invoker: 'ayoub',
+      group: 'programming'
+    },
+    {
+      type: 'joine',
+      invoker: 'imad',
+      group: 'fitness'
+    },
+    {
+      type: 'event-created',
+      group: 'knowledge',
+      invoker: 'mustafa'
+    },
+  ]);
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [image, setImage] = useState("/default-profile.png")
+  const [Err, setError] = useState("")
 
-            </div>
+  useEffect(() => {
+      const storedData = sessionStorage.getItem("Image");
+      if (storedData && storedData!="null") {
+        setImage(storedData);
+      }
+
+   /* const fetchNotifications = async () => {
+      try {
+       
+        const response = await fetch("http://localhost:8080/api/GetNotification",{
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', 
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setNotifications(data.notifications);
+          setNotificationCount(data.count); 
+        } else {
+          setError("error while fetching notifications");
+        }
+      } catch (error) {
+        setError("error while fetching notifications");
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();*/
+  }, []);
+
+  return (
+    <nav>
+      {/* Search Bar (Right) */}
+      <div className='logo'>
+        <span>Lite-Facebook</span>
+      </div>
+
+      {/* Logo and Icons (Center) */}
+      <div className='nav-center'>
+        <SearchOutlinedIcon />
+        <div className='search-container'>
+          <input type='search' placeholder='Search for friends, groups' />
         </div>
-    )
+        <div className='icons'>
+          <HomeOutlinedIcon />
+          <GroupOutlinedIcon />
+          <div className='notification'>
+            <div onClick={handleclick}>
+              <NotificationsNoneOutlinedIcon />
+            </div>
+            {notificationCount != 0 && <span className="count">{notificationCount}</span>}
+            <div className='pop-out none'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
+          </div>
+          <MailOutlinedIcon />
+        </div>
+      </div>
+      <img  src={image || "/default-profile.png"} alt='Profile' />
+    </nav>
+  )
 }

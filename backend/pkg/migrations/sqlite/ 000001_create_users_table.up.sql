@@ -1,7 +1,7 @@
 -- +migrate Up
 CREATE TABLE users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    nickname TEXT NOT NULL UNIQUE,
+    nickname TEXT NOT NULL,
     date_birth INTEGER NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,

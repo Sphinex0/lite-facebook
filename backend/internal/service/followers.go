@@ -90,7 +90,7 @@ func (S *Service) GetFollowRequests(user *models.UserInfo, before int) (requeste
 	return
 }
 
-func (S *Service) GetFollowers(user *models.UserInfo, before int) (followers []models.UserInfo,err error) {
+func (S *Service) GetFollowers(user *models.UserInfo, before int) (followers []models.FollowWithUser,err error) {
 	followers , err = S.Database.GetFollowers(user, before)
 	return
 }

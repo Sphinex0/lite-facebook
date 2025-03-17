@@ -5,8 +5,6 @@ CREATE TABLE conversations (
     entitie_two_user INTEGER,
     entitie_two_group INTEGER,
     type TEXT CHECK (type IN ('private', 'group')),
-    created_at INTEGER NOT NULL,
-    modified_at INTEGER NOT NULL,
     FOREIGN KEY (entitie_one) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (entitie_two_user) REFERENCES users (id) ON DELETE CASCADE,
     FOREIGN KEY (entitie_two_group) REFERENCES groups (id) ON DELETE CASCADE,

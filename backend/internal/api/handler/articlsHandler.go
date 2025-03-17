@@ -10,7 +10,6 @@ import (
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
-	"social-network/pkg/middlewares"
 )
 
 func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Request) {
@@ -19,7 +18,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
@@ -85,7 +84,7 @@ func (Handler *Handler) HandelGetPostsByGroup(w http.ResponseWriter, r *http.Req
 	}
 	err = Handler.Service.VerifyGroup(data.GroupID, user.ID)
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
 		return
 	}
 	article_views, err := Handler.Service.FetchPostsByGroup(user.ID, data.GroupID, data.Before)
@@ -115,7 +114,7 @@ func (Handler *Handler) HandelCreateReaction(w http.ResponseWriter, r *http.Requ
 		return
 	}
 
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
@@ -145,7 +144,7 @@ func (Handler *Handler) AfterGet(w http.ResponseWriter, r *http.Request) (user m
 		return
 	}
 
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		err = fmt.Errorf("Unauthorized")

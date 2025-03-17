@@ -1,11 +1,12 @@
-'use client'
 import { Comment, Preview, PrivacyTip, Public, ThumbDown, ThumbUp } from "@mui/icons-material"
 import { use, useEffect, useState } from "react"
 import styles from './post.module.css'
 import PostViewer from "./postViewer"
 import { likeArticle, timeAgo } from "@/app/helpers"
+import UserInfo from "./userInfo"
+import Link from "next/link"
 
-export default function Post({ postInfo }) {
+export default function Post({ postInfo , reference}) {
     const [likes, setLikes] = useState(postInfo.likes || 0); // Fallback to 0 if undefined
     const [disLikes, setDislikes] = useState(postInfo.disLikes || 0);
     const [commentsCount, setCommentCount] = useState(postInfo.comments_count || 0);
@@ -19,20 +20,14 @@ export default function Post({ postInfo }) {
 
 
     return (
-        <div className="feed">
+        <div className="feed" ref={reference}>
+            
+            {postInfo.group_name ?<div> <strong> Group </strong>: {<Link href={`/groups/${postInfo.article.group_id}`}>{postInfo.group_name}</Link>}</div> : ""}
             <div className="head">
-                <div className="user">
-                    <div className="profile-photo">
-                        <img src="./images/profile-13.jpg" />
-                    </div>
-                    <div className="ingo">
-                        <h3>{postInfo.user_info.first_name} {postInfo.user_info.last_name}</h3>
-                        <small>{timeAgo(postInfo.article.created_at)}</small>
-                    </div>
-                </div>
+                <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article}/>
             </div>
             
-            <Public/> {postInfo.article.privacy}
+            
             <div  className={styles.content}>{postInfo.article.content}</div>
 
 
@@ -58,6 +53,7 @@ export default function Post({ postInfo }) {
                             likeState={likeState}
                             likePost={likePost}
                             commentsCount={commentsCount}
+                            setCommentCount={setCommentCount}
                             setPostViewDisplay={setPostViewDisplay}
                         />
                         )}

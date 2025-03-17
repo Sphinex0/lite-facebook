@@ -15,92 +15,93 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (S *Service) LoginUser(User *models.User) error {
+func (S *Service) LoginUser(User *models.User) (string, error) {
 	// check email len
 	if ValidateLength(User.Email) {
-		return errors.New("too long or too short Email")
+		return "", errors.New("too long or too short Email")
 	}
 
 	// check password len
 	if ValidateLength(User.Password) {
-		return errors.New("too long or too short Password")
+		return "", errors.New("too long or too short Password")
 	}
 
 	// chefk password and email validity
-	usrId, err := S.Database.CheckMailAndPaswdvalidity(User.Email, User.Password)
+	id, err := S.Database.CheckMailAndPaswdvalidity(User.Email, User.Password)
 	if err != nil {
-		return err
+		return "", err
 	}
+
+	User.ID = id
 	// generate new uuid
 	Uuid := GenerateUuid()
 
 	// Update uuid
-	S.Database.AddUuid(Uuid, usrId)
-	return nil
+	S.Database.AddUuid(Uuid, User.ID)
+	return Uuid, nil
 }
 
-func (s *Service) RegisterUser(user *models.User) error {
+func (s *Service) RegisterUser(user *models.User) (string, error) {
 	// Age
 	fmt.Println((*user).DateBirth)
 
 	// First_Name
 	if len((*user).First_Name) < 3 || len((*user).First_Name) > 15 {
-		return errors.New("InvalideFirst_Name")
+		return "", errors.New("InvalideFirst_Name")
 	}
 
 	// Last_Name
 	if len((*user).Last_Name) < 3 || len((*user).Last_Name) > 15 {
-		return errors.New("InvalideLast_Name")
+		return "", errors.New("InvalideLast_Name")
 	}
 
 	// Password
 	if len((*user).Password) < 6 || len((*user).Password) > 30 {
-		return errors.New("InvalidPassword")
+		return "", errors.New("InvalidPassword")
 	}
 
 	// email
 	(*user).Email = strings.ToLower((*user).Email)
 	if !EmailChecker((*user).Email) {
-		return errors.New("InvalidEmail")
+		return "", errors.New("InvalidEmail")
 	}
 	if len((*user).Email) > 50 {
-		return errors.New("LongEmail")
+		return "", errors.New("LongEmail")
 	}
 
 	// Nickname
 	if (*user).Nickname != "" {
 		if len(strings.TrimSpace((*user).Nickname)) < 3 || len(strings.TrimSpace((*user).Nickname)) > 15 {
-			return errors.New("InvalidUsername")
+			return"",  errors.New("InvalidUsername")
 		}
 	}
 
 	// AboutMe
 	if (*user).AboutMe != "" {
 		if len(strings.TrimSpace((*user).AboutMe)) < 3 || len(strings.TrimSpace((*user).AboutMe)) > 50 {
-			return errors.New("InvalidUsername")
+			return "", errors.New("InvalidUsername")
 		}
 	}
 
 	// username or email existance
 	if s.Database.CheckIfUserExists((*user).Email) {
-		return errors.New("UserAlreadyExist")
+		return "", errors.New("UserAlreadyExist")
 	}
-
-	// Generate Uuid
-	Uuid := GenerateUuid()
 
 	// Encrypt Pass
 	var err error
 	(*user).Password, err = EncyptPassword((*user).Password)
 	if err != nil {
-		return err
+		return "", err
 	}
 
 	// Fix username html
 	(*user).Nickname = html.EscapeString((*user).Nickname)
 
+	// Generate Uuid
+	Uuid := GenerateUuid()
 	// Insert the user
-	return s.Database.InsertUser(*user, Uuid)
+	return Uuid, s.Database.InsertUser(*user, Uuid)
 }
 
 func ValidateLength(data string) bool {

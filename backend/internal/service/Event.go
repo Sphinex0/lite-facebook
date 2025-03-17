@@ -8,13 +8,14 @@ import (
 )
 
 func (service *Service) CreateEvent(Events models.Event) (err error) {
-	// valid, err := service.Database.GetCreatorEvent(Events.GroupID, Events.UserID)
-	// if err != nil {
-	// 	return
-	// }
-	// if valid {
-	// 	err = service.Database.SaveEvent(&Events)
-	// }
+	valid, err := service.Database.GetCreatorGroup(Events.GroupID, Events.UserID)
+	if err != nil {
+		return
+	}
+	if valid {
+		err = service.Database.SaveEvent(&Events)
+        fmt.Println("err",err)
+	}
 	return
 }
 
@@ -48,7 +49,7 @@ func (S *Service) GetEventsById(Event *models.Event) (*models.Event, error) {
 	}
 
 	// Scan the row into the Event struct
-	if err := row.Scan(utils.GetScanFields(&Event)); err != nil {
+	if err := row.Scan(utils.GetScanFields(Event)...); err != nil {
 		return nil, fmt.Errorf("error scanning Event data: %v", err)
 	}
 
@@ -73,7 +74,7 @@ func (S *Service) GetEventsOption(OptionEvent models.EventOption) ([]models.Even
 
     for rows.Next() {
         var event models.EventOption
-        if err := rows.Scan(utils.GetScanFields(&event)); err != nil {
+        if err := rows.Scan(utils.GetScanFields(&event)...); err != nil {
             fmt.Println(err)
             return nil, err
         }

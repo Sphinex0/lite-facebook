@@ -1,28 +1,31 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styles from "./selectFollower.module.css"
 import UserInfo from './userInfo'
+import { useOnVisible } from '@/app/helpers'
+
+
 const SelectFollower = () => {
     const [followers, setFollowers] = useState([])
     const before = useRef(Math.floor(Date.now() / 1000))
+    const lastElementRef = useRef(null)
 
-    const fetchFollowers = async () => {
+    const fetchFollowers = async (signal) => {
         try {
-            //const before = posts.length > 0 ? posts[posts.length - 1].article.created_at : Math.floor(Date.now() / 1000)
-            console.log(before, followers)
             const response = await fetch("http://localhost:8080/api/followers", {
                 method: "POST",
                 credentials: "include",
-                body: JSON.stringify({ before: before.current })
+                body: JSON.stringify({ before: before.current }),
+                signal
             })
 
             console.log("status:", response.status)
             if (response.ok) {
                 const followersData = await response.json()
-                if (followersData) {
+                if (followersData){
                     setFollowers((prv) => [...prv, ...followersData])
-                    before.current = followersData[followersData.length-1].modified_at
+                    before.current = followersData[followersData.length - 1].modified_at
+                    console.log(followersData)
                 }
-                console.log(followersData)
             }
 
         } catch (error) {
@@ -31,19 +34,27 @@ const SelectFollower = () => {
 
     }
 
-    useEffect(()=>{
-        console.log("hereeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee  ")
-        fetchFollowers()
-    },[])
+    useEffect(() => {
+        const controller = new AbortController()
+        fetchFollowers(controller.signal)
+        return ()=>controller.abort()
+    }, [])
+    useOnVisible(lastElementRef, fetchFollowers)
 
 
-  return (
-    <div className={styles.container}>
-        {followers.map((userInfo)=>{
-            return <UserInfo userInfo={userInfo} key={userInfo.id}/>
-        })}
-    </div>
-  )
+    return (<>
+        <h3>choose who can see your post:</h3>
+        <div className={styles.container} >
+            {followers.map((userInfo, index) => {
+                if (index == followers.length-1){
+                    return <div ref={lastElementRef} className={styles.fullUser} key={`user${userInfo.id}`}><label htmlFor={`user${userInfo.id}`}><UserInfo userInfo={userInfo} key={userInfo.id} /></label> <input type='checkbox' id={`user${userInfo.id}`} name='users' value={userInfo.id} /></div>
+                }
+                return <div className={styles.fullUser} key={`user${userInfo.id}`}><label htmlFor={`user${userInfo.id}`}><UserInfo userInfo={userInfo} key={userInfo.id} /></label> <input type='checkbox' id={`user${userInfo.id}`} name='users' value={userInfo.id} /></div>
+            })}
+        </div>
+    </>
+
+    )
 }
 
 export default SelectFollower
