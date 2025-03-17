@@ -24,7 +24,7 @@ const SideBar = () => {
             <h3>Notification</h3>
         </Link>
 
-        <Link href={"/"} className="menu-item" id="messages-notifications">
+        <Link href={"/chat"} className={`menu-item ${router == "/chat" && "active"}`} id="messages-notifications">
             <span className='i'><Mail/><small className="notification-count">6</small></span>
             <h3>Messages</h3>
         </Link>

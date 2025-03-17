@@ -1,4 +1,13 @@
 {
     "scm.compactFolders": true,
-    "explorer.compactFolders": false
+    "explorer.compactFolders": false,
+    "background.fullscreen": {
+
+        "images": ["file:///C:/Users/moad0/Videos/katana-forest.1920x1080-ezgif.com-video-to-gif-converter.gif"],
+        "opacity": 0.1,
+        "size": "cover",
+        "position": "center",
+        "interval": 0,
+        "random": false
+    }
 }

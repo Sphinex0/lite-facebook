@@ -59,14 +59,6 @@ export default function Posts() {
             <CreatePost setModalDisplay={setModalDisplay} />
             {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} /> : ""}
             <PostList posts={posts} reference={lastPostElementRef} />
-            {/* <div className="feeds" >
-                {posts.map((postInfo, index) => {
-                    if (index == posts.length - 1) {
-                        return <Post postInfo={postInfo} key={postInfo.article.id} reference={lastPostElementRef} />
-                    }
-                    return <Post postInfo={postInfo} key={postInfo.article.id} />
-                })}
-            </div> */}
         </>
 )
 }
