@@ -17,7 +17,8 @@ export default function Login () {
     try {
       const response = await fetch('http://localhost:8080/api/login', {
         method: 'POST',
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
+        credentials:"include"
       })
 
       if (response.status == 200) {

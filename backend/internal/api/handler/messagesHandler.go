@@ -11,7 +11,6 @@ import (
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
-	"social-network/pkg/middlewares"
 
 	"github.com/gorilla/websocket"
 )
@@ -27,7 +26,7 @@ var (
 // handle messages of ws
 func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+		user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 		if !ok {
 			utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 			return

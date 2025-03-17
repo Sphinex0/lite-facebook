@@ -70,12 +70,12 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	user, ok := utils.GetUserFromContext(r.Context())
+	_,uuid, ok := utils.GetUserFromContext(r.Context())
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
 		return
 	}
-	err := H.Service.DeleteSessionCookie(w, user.Uuid)
+	err := H.Service.DeleteSessionCookie(w, uuid)
 	if err != nil {
 		utils.WriteJson(w, http.StatusOK, err.Error())
 		return

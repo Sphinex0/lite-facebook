@@ -12,11 +12,18 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
-	"social-network/internal/models"
 	"strings"
+
+	"social-network/internal/models"
 
 	"github.com/gofrs/uuid/v5"
 )
+
+type contextKey string
+
+const UserIDKey contextKey = "userID"
+
+const UserCookie contextKey = "cookie"
 
 func WriteJson(w http.ResponseWriter, statuscode int, Data any) error {
 	w.WriteHeader(statuscode)
@@ -104,17 +111,20 @@ func Placeholders(n int) string {
 	return strings.Repeat("?,", n)[:2*n-1]
 }
 
-type ContextKey string
+// type ContextKey string
 
-const UserIDKey ContextKey = "user"
+// const UserIDKey ContextKey = "user"
 
-func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
-	user, ok := ctx.Value(UserIDKey).(models.UserInfo)
-	return user, ok
+func GetUserFromContext(ctx context.Context) (user models.UserInfo, uuidCookie string, ok bool) {
+	user, ok = ctx.Value(UserIDKey).(models.UserInfo)
+	if !ok {
+		return
+	}
+	uuidCookie, ok = ctx.Value(UserCookie).(string)
+	return
 }
 
 func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileHeader) (string, error) {
-
 	if _, err := os.Stat(UploadDir); os.IsNotExist(err) {
 		os.Mkdir(UploadDir, os.ModePerm)
 	}

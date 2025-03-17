@@ -38,7 +38,8 @@ export default function SignupPage () {
     try {
       const response = await fetch('http://localhost:8080/api/signup', {
         method: 'POST',
-        body: data // Send form data as a JSON string
+        body: data,// Send form data as a JSON string
+        credentials:"include"
       })
 
       if (response.status == 200) {

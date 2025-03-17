@@ -9,7 +9,6 @@ import (
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
-	"social-network/pkg/middlewares"
 )
 
 func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
@@ -17,7 +16,7 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
@@ -25,7 +24,7 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 
 	var Group models.Group
 	Group.Creator = user.ID
-	fmt.Println("Group.Creator",Group.Creator)
+	fmt.Println("Group.Creator", Group.Creator)
 	Group.Title = strings.TrimSpace(r.FormValue("Title"))
 	Group.Description = strings.TrimSpace(r.FormValue("Description"))
 	Group.CreatedAt = int(time.Now().Unix())
@@ -75,20 +74,17 @@ func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(group)
 }
 
-
 func (Handler *Handler) GetMember(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
 
-
-	
 	group, err := Handler.Service.GetMemberById(user.ID)
 	if err != nil {
 		fmt.Println(err)

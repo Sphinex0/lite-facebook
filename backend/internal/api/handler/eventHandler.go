@@ -7,7 +7,6 @@ import (
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
-	"social-network/pkg/middlewares"
 )
 
 func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
@@ -15,7 +14,7 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
@@ -29,8 +28,7 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
-	if Event.Title=="" || Event.Description=="" {
+	if Event.Title == "" || Event.Description == "" {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad Request")
 		return
 	}
@@ -76,25 +74,21 @@ func (Handler *Handler) GetEvent(w http.ResponseWriter, r *http.Request) {
 
 // skip
 
-
-
-
 func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-	
-	user, ok := r.Context().Value(middlewares.UserIDKey).(models.UserInfo)
+
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
-	
 
 	var OptionEvent models.EventOption
 
-	OptionEvent.UserID=user.ID
+	OptionEvent.UserID = user.ID
 	err := utils.ParseBody(r, &OptionEvent)
 	if err != nil {
 		fmt.Println(err)
@@ -108,8 +102,6 @@ func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-
 func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
@@ -121,7 +113,7 @@ func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
-	EventOptions ,err := Handler.Service.GetEventsOption(EventOption)
+	EventOptions, err := Handler.Service.GetEventsOption(EventOption)
 	if err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))

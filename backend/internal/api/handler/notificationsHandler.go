@@ -14,7 +14,7 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	user, ok := utils.GetUserFromContext(r.Context())
+	user, _, ok := utils.GetUserFromContext(r.Context())
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
 		return
@@ -47,7 +47,7 @@ func (H *Handler) MarkNotificationAsSeen(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user, ok := utils.GetUserFromContext(r.Context())
+	user,_, ok := utils.GetUserFromContext(r.Context())
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
 		return

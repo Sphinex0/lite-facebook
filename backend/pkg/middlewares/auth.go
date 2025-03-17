@@ -51,10 +51,6 @@ func CORS(next http.Handler) http.Handler {
 	})
 }
 
-type contextKey string
-
-const UserIDKey contextKey = "userID"
-
 func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		allowedPath := []string{"/api/login", "/api/signup"}
@@ -82,7 +78,8 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}
-			ctx := context.WithValue(r.Context(), UserIDKey, user)
+			ctx := context.WithValue(r.Context(), utils.UserIDKey, user)
+			ctx = context.WithValue(ctx, utils.UserCookie, cookie.Value)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
 			if err == nil {

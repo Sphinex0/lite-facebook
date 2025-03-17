@@ -40,7 +40,7 @@ export default function Navbar () {
 
   useEffect(() => {
       const storedData = sessionStorage.getItem("Image");
-      if (storedData) {
+      if (storedData && storedData!="null") {
         setImage(storedData);
       }
 
@@ -97,7 +97,7 @@ export default function Navbar () {
           <MailOutlinedIcon />
         </div>
       </div>
-      <img  src={image} alt='Profile' />
+      <img  src={image || "/default-profile.png"} alt='Profile' />
     </nav>
   )
 }

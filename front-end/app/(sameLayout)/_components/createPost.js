@@ -13,7 +13,7 @@ const CreatePost = ({ setModalDisplay }) => {
  
 
   return (
-    <div action="" className="create-post" onClick={show}>
+    <div className="create-post" onClick={show}>
       <div className="profile-photo">
         <img src="./images/profile-1.jpg" />
       </div>
