@@ -61,8 +61,6 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/follow", handler.HandleFollow)                     // post {"user_id":2}
 	mux.HandleFunc("/api/follow/decision", handler.HandleFollowRequest)     // post {"follower":2,"status":"accepted"}
 
-	// notification
-	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
 	
 	// websocket
 	upgrader := websocket.Upgrader{
