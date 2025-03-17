@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 
 	"social-network/internal/models"
@@ -46,17 +45,15 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	// Extract profile picture (optional)
 	file, handler, err := r.FormFile("avatar")
 	if err == nil {
+		defer file.Close()
 		user.Image, err = utils.StoreThePic("../backend/internal/repository/profile", file, handler)
 		if err != nil {
 			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
 		}
 	}
-	file.Close()
-
 	// Proccess Data and Insert it
 	Uuid, err := H.Service.RegisterUser(&user)
 	if err != nil {
-		fmt.Println("yes", err.Error())
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -66,7 +63,6 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		First_Name: user.First_Name,
 		Last_Name:  user.Last_Name,
 		Image:      user.Image,
-		Uuid:       Uuid,
 	}
 
 	utils.SetSessionCookie(w, Uuid)
