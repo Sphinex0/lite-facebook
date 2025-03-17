@@ -1430,9 +1430,3 @@ WHERE
         )
     )
 ;
-
-SELECT *
-		FROM messages M
-		WHERE M.conversation_id = 1
-		AND M.created_at < 1741881292
-		ORDER BY M.created_at , M.id
