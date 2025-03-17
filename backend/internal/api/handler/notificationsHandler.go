@@ -40,7 +40,24 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 
 func (H *Handler) MarkNotificationAsSeen(w http.ResponseWriter, r *http.Request) {
 	// get the notification id from body
-	
-	// check it if exists
-	// mark as seen
+	var ntfID int
+	err := utils.ParseBody(r, ntfID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "bad request")
+		return
+	}
+
+	user, ok := utils.GetUserFromContext(r.Context())
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
+		return
+	}
+
+	err = H.Service.MarkAsseen(ntfID, user.ID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, "Marked succesfuly")
 }

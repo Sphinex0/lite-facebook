@@ -56,3 +56,15 @@ func (s *Service) AddNotification(notification models.Notification) error {
 
 	return nil
 }
+
+func (s *Service) MarkAsseen(ntfId, userID int) error {
+	if !s.Database.CheckNotifValidation(ntfId) {
+		return errors.New("not valide notification")
+	}
+
+	err := s.Database.MarkAsseen(ntfId, userID); if err != nil {
+		return errors.New("error while ineraction with db")
+	}
+
+	return nil
+}
