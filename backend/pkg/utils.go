@@ -3,11 +3,18 @@ package utils
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"io"
 	"log"
+	"mime/multipart"
 	"net/http"
+	"os"
+	"path/filepath"
 	"reflect"
 	"social-network/internal/models"
 	"strings"
+
+	"github.com/gofrs/uuid/v5"
 )
 
 func WriteJson(w http.ResponseWriter, statuscode int, Data any) error {
@@ -103,4 +110,30 @@ const UserIDKey ContextKey = "user"
 func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
 	user, ok := ctx.Value(UserIDKey).(models.UserInfo)
 	return user, ok
+}
+
+func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileHeader) (string, error) {
+	// Ensure Profile directory exists
+	if _, err := os.Stat(UploadDir); os.IsNotExist(err) {
+		os.Mkdir(UploadDir, os.ModePerm)
+	}
+
+	// uuid.New() + "."
+	filePath := filepath.Join(UploadDir, handler.Filename+GenerateUuid())
+	dst, err := os.Create(filePath)
+	if err != nil {
+		return "", errors.New("could not save file")
+	}
+	defer dst.Close()
+
+	_, err = io.Copy(dst, file)
+	if err != nil {
+		return "", errors.New("failed to save file")
+	}
+
+	return filePath, nil
+}
+
+func GenerateUuid() string {
+	return uuid.Must(uuid.NewV4()).String()
 }

@@ -2,10 +2,7 @@ package handler
 
 import (
 	"fmt"
-	"io"
 	"net/http"
-	"os"
-	"path/filepath"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -47,35 +44,14 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Extract profile picture (optional)
-	var filePath string
 	file, handler, err := r.FormFile("avatar")
-	if err == nil { // No error means a file was uploaded
-
-		// Ensure Profile directory exists
-		uploadDir := "../backend/internal/repository/profile"
-		defer file.Close()
-		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
-			os.Mkdir(uploadDir, os.ModePerm)
-		}
-
-		// Save with a unique filename (e.g., user.UUID + filename)
-		// uuid.New() + "."
-		filePath = filepath.Join(uploadDir, handler.Filename)
-		dst, err := os.Create(filePath)
+	if err == nil {
+		user.Image, err = utils.StoreThePic("../backend/internal/repository/profile", file, handler)
 		if err != nil {
-			utils.WriteJson(w, http.StatusInternalServerError, "Could not save file")
-			return
+			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
 		}
-		defer dst.Close()
-		_, err = io.Copy(dst, file)
-		if err != nil {
-			utils.WriteJson(w, http.StatusInternalServerError, "Failed to save file")
-			return
-		}
-
-		// Assign file path to user struct
-		user.Image = filePath
 	}
+	file.Close()
 
 	// Proccess Data and Insert it
 	Uuid, err := H.Service.RegisterUser(&user)
@@ -85,7 +61,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// some data that will make it easy for the front-end devs
+	// some data that to make it easy in the front-end
 	userinfo := models.UserInfo{
 		First_Name: user.First_Name,
 		Last_Name:  user.Last_Name,
@@ -103,7 +79,7 @@ func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
 		return
 	}
-	err:= H.Service.DeleteSessionCookie(w, user.Uuid)
+	err := H.Service.DeleteSessionCookie(w, user.Uuid)
 	if err != nil {
 		utils.WriteJson(w, http.StatusOK, err.Error())
 		return
