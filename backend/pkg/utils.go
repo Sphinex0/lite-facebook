@@ -113,12 +113,11 @@ func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
 }
 
 func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileHeader) (string, error) {
-	// Ensure Profile directory exists
+
 	if _, err := os.Stat(UploadDir); os.IsNotExist(err) {
 		os.Mkdir(UploadDir, os.ModePerm)
 	}
 
-	// uuid.New() + "."
 	filePath := filepath.Join(UploadDir, handler.Filename+GenerateUuid())
 	dst, err := os.Create(filePath)
 	if err != nil {
