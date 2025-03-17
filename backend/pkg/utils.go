@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"mime/multipart"
@@ -118,7 +119,9 @@ func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileH
 		os.Mkdir(UploadDir, os.ModePerm)
 	}
 
-	filePath := filepath.Join(UploadDir, handler.Filename+GenerateUuid())
+	randomstr := GenerateUuid()
+	fmt.Println(randomstr + handler.Filename)
+	filePath := filepath.Join(UploadDir, randomstr+handler.Filename)
 	dst, err := os.Create(filePath)
 	if err != nil {
 		return "", errors.New("could not save file")
