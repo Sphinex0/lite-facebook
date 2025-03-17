@@ -56,7 +56,6 @@ export default function Chat() {
     // Setup message handler for SharedWorker, depending on clientWorker
     useEffect(() => {
         if (!workerPortRef.current) return;
-
         const port = workerPortRef.current;
         port.start();
 

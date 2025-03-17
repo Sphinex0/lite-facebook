@@ -1,7 +1,7 @@
 import { timeAgo } from '@/app/helpers'
 import React from 'react'
 
-const UserInfo = ({ userInfo, articleInfo, group }) => {
+const UserInfo = ({ userInfo, articleInfo, group , online }) => {
     return (
         <div className="user">
             <div className="profile-photo">
