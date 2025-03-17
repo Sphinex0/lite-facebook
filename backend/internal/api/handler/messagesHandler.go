@@ -1,6 +1,8 @@
 package handler
 
 import (
+	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"slices"
@@ -58,7 +60,6 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			Conversations: conversations,
 			OnlineUsers:   getOnlineUsers(conversations),
 		}
-		
 		if err := conn.WriteJSON(initialMsg); err != nil {
 			fmt.Println("Initial message send error:", err)
 			return
@@ -68,6 +69,43 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 
 		for {
 			var msg models.WSMessage
+			typeMessage, message, err := conn.ReadMessage()
+			if err != nil {
+				if websocket.IsUnexpectedCloseError(err) {
+					fmt.Printf("WebSocket closed: %v\n", err)
+				}
+				break
+			}
+
+			if typeMessage == websocket.BinaryMessage {
+				fmt.Println(len(message))
+				if len(message) < 4 {
+					fmt.Println("short")
+					continue
+				}
+				idLen := binary.LittleEndian.Uint32(message[0:4])
+				fmt.Println(idLen)
+				if len(message) < int(idLen)+4 {
+					fmt.Println("short dfdf")
+					continue
+				}
+				fmt.Println("idLen", idLen)
+				err = json.Unmarshal(message[4:4+idLen], &msg)
+				if err != nil {
+					fmt.Printf("error n json: %v\n", err)
+					break
+				}
+				fmt.Println(msg)
+
+			} else if typeMessage == websocket.TextMessage {
+				err = json.Unmarshal(message, &msg)
+				if err != nil {
+					fmt.Printf("error n json: %v\n", err)
+					break
+				}
+				fmt.Println(message)
+			}
+
 			if err := conn.ReadJSON(&msg); err != nil {
 				if websocket.IsUnexpectedCloseError(err) {
 					fmt.Printf("WebSocket closed: %v\n", err)
@@ -75,6 +113,7 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 				break
 			}
 			msg.Message.SenderID = user.ID
+			fmt.Println(msg)
 			handleMessage(msg, h, conn)
 		}
 
@@ -151,9 +190,15 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			sendError(msg.Message.SenderID, "Not authorized for this conversation")
 			return
 		}
-
-		if err := h.Service.CreateMessage(&msg.Message); err != nil {
+		var err error
+		if err = h.Service.CreateMessage(&msg.Message); err != nil {
 			fmt.Println("Create message error:", err)
+			sendError(msg.Message.SenderID, "Failed to send message")
+			return
+		}
+
+		if msg.UserInfo, err = h.Service.GetUserByID(msg.Message.SenderID); err != nil {
+			fmt.Println("Get user error", err)
 			sendError(msg.Message.SenderID, "Failed to send message")
 			return
 		}
@@ -257,3 +302,36 @@ func uniqueInts(slice []int) []int {
 	}
 	return list
 }
+
+func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.Request) {
+	_, data, err := Handler.AfterGet(w, r)
+	if err != nil {
+		return
+	}
+	messages, err := Handler.Service.FetchMessagesHestories(data.Before, data.ConversationID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, messages)
+}
+
+/*
+func HandleImage(path string, buffer []byte) string {
+	// extensions := []string{".png", ".jepg", ".gif", ".jpg"}
+	// extIndex := slices.IndexFunc(extensions, func(ext string) bool {
+	// 	return strings.HasSuffix(fileheader.Filename, ext)
+	// })
+	// if extIndex == -1 {
+	// 	return ""
+	// }
+	//+extensions[extIndex]
+	imageName, _ := uuid.NewV4()
+	err := os.WriteFile("../front-end/public/images/"+imageName.String()+".png", buffer, 0o644) // Safer permissions
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return imageName.String() + extensions[extIndex]
+}
+*/

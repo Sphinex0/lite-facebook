@@ -8,3 +8,23 @@
 
 // coockie exeoiring in the update after login
 // add the session in the sessions table
+//create a db
+// sing up && login functunality
+// groups
+// request
+// chat privet && public
+// accept and reject
+// profile user
+
+// coockie exeoiring in the update after login
+// add the session in the sessions table
+
+
+/ =>/posts
+/profile
+/profile/id
+/requests
+/groups
+/group/id
+/notifications
+

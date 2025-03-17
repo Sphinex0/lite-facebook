@@ -20,6 +20,7 @@ func CORS(next http.Handler) http.Handler {
 		// List of allowed origins (you can modify it based on your needs)
 		allowedOrigins := []string{
 			"http://localhost:3000",
+			"http://10.1.8.6:3000",
 		}
 
 		// Get the `Origin` header from the request
@@ -33,7 +34,6 @@ func CORS(next http.Handler) http.Handler {
 				break
 			}
 		}
-
 		// Set the CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
@@ -62,7 +62,7 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			return strings.Contains(r.URL.Path, ext)
 		})
 
-		cookie, err := r.Cookie("session_id")
+		cookie, err := r.Cookie("session_token")
 		if Hasallowed == -1 {
 			if err != nil {
 				fmt.Println(err)
@@ -71,12 +71,14 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			}
 			uuid, err := uuid.FromString(cookie.Value)
 			if err != nil {
+				fmt.Println(err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}
 
 			user, err := repository.GetUserByUuid(db, uuid)
 			if err != nil {
+				fmt.Println(err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}

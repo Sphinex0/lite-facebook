@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import './login.css'
+import styles from './login.module.css'
 
 export default function Login () {
   const [email, setEmail] = useState('')
@@ -38,7 +38,7 @@ export default function Login () {
   }
 
   return (
-    <div className='container'>
+    <div className={styles.container}>
       <div className='form-box'>
         <h2>Login</h2>
 

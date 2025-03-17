@@ -1,0 +1,50 @@
+
+.blue{
+    color: blue;
+}
+.red{
+    color: red;
+}
+
+.ArticleActionBtn{
+    padding: 1px;
+    cursor: pointer;
+    vertical-align: middle;
+    width: 24px;
+    height: auto;
+}
+
+.footerText{
+    font-size: medium;
+    margin-right: 10px;
+    padding-inline: 10px;
+}
+.content{
+    white-space: pre-wrap;
+    text-align: left;
+    padding: 10px;
+    line-break:anywhere;
+}
+
+.PreviewContent{
+    max-height: 300px;
+    overflow: auto;
+}
+
+.image{
+    margin: auto;
+    width: auto;
+    max-height: 300px;
+}
+
+.OpenInNew{
+    color: white;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.imageHolder{
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.616);
+}
