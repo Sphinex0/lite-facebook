@@ -6,7 +6,7 @@ import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Navbar () {
   const [bool, setbool] = useState(false)
