@@ -140,6 +140,7 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 
 		err1 := rows.Scan(tab...)
 		if err1 != nil {
+			fmt.Println("here")
 			fmt.Println(err1)
 			continue
 		}

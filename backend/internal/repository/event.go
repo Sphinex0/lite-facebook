@@ -54,7 +54,7 @@ func (data *Database) SaveOptionEvent(Event *models.EventOption) (err error) {
 }
 
 func (data *Database) OptionEvent(id int) (*sql.Rows, error) {
-	res, err := data.Db.Query(`SELECT * FROM event_options WHERE even_id = ?`, id)
+	res, err := data.Db.Query(`SELECT * FROM event_options WHERE event_id = ?`, id)
 	if err != nil {
 		return nil, err
 	}

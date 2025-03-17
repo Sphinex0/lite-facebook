@@ -1,6 +1,7 @@
+import { timeAgo } from '@/app/helpers'
 import React from 'react'
 
-const UserInfo = ({ userInfo, articleInfo , group }) => {
+const UserInfo = ({ userInfo, articleInfo, group }) => {
     return (
         <div className="user">
             <div className="profile-photo">
@@ -9,10 +10,14 @@ const UserInfo = ({ userInfo, articleInfo , group }) => {
             <div className="ingo">
                 <h3>
                     {
-                        group.title || `${userInfo.first_name} ${userInfo.last_name}`
+                        (group && group.title) || userInfo && `${userInfo.first_name} ${userInfo.last_name}`
                     }
                 </h3>
-                {articleInfo && <small>{timeAgo(articleInfo.created_at)}</small>}
+                {articleInfo && articleInfo.parent == null &&
+                    <>
+                        <small>{articleInfo.privacy}</small> . <small>{timeAgo(articleInfo.created_at)}</small>
+                    </>
+                }
             </div>
         </div>
     )

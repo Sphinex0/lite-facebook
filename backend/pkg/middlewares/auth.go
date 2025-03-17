@@ -34,7 +34,6 @@ func CORS(next http.Handler) http.Handler {
 				break
 			}
 		}
-		fmt.Println(allowOrigin,origin)
 		// Set the CORS headers
 		w.Header().Set("Access-Control-Allow-Origin", allowOrigin)
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH")
@@ -63,8 +62,7 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			return strings.Contains(r.URL.Path, ext)
 		})
 
-		cookie, err := r.Cookie("session_id")
-		fmt.Println(err)
+		cookie, err := r.Cookie("session_token")
 		if Hasallowed == -1 {
 			if err != nil {
 				fmt.Println(err)
@@ -73,12 +71,14 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			}
 			uuid, err := uuid.FromString(cookie.Value)
 			if err != nil {
+				fmt.Println(err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}
 
 			user, err := repository.GetUserByUuid(db, uuid)
 			if err != nil {
+				fmt.Println(err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}

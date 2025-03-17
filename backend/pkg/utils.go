@@ -67,14 +67,14 @@ func GetExecFields(s interface{}, excludeFields ...string) []interface{} {
 	return fields
 }
 
-// transform the next set and delete cookie to gorillamux once //
-
 func SetSessionCookie(w http.ResponseWriter, uuid string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session_id",
+		Name:   "session_token",
 		Value:  uuid,
 		Path:   "/",
-		MaxAge: 3600 * 24,
+		HttpOnly: true,
+		MaxAge: 31536000,
+		SameSite: http.SameSiteLaxMode,
 	})
 }
 

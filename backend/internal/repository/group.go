@@ -37,6 +37,7 @@ func (data *Database) GetGroupById(id int) *sql.Row{
     return res
 }
 
+
 func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
 	res := data.Db.QueryRow(`SELECT creator FROM groups Where id =?`, group_ID)
 	var id int
@@ -49,4 +50,13 @@ func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
 		return true, nil
 	}
 	return false, fmt.Errorf("not create group")
+}
+
+
+
+func (data *Database) Getmember(id int) (*sql.Rows,error){
+	query := `SELECT group_id FROM invites WHERE (sender = ? OR receiver = ?) AND status = "accepted"`
+
+    return data.Db.Query(query, id, id)
+
 }

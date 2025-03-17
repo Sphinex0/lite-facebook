@@ -9,3 +9,9 @@ type Follower struct {
 	CreatedAt int    `json:"created_at"`
 	ModifiedAt int    `json:"modified_at"`
 }
+
+type FollowWithUser struct {
+	UserInfo
+	CreatedAt int    `json:"created_at"`
+	ModifiedAt int    `json:"modified_at"`
+}

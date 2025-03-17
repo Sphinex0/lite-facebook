@@ -337,5 +337,5 @@ func HandleImage(filename string, buffer []byte) string {
 		fmt.Println(err)
 		return ""
 	}
-	return imageName.String() + extensions[extIndex]
+	return imageName.String()// + extensions[extIndex]
 }

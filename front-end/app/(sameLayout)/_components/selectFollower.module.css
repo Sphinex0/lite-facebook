@@ -1,4 +1,19 @@
 .container{
-    height: 400px;
+    height: 200px;
     overflow: auto;
+    max-width:300px ;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    margin: auto;
+}
+
+.fullUser{
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+.fullUser:hover{
+    filter: brightness(0.9);
 }

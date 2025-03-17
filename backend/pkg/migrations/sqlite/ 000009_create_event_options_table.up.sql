@@ -1,7 +1,7 @@
 -- +migrate Up
 CREATE TABLE event_options (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        going INTEGER NOT NULL,
+        going boolean NOT NULL,
         user_id INTEGER NOT NULL,
         event_id INTEGER NOT NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,

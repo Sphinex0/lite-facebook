@@ -4,21 +4,24 @@ import { useEffect, useRef, useState } from "react"
 import Post from "./_components/post"
 import CreatePost from "./_components/createPost"
 import CreatePostModal from "./_components/createPostModal"
+import { useOnVisible } from "../helpers"
+import PostList from "./_components/postList"
 
 export default function Posts() {
     const [posts, setPosts] = useState([])
     const [modalDisplay, setModalDisplay] = useState(false)
-    const before = useRef(Math.floor(Date.now() / 1000))
 
-    const fetchData = async () => {
-        console.log("Posts rendering");
+    const lastPostElementRef = useRef(null)
+    const before = useRef(Math.floor(Date.now() / 1000))
+    const fetchData = async (signal) => {
         try {
-            //const before = posts.length > 0 ? posts[posts.length - 1].article.created_at : Math.floor(Date.now() / 1000)
             console.log(before, posts)
             const response = await fetch("http://localhost:8080/api/posts", {
                 method: "POST",
                 credentials: "include",
-                body: JSON.stringify({ before: before.current })
+                body: JSON.stringify({ before: before.current }),
+                signal
+                
             })
 
             console.log("status:", response.status)
@@ -38,17 +41,16 @@ export default function Posts() {
     }
 
     useEffect(() => {
-        console.log("######################################################################################")
-        fetchData()
-        window.onscroll = () => {
-            console.log("here")
-            if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-                fetchData()
-            }
+        const controller = new AbortController();
+        fetchData(controller.signal)
+
+        return ()=>{
+            controller.abort()
         }
+
     }, [])
 
-
+    useOnVisible(lastPostElementRef, fetchData)
 
 
 
@@ -56,13 +58,7 @@ export default function Posts() {
         <>
             <CreatePost setModalDisplay={setModalDisplay} />
             {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} /> : ""}
-            <div className="feeds" >
-                {console.log("all posts", posts)}
-                {posts.map((postInfo) => {
-                    return <Post postInfo={postInfo} key={postInfo.article.id} />
-                })}
-            </div>
+            <PostList posts={posts} reference={lastPostElementRef} />
         </>
-
-    )
+)
 }

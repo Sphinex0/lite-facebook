@@ -108,7 +108,7 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
-	
+
 	utils.WriteJson(w, http.StatusOK, followers)
 }
 

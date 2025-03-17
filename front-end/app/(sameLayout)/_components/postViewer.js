@@ -1,58 +1,73 @@
-import { ThumbUp, ThumbDown, Comment } from "@mui/icons-material";
+import { ThumbUp, ThumbDown, OpenInNew } from "@mui/icons-material";
 import styles from './post.module.css';
-import { timeAgo } from "@/app/helpers";
+import { timeAgo, useOnVisible } from "@/app/helpers";
 import CreateComment from "./createComment";
+import { useEffect, useRef, useState } from "react";
+import Comment from "./comment";
+import UserInfo from "./userInfo";
+import Link from "next/link";
 
-export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setPostViewDisplay }) {
+export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setCommentCount, setPostViewDisplay }) {
+  const [comments, setComments] = useState([])
+  const lastElementRef = useRef(null)
+  const before = useRef(Math.floor(Date.now() / 1000))
+
   const hide = (e) => {
     if (e.target.classList.contains('customize-theme')) {
       setPostViewDisplay(false)
     }
   }
+
+
+  const fetchComments = async (signal) => {
+    try {
+      const response = await fetch("http://localhost:8080/api/comments", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({ before: before.current, parent: postInfo.article.id }),
+        signal
+      })
+
+      console.log("status:", response.status)
+      if (response.ok) {
+        const commentsData = await response.json()
+        console.log(commentsData)
+        if (commentsData) {
+
+
+            setComments((prv) => [...prv, ...commentsData])
+          
+
+          before.current = commentsData[commentsData.length - 1].article.created_at
+          console.log("last created at", commentsData[commentsData.length - 1].article.created_at)
+        }
+      }
+
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchComments(controller.signal)
+    return ()=>controller.abort()
+  }, [])
+  useOnVisible(lastElementRef, fetchComments)
+
+
   return (
-    // <div className="post-viewer">
-    //   {/* Existing content, e.g., post details or comments */}
-    //   <h2>{postInfo.article.content}</h2>
-
-    //   {/* Like and Dislike buttons */}
-    //   <div className="action-button">
-    //     <div className="action-buttons">
-    //       <span>
-    //         <ThumbUp
-    //           onClick={() => likePost(1, postInfo.article.id)}
-    //           className={`${likeState === 1 ? styles.blue : ""} ${styles.ArticleActionBtn}`}
-    //         />
-    //         <span className={styles.footerText}>{likes}</span>
-    //         <ThumbDown
-    //           onClick={() => likePost(-1, postInfo.article.id)}
-    //           className={`${likeState === -1 ? styles.red : ""} ${styles.ArticleActionBtn}`}
-    //         />
-    //         <span className={styles.footerText}>{disLikes}</span>
-
-    //         <span className={styles.footerText}>{commentsCount}</span>
-    //       </span>
-    //     </div>
-    //   </div>
-    // </div>
     <div className="customize-theme" onClick={hide}>
       <div className="card">
         <h2>Post</h2>
         <div className="feed">
+        {postInfo.group_name ?<div> <strong> Group </strong>: {<Link href={`/groups/${postInfo.article.group_id}`}>{postInfo.group_name}</Link>}</div> : ""}
           <div className="head">
-            <div className="user">
-              <div className="profile-photo">
-                <img src="./images/profile-13.jpg" />
-              </div>
-              <div className="ingo">
-                <h3>{postInfo.user_info.first_name} {postInfo.user_info.last_name}</h3>
-                <small>{timeAgo(postInfo.article.created_at)}</small>
-              </div>
-            </div>
+            <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article}/>
           </div>
-          <p>
-            {postInfo.article.content}
-          </p>
-          {postInfo.article.image && <img src="./images/feed-1.jpg" />}
+          <div className={`${styles.content} ${styles.PreviewContent}`}>{postInfo.article.content}</div>
+
+          {postInfo.article.image &&<div className={styles.imageHolder}> <img className={styles.image} src="./images/feed-1.jpg" /> <a href="./images/feed-1.jpg" target="_blank" className={styles.OpenInNew}><OpenInNew/></a> </div>}
 
           <div className="action-button">
             <div className="action-buttons">
@@ -70,30 +85,16 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
             </div>
           </div>
         </div>
-        {/* <form
-          className={styles.form}
-          onSubmit={(e) => {
-            //   e.preventDefault();
-            //   addComment(commentContent);
-            //   setCommentContent('');
-          }}
-        >
-          <textarea
-            className={styles.textInput}
-            //value={commentContent}
-            //onChange={(e) => setCommentContent(e.target.value)}
-            placeholder="Write a comment..."
-          ></textarea>
-          <button type="submit" className="btn btn-primary">Comment</button>
-        </form> */}
-        <CreateComment />
+
+        <p style={{ textAlign: "left" }}>Comments :</p>
+        <CreateComment setComments={setComments} setCommentCount={setCommentCount} parent={postInfo.article.id} />
         <div className="comments">
-          {/*comments.map((comment) => (
-          <div key={comment.id} className="comment">
-            <p>{comment.author}</p>
-            <div style={{ whiteSpace: 'pre-wrap' }}>{comment.content}</div>
-          </div>
-        ))*/}
+          {comments.length === 0 ? <h5> no comments yet</h5> : comments.map((comment) => {
+            return <Comment key={comment.article.id} commentInfo={comment} reference={lastElementRef}/>
+          }
+
+          )}
+
         </div>
       </div>
     </div>
