@@ -345,7 +345,7 @@ main .container .left .profile {
     justify-content: space-between;
 }
 
-.middle .feed .user {
+ .user {
     display: flex;
     gap: 1rem;
 }

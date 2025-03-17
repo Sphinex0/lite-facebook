@@ -127,6 +127,10 @@
     text-overflow: ellipsis;
 }
 
+.styles.userImage {
+    width: 100px;
+}
+
 .conversationPreview {
     margin: 0;
     font-size: 0.8rem;

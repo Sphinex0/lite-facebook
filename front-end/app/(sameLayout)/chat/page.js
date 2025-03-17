@@ -4,6 +4,7 @@ import styles from "./styles.module.css";
 import Message from "@/app/(sameLayout)/chat/_components/message";
 import { AddPhotoAlternate, Cancel, EmojiEmotions, Send } from "@mui/icons-material";
 import { emojis } from "./_components/emojis";
+import UserInfo from "../_components/userInfo";
 
 export default function Chat() {
     const [clientWorker, setClientWorker] = useState(null);
@@ -35,7 +36,6 @@ export default function Chat() {
     }, []);
 
     useEffect(() => {
-        console.log("conversations => ", conversations)
         conversationsRef.current = conversations
     }, [conversations])
 
@@ -73,7 +73,6 @@ export default function Chat() {
                 case "conversations":
                     const onlineUsers = data.online_users;
                     setConversations(data.conversations.map(conv => {
-                        // Fixed: Handle group conversations properly
                         if (conv.user_info) {
                             return {
                                 ...conv,
@@ -83,15 +82,14 @@ export default function Chat() {
                                 }
                             };
                         }
-                        return conv; // Keep group conversations as-is
+                        return conv;
                     }));
                     break;
 
                 case "online":
                 case "offline":
-                    // Fixed: Assuming server sends user ID in data.message.user_id
                     setConversations(prev => prev.map(conv => {
-                        if (conv.user_info?.id === data.message.user_id) {
+                        if (conv.user_info?.id === data.user_info.id) {
                             return {
                                 ...conv,
                                 user_info: {
@@ -105,18 +103,30 @@ export default function Chat() {
                     break;
 
                 case "new_message":
-                    // Fixed: Use data.message instead of data
                     const msg = data.message;
                     const conversationId = msg.conversation_id;
 
                     setConversations(prev => {
                         const conversation = prev.find(c => c.conversation.id === conversationId);
-                        if (!conversation) return prev;
-                        return [conversation, ...prev.filter(c => c.conversation.id !== conversationId)];
+                        if (conversation) {
+                            return [conversation, ...prev.filter(c => c.conversation.id !== conversationId)];
+                        } else {
+                            return [
+                                {
+                                    conversation: {
+                                        id: msg.conversation_id
+                                    },
+                                    user_info: {
+                                        ...data.user_info,
+                                        online: true
+                                    }
+                                },
+                                ...prev]
+                        }
                     });
 
                     if (selectedConversationRef.current?.id === conversationId) {
-                        setMessages(prev => [...prev, msg]); // Fixed: Use msg instead of data
+                        setMessages(prev => [...prev, data]);
                     }
                     break;
                 default:
@@ -315,17 +325,16 @@ export default function Chat() {
                                 }`}
                             onClick={() => handleSetSelectedConversation(conversation)}
                         >
-                            <h5 className={styles.conversationTitle}>
-                                {
-                                    user_info.online && " online "
-                                }
-                                {displayText}
-
-                            </h5>
+                            <UserInfo userInfo={user_info} group={group} />
                         </div>
                     );
                 })}
             </div>
         </div>
+        
     );
 }
+
+// {
+//     user_info.online && " online "
+// }
