@@ -36,6 +36,7 @@ body {
 
 }
 
+/* 
 *,
 *::before,
 *::after {
@@ -46,7 +47,7 @@ body {
     text-decoration: none;
     list-style: none;
     border: none;
-}
+} */
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -62,7 +63,7 @@ body {
 }
 
 .profile-photo {
-    width: 2.7rem;
+    width: 50px;
     aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
@@ -361,6 +362,52 @@ main .container .left .profile {
     gap: 1rem;
     font-size: .85rem;
     line-height: 1.5;
+}
+
+/* 
+.online {
+    position: relative;
+    z-index: 200;
+}
+
+.online::after {
+    content: "";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 10px;
+    
+    background-color: #0fcc45;
+    border-radius: 50%;
+    
+    position: absolute;
+    right: 0;
+} */
+.profile-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-photo {
+    /* Your styles, e.g., border-radius: 50%; overflow: hidden; */
+}
+
+.status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.status.online {
+    background-color: limegreen;
+}
+
+.status.offline {
+    background-color: lightgray;
 }
 
 .imagePreview {

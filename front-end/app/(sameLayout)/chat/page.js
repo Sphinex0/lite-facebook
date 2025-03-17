@@ -296,6 +296,7 @@ export default function Chat() {
             <div className={styles.conversationsList}>
                 {conversations.map((conversationInfo) => {
                     const { conversation, user_info, group } = conversationInfo;
+                    const onlineDiv = true
                     return (
                         <div
                             key={`conv-${conversation.id}`}
@@ -303,7 +304,7 @@ export default function Chat() {
                                 }`}
                             onClick={() => handleSetSelectedConversation(conversation)}
                         >
-                            <UserInfo userInfo={user_info} group={group} />
+                            <UserInfo userInfo={user_info} group={group} onlineDiv={onlineDiv} />
                         </div>
                     );
                 })}

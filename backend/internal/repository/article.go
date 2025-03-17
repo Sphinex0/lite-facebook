@@ -91,7 +91,7 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 	query := `
 		SELECT
 			A.*,
-			COALESCE((SELECT like FROM likes L WHERE L.user_id = ? AND L.article_id = A.id),0) as like
+			COALESCE((SELECT like FROM likes L WHERE L.user_id = ? AND L.article_id = A.id), 0) as like
 		FROM
 			article_view A
 			LEFT JOIN followers F ON A.user_id = F.user_id
@@ -99,10 +99,14 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 			AND F.status = 'accepted'
 			LEFT JOIN permited_users P ON A.id = P.article_id
 			AND P.user_id = ?
+			LEFT JOIN invites I ON A.group_id = I.group_id AND I.status = "accepted" AND (I.sender = ? OR I.receiver = ?)
 		WHERE
 			parent IS NULL
 			AND (
-				A.privacy = 'public'
+				A.privacy = 'public' AND (
+					A.group_id IS NULL
+					OR I.group_id IS NOT NULL
+				)
 				OR (
 					A.id = ?
 				)
@@ -114,15 +118,15 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 					A.privacy = 'private'
 					AND P.user_id IS NOT NULL
 				)
-    		)
+			)
 			AND A.created_at < ?
-
-        ORDER BY A.created_at DESC
-        LIMIT 10
+		ORDER BY A.created_at DESC
+		LIMIT 10
 	`
 
-	rows, err := data.Db.Query(query, id, id, id, id, before)
+	rows, err := data.Db.Query(query, id, id, id, id,id, id, before)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 	for rows.Next() {
