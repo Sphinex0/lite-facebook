@@ -22,7 +22,6 @@ export default function Login () {
 
       if (response.status == 200) {
         const data = await response.json()
-        document.cookie = `session_token=${data.uuid}; Path=/; Max-Age=31536000`
         sessionStorage.setItem('first_name', data.first_name)
         sessionStorage.setItem('last_name', data.last_name)
         sessionStorage.setItem('Nickname', data.nickname)

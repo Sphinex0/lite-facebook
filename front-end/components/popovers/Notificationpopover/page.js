@@ -1,65 +1,9 @@
-import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import './notification.css'
 
-const Notifications = () => {
-  const [notifications, setNotifications] = useState([
-    {
-      type: 'follow-request',
-      invoker: 'hamza'
-    },
-    {
-      type: 'invitation-request',
-      invoker: 'ayoub',
-      group: 'programming'
-    },
-    {
-      type: 'joine',
-      invoker: 'imad',
-      group: 'fitness'
-    },
-    {
-      type: 'event-created',
-      group: 'knowledge',
-      invoker: 'mustafa'
-    },
-  ]);
-  const [notificationCount, setNotificationCount] = useState(3);
-
-  const [Err, setError] = useState("")
-/*  useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-       
-        const response = await fetch("http://localhost:8080/api/GetNotification",{
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include', 
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setNotifications(data.notifications);
-          setNotificationCount(data.count); 
-        } else {
-          setError("error while fetching notifications");
-        }
-      } catch (error) {
-        setError("error while fetching notifications");
-        console.error('Error fetching notifications:', error);
-      }
-    };
-
-    fetchNotifications();
-  }, []);*/
-
-  console.log(notificationCount);
-  
+const Notifications = ({ notifications = [], Err }) => {
   return (
     <div className="notification-wrapper">
-      {notificationCount != 0 && <span className="count">{notificationCount}</span>}
       <div className="notification-container">
         {Err && <div className="notif-err">Error loading notifications. Please try again.</div>}
         {notifications.map((notification, index) => {
