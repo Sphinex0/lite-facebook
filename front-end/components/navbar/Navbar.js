@@ -40,7 +40,7 @@ export default function Navbar () {
 
   useEffect(() => {
       const storedData = sessionStorage.getItem("Image");
-      if (storedData && storedData!="null") {
+      if (storedData!="null") {
         setImage(storedData);
       }
 
