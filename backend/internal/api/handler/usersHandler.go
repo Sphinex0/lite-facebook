@@ -124,3 +124,28 @@ func (Handler *Handler) HandleUpdateProfile(w http.ResponseWriter, r *http.Reque
 
 	utils.WriteJson(w, http.StatusOK, "profile updated")
 }
+
+
+func (Handler *Handler) HandleGetProfilePosts(w http.ResponseWriter, r *http.Request) {
+	
+	user, data, err := Handler.AfterGet(w, r)
+	if err.Err != nil {
+		return
+	}
+	if data.UserID ==0{
+		data.UserID = user.ID
+	}
+
+	article_views, err := Handler.Service.FetchPostsByProfile(data.UserID, data.Before, user.ID)
+	if err.Err != nil {
+		log.Println(err)
+		if err.Err.Error() == "profile is private, follow to see"{
+			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+			return
+		}
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, article_views)
+}

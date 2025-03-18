@@ -55,13 +55,29 @@ func (service *Service) GetFollowCounts(profile *models.Profile) (err error) {
 }
 
 func (service *Service) ModifyProfile(profile *models.User) (err error) {
-	
-	if (profile.Privacy != "public" && profile.Privacy != "private"){
+	if profile.Privacy != "public" && profile.Privacy != "private" {
 		err = fmt.Errorf("bad request")
-		return 
+		return
 	}
 
 	err = service.Database.UpdateUserPrivacy(profile)
 	return
+}
 
+func (service *Service) FetchPostsByProfile(profile int, before int, currentUser int) (article_views []models.ArticleView, err models.Error) {
+	status, _ := service.Database.GetUserPrivacyByID(profile)
+	if profile != currentUser && status == "private" && !service.Database.IsFollow(profile, currentUser) {
+		// not all info
+		err.Err = fmt.Errorf("profile is private, follow to see")
+		return
+
+	} else {
+		// all info
+		article_views, err = service.Database.GetPostsByUserId(currentUser, profile, before)
+		if err.Err != nil {
+			return
+		}
+	}
+
+	return
 }

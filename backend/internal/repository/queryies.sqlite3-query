@@ -1344,7 +1344,6 @@ VALUES
         1676592000
     );
 
-
 INSERT INTO
     conversations
 VALUES
@@ -1368,4 +1367,54 @@ INSERT INTO
 VALUES
     (NULL, 1, 2, 'Hi', '', 0, 2, 1676592000);
 
-
+SELECT
+    A.*,
+    COALESCE(
+        (
+            SELECT
+                like
+            FROM
+                likes L
+            WHERE
+                L.user_id = 11
+                AND L.article_id = A.id
+        ),
+        0
+    ) as like
+FROM
+    article_view A
+    LEFT JOIN followers F ON A.user_id = F.user_id
+    AND F.follower = 11
+    AND F.status = 'accepted'
+    LEFT JOIN permited_users P ON A.id = P.article_id
+    AND P.user_id = 11
+    LEFT JOIN invites I ON A.group_id = I.group_id
+    AND I.status = "accepted"
+    AND (
+        I.sender = 11
+        OR I.receiver = 11
+    )
+WHERE
+    parent IS NULL
+    AND A.user_id = 11
+    AND (
+        A.privacy = 'public'
+        AND (
+            A.group_id IS NULL
+            OR I.group_id IS NOT NULL
+        )
+        OR (A.user_id = 11)
+        OR (
+            A.privacy = 'almost_private'
+            AND F.id IS NOT NULL
+        )
+        OR (
+            A.privacy = 'private'
+            AND P.user_id IS NOT NULL
+        )
+    )
+    AND A.created_at < 566466434642
+ORDER BY
+    A.created_at DESC
+LIMIT
+    10;

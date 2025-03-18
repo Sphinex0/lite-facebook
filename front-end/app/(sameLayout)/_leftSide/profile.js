@@ -17,6 +17,7 @@ const Profile = () => {
         </div>
     </Link>
     )
+    
 }
 
 export default Profile;

@@ -1,6 +1,6 @@
 'use client'
 import { AddPhotoAlternate, Public, SentimentDissatisfiedSharp } from '@mui/icons-material'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import styles from './createPostModal.module.css'
 import SelectFollower from './selectFollower'
 import { addArticle } from '@/app/helpers'
@@ -21,7 +21,9 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
     if (added) {
       setModalDisplay(false)
       setContent("")
+      setImagePreview("")
     }
+
 
   }
 
@@ -44,11 +46,10 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
             placeholder={"What's on your mind, Diana ?"}>
           </textarea>
 
-           
-          
           <input
             type="file"
             id='postImage'
+            name='image'
             onChange={(e) => {
               if (e.target.files[0]) {
                 const file = e.target.files[0]
