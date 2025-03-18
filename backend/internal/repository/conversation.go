@@ -43,7 +43,7 @@ func (data *Database) VerifyConversation(id1, id2 int, type_obj string) (err err
 func (data *Database) GetConversations(id int) (conversations []models.ConversationsInfo, err error) {
 	query := `
 		SELECT
-			C.*
+			C.*,COALESCE((SELECT content FROM messages M WHERE M.conversation_id = C.id),"") as last_message
 		FROM
 			conversations C
 		WHERE
@@ -82,7 +82,8 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 	defer rows.Close()
 	for rows.Next() {
 		var conv models.ConversationsInfo
-		err1 := rows.Scan(utils.GetScanFields(&conv.Conversation)...)
+		tab := append(utils.GetScanFields(&conv.Conversation),&conv.LastMessage)
+		err1 := rows.Scan(tab...)
 		if err1 != nil {
 			fmt.Println(err1)
 		}
