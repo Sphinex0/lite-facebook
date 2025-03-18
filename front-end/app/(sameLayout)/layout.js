@@ -26,9 +26,9 @@ export default function MainLayout({ children }) {
     };
   }, []);
 
-  useEffect(() => {
-    console.log("conversations", conversations)
-  }, [conversations])
+  // useEffect(() => {
+  //   console.log("conversations", conversations)
+  // }, [conversations])
 
 
 

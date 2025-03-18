@@ -153,7 +153,7 @@ func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileH
 		return "", errors.New("failed to save file")
 	}
 
-	return filePath, nil
+	return randomstr+extensions[extIndex], nil
 }
 
 func GenerateUuid() string {
