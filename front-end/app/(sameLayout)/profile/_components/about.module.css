@@ -1,0 +1,12 @@
+.infoItem{
+    display: flex;
+    flex-direction: column;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 10px;
+}
+.infoItem span{
+    border-bottom:1px solid #ccc;
+    padding: 5px;
+    margin-bottom: 5px;
+}
