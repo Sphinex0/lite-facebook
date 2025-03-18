@@ -37,6 +37,11 @@ body {
 
 }
 
+a{
+    color: unset;
+    text-decoration: none;
+}
+
 /* 
 *,
 *::before,
@@ -96,6 +101,7 @@ img {
     flex-shrink: 0;
     height: fit-content;
     align-self: center;
+    border: none;
 }
 
 .text-bold {
@@ -583,7 +589,7 @@ main .container .right {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 100%;
+    z-index: 100;
     text-align: center;
     display: grid;
     place-items: center;
@@ -597,13 +603,11 @@ main .container .right {
     width: 50%;
     box-shadow: 0 0 1rem var(--color-primary);
     max-height: 85vh;
-    margin-top: 80px;
     overflow: auto;
 }
 
 .comments {
     overflow: auto;
-    height: 300px;
 }
 
 
