@@ -23,16 +23,24 @@ func (data *Database) SaveMessage(msg *models.WSMessage) (err error) {
 	if msg.Message.Reply != nil {
 		err = data.Db.QueryRow(`
 			SELECT content FROM messages WHERE id = ?
-		`,msg.Message.Reply).Scan(&msg.ReplyContent)
+		`, msg.Message.Reply).Scan(&msg.ReplyContent)
 	}
 
-	// conv msg.Message.ConversationID 
+	// conv msg.Message.ConversationID
 	data.Db.Exec(`
-		UPDATE invites 
+		UPDATE members
 		SET seen = seen + 1
-		WHERE reciver 
-	`) 
+		WHERE conversation_id = ? AND member = ?
+	`, msg.Message.ConversationID, msg.Message.SenderID)
+
 	// Members
+
+	data.Db.Exec(`
+		UPDATE me
+		SET seen = seen + 1
+		WHERE conversation_id = ? AND member = ?
+	`, msg.Message.ConversationID, msg.Message.SenderID)
+
 	return
 }
 
