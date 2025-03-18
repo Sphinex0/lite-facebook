@@ -26,7 +26,7 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 	} else if err == sql.ErrNoRows {
 		err = nil
 		var status string
-		status, err = S.Database.GetUserPrivacyByID(follow)
+		status, err = S.Database.GetUserPrivacyByID(follow.UserID)
 		if err != nil {
 			log.Println("error checking targeted user privacy")
 
@@ -41,14 +41,14 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		err = S.Database.SaveFollow(follow)
 		if err != nil {
 			log.Println("error saving the follow")
-		}else {
+		} else {
 			if follow.Status == "accepted" {
 				conv := models.Conversation{
-					Entitie_one: follow.Follower,
+					Entitie_one:      follow.Follower,
 					Entitie_two_user: &follow.UserID,
-					Type: "private",
+					Type:             "private",
 				}
-			
+
 				S.Database.CreateConversation(&conv)
 			}
 		}
@@ -66,13 +66,13 @@ func (S *Service) FollowDecision(follow *models.Follower) (err error) {
 
 	if follow.Status == "accepted" {
 		err = S.Database.AcceptFollowRequest(follow)
-		if err == nil{
+		if err == nil {
 			conv := models.Conversation{
-				Entitie_one: follow.Follower,
+				Entitie_one:      follow.Follower,
 				Entitie_two_user: &follow.UserID,
-				Type: "private",
+				Type:             "private",
 			}
-		
+
 			S.Database.CreateConversation(&conv)
 		}
 	} else if follow.Status == "rejected" {
@@ -85,16 +85,37 @@ func (S *Service) FollowDecision(follow *models.Follower) (err error) {
 	return
 }
 
-func (S *Service) GetFollowRequests(user *models.UserInfo, before int) (requesters []models.UserInfo,err error) {
-	requesters , err = S.Database.GetFollowRequests(user, before)
+func (S *Service) GetFollowRequests(user *models.UserInfo, before int, currentUser int) (requesters []models.UserInfo, err error) {
+	status, _ := S.Database.GetUserPrivacyByID(user.ID)
+	if user.ID != currentUser && status == "private" && !S.Database.IsFollow(user.ID, currentUser) {
+		// not all info
+		err = fmt.Errorf("profile is private, follow to see")
+		return
+
+	}
+	requesters, err = S.Database.GetFollowRequests(user, before)
 	return
 }
 
-func (S *Service) GetFollowers(user *models.UserInfo, before int) (followers []models.FollowWithUser,err error) {
-	followers , err = S.Database.GetFollowers(user, before)
+func (S *Service) GetFollowers(user *models.UserInfo, before int, currentUser int) (followers []models.FollowWithUser, err error) {
+	status, _ := S.Database.GetUserPrivacyByID(user.ID)
+	if user.ID != currentUser && status == "private" && !S.Database.IsFollow(user.ID, currentUser) {
+		// not all info
+		err = fmt.Errorf("profile is private, follow to see")
+		return
+
+	}
+	followers, err = S.Database.GetFollowers(user, before)
 	return
 }
-func (S *Service) GetFollowings(user *models.UserInfo, before int) (followings []models.UserInfo,err error) {
-	followings , err = S.Database.GetFollowings(user, before)
+func (S *Service) GetFollowings(user *models.UserInfo, before int, currentUser int) (followings []models.FollowWithUser, err error) {
+	status, _ := S.Database.GetUserPrivacyByID(user.ID)
+	if user.ID != currentUser && status == "private" && !S.Database.IsFollow(user.ID, currentUser) {
+		// not all info
+		err = fmt.Errorf("profile is private, follow to see")
+		return
+
+	}
+	followings, err = S.Database.GetFollowings(user, before)
 	return
 }

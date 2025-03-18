@@ -45,6 +45,7 @@ func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
+	utils.WriteJson(w, http.StatusOK, follow)
 }
 
 // accept/reject follow request
@@ -86,9 +87,13 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	requesters, err := Handler.Service.GetFollowRequests(&user, timeBefore.Before)
+	requesters, err := Handler.Service.GetFollowRequests(&user, timeBefore.Before, user.ID)
 	if err != nil {
 		log.Println(err)
+		if err.Error() == "profile is private, follow to see"{
+			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+			return
+		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
@@ -96,14 +101,22 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 }
 
 func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Request) {
-	user, timeBefore, err := Handler.AfterGet(w, r)
+	user, data, err := Handler.AfterGet(w, r)
 	if err != nil {
 		return
 	}
-
-	followers, err := Handler.Service.GetFollowers(&user, timeBefore.Before)
+	var targetUser models.UserInfo
+	targetUser.ID = user.ID
+	if(data.UserID != 0){
+		targetUser.ID =data.UserID
+	}
+	followers, err := Handler.Service.GetFollowers(&targetUser, data.Before, user.ID)
 	if err != nil {
 		log.Println(err)
+		if err.Error() == "profile is private, follow to see"{
+			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+			return
+		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
@@ -112,14 +125,22 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 }
 
 func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Request) {
-	user, timeBefore, err := Handler.AfterGet(w, r)
+	user, data, err := Handler.AfterGet(w, r)
 	if err != nil {
 		return
 	}
-
-	followings, err := Handler.Service.GetFollowings(&user, timeBefore.Before)
+	var targetUser models.UserInfo
+	targetUser.ID = user.ID
+	if(data.UserID != 0){
+		targetUser.ID =data.UserID
+	}
+	followings, err := Handler.Service.GetFollowings(&targetUser, data.Before, user.ID)
 	if err != nil {
 		log.Println(err)
+		if err.Error() == "profile is private, follow to see"{
+			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+			return
+		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}

@@ -62,12 +62,14 @@ export default function ShowGroup({ params }) {
         {isAllowed 
         ? <button className={styles.editProfileBtn} 
         onClick={()=>{
-          joinGroup(id,setIsAllowed)
+          leaveGroup(id,setIsAllowed)
         }}
         >Leave Group</button>
+
+
         :<button className={styles.editProfileBtn} 
         onClick={()=>{
-          leaveGroup(id,setIsAllowed)
+          joinGroup(id,setIsAllowed)
         }}
         >Join Group</button>}
         

@@ -15,9 +15,7 @@
     display:flex;
     border-bottom:1px solid #ccc;
   }
-  .profileHeader *{
-  /* border:1px solid red; */
-  }
+  
   .g1{
     flex-grow:1;
     position:relative;

@@ -44,7 +44,8 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
             placeholder={"What's on your mind, Diana ?"}>
           </textarea>
 
-          {imagePreview && <img src={imagePreview} className="imagePreview" />}
+           
+          
           <input
             type="file"
             id='postImage'
@@ -63,8 +64,8 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
             className={styles.fileInput} />
 
           <div className={styles.footer}>
-            <label htmlFor="postImage">
-              <AddPhotoAlternate />
+            <label htmlFor="postImage" className={styles.addFile}>
+            {imagePreview ? <img src={imagePreview} className="imagePreview" /> : <AddPhotoAlternate />}
             </label>
 
             <input type="submit" value="Post" className="btn btn-primary" />
