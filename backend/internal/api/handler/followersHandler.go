@@ -82,8 +82,8 @@ func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Reque
 }
 
 func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.Request) {
-	user, timeBefore, err := Handler.AfterGet(w, r)
-	if err != nil {
+	user, timeBefore, err1 := Handler.AfterGet(w, r)
+	if err1.Err != nil {
 		return
 	}
 
@@ -101,8 +101,8 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 }
 
 func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Request) {
-	user, data, err := Handler.AfterGet(w, r)
-	if err != nil {
+	user, data, err1 := Handler.AfterGet(w, r)
+	if err1.Err != nil {
 		return
 	}
 	var targetUser models.UserInfo
@@ -125,8 +125,8 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 }
 
 func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Request) {
-	user, data, err := Handler.AfterGet(w, r)
-	if err != nil {
+	user, data, err1 := Handler.AfterGet(w, r)
+	if err1.Err != nil {
 		return
 	}
 	var targetUser models.UserInfo
