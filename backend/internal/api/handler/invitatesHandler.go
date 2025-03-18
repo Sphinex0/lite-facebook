@@ -11,24 +11,27 @@ import (
 )
 
 func (Handler *Handler) AddInvite(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("handel")
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
 	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
-	fmt.Println(user)
-	fmt.Println(ok)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
+	fmt.Println("user",user)
 	var Invite models.Invite
 	err := utils.ParseBody(r, &Invite)
+	Invite.Sender = user.ID
+	
+
+	fmt.Println(Invite)
 	if err != nil || Invite.Receiver == 0 || Invite.GroupID == 0 || Invite.Sender == Invite.Receiver {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
-	Invite.Sender = user.ID
 	if err := Handler.Service.CreateInvite(Invite); err != nil {
 		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")

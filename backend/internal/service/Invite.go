@@ -8,10 +8,8 @@ import (
 )
 
 func (service *Service) CreateInvite(Invites models.Invite) (err error) {
-	resA := service.Database.IsFollow(Invites.Sender, Invites.Receiver)
-	resB := service.Database.IsFollow(Invites.Receiver, Invites.Sender)
-	if resA && resB {
-
+	boolean := service.Database.IsCreatore(Invites.Receiver, Invites.GroupID)
+	if boolean {
 		Invites.Status = "pending"
 		id := 0
 		id, err = service.Database.Saveinvite(&Invites)
@@ -23,15 +21,20 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 				return fmt.Errorf("bad request")
 			}
 			err = service.Database.SaveInvite(&Invites)
-		} else {
-			Invites.ID = id
-			err = service.Database.DeleteInvites(&Invites)
 		}
-	} else {
-		return fmt.Errorf("not follow")
+	}else {
+		resA := service.Database.IsFollow(Invites.Sender, Invites.Receiver)
+		resB := service.Database.IsFollow(Invites.Receiver, Invites.Sender)
+		if resA && resB {
+		} else {
+			return fmt.Errorf("not follow")
+		}
 	}
+	
 	return
 }
+
+
 
 func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 	if Invites.Status == "accepted" {
@@ -64,6 +67,7 @@ func (S *Service) AllInvites(id int) ([]models.Invite, error) {
 
 	return Invites, nil
 }
+
 func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	rows, err := S.Database.Getallmembers(id)
 	if err != nil {
@@ -84,23 +88,22 @@ func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	return Invites, nil
 }
 
-
 func (S *Service) Members(Invite []models.Invite) (map[int]models.User, error) {
-	member:= make(map[int]models.User)
+	member := make(map[int]models.User)
 	for _, m := range Invite {
-        row1, err := S.Database.GetUsers(m.Receiver)
-        if err != nil {
-            fmt.Println(err)
-            return nil, fmt.Errorf("error getting receiver user with ID %d: %w", m.Receiver, err)
-        }
-        member[m.Receiver] = row1
+		row1, err := S.Database.GetUsers(m.Receiver)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("error getting receiver user with ID %d: %w", m.Receiver, err)
+		}
+		member[m.Receiver] = row1
 
-        row2, err := S.Database.GetUsers(m.Sender)
-        if err != nil {
-            fmt.Println(err)
-            return nil, fmt.Errorf("error getting sender user with ID %d: %w", m.Sender, err)
-        }
-        member[m.Sender] = row2
-    }
-	return member ,nil
+		row2, err := S.Database.GetUsers(m.Sender)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("error getting sender user with ID %d: %w", m.Sender, err)
+		}
+		member[m.Sender] = row2
+	}
+	return member, nil
 }

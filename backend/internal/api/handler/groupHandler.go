@@ -62,16 +62,28 @@ func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
+
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
 	var Groups models.Group
 	err := utils.ParseBody(r, &Groups)
 	fmt.Println(Groups.ID)
 	group, err := Handler.Service.GetGroupsById(&Groups)
+	types, err := Handler.Service.TypeInvate(user.ID,group.ID)
 	if err != nil {
-		fmt.Println(err)
-		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		utils.WriteJson(w, http.StatusNotAcceptable, "Not Acceptable")
+		return
 	}
+	var group_info models.GroupInfo
+	group_info.Group = *group 
+	group_info.Action = types
+	fmt.Println(group_info)
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(group)
+	json.NewEncoder(w).Encode(group_info)
 }
 
 func (Handler *Handler) GetMember(w http.ResponseWriter, r *http.Request) {
