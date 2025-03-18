@@ -104,12 +104,16 @@ export default function Chat() {
                     setConversations((prev) => {
                         const conversation = prev.find((c) => c.conversation.id === conversationId);
                         if (conversation) {
-                            return [conversation, ...prev.filter((c) => c.conversation.id !== conversationId)];
+                            return [{
+                                ...conversation,
+                                last_message : data?.message?.content
+                            }, ...prev.filter((c) => c.conversation.id !== conversationId)];
                         } else {
                             return [
                                 {
                                     conversation: { id: msg.conversation_id },
                                     user_info: { ...data.user_info, online: true },
+                                    last_message : data?.message?.content
                                 },
                                 ...prev,
                             ];

@@ -22,7 +22,7 @@ func main() {
 	}
 
 	server := http.Server{
-		Addr:    ":8000",
+		Addr:    ":8080",
 		Handler: middlewares.CORS(middlewares.AuthMiddleware(api.Routes(db), db)),
 	}
 

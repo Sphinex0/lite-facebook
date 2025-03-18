@@ -43,7 +43,13 @@ func (data *Database) VerifyConversation(id1, id2 int, type_obj string) (err err
 func (data *Database) GetConversations(id int) (conversations []models.ConversationsInfo, err error) {
 	query := `
 		SELECT
-			C.*,COALESCE((SELECT content FROM messages M WHERE M.conversation_id = C.id),"") as last_message
+			C.*,COALESCE((
+							SELECT content 
+							FROM messages M 
+							WHERE M.conversation_id = C.id
+							ORDER BY created_at DESC
+							LIMIT 1
+						),"") as last_message
 		FROM
 			conversations C
 		WHERE

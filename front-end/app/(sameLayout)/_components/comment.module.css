@@ -11,6 +11,8 @@
 .textInput{
     flex-grow: 1;
     resize: none;
+    border: none;
+    padding: 5px;
 }
 .addFile{
     padding: 5px;
