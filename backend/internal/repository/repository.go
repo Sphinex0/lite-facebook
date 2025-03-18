@@ -34,11 +34,11 @@ func ApplyMigrations(db *sql.DB) error {
 		Dir: "pkg/migrations/sqlite",
 	}
 
-	_, err := migrate.Exec(db, "sqlite3", migrations, migrate.Up)
+	n, err := migrate.Exec(db, "sqlite3", migrations, migrate.Up)
 	if err != nil {
-		return fmt.Errorf("error while executing the migration %v", err)
+		return fmt.Errorf("error while executing the migration: %v", err)
 	}
-	fmt.Println("apply Migration Successfully!")
+	fmt.Printf("Applied %d migrations successfully!\n", n)
 	return nil
 }
 

@@ -1331,102 +1331,40 @@ INSERT INTO
 VALUES
     (NULL, 3, 1, 1);
 
-SELECT
-    A.*,
-    COALESCE(
-        (
-            SELECT
-                like
-            FROM
-                likes L
-            WHERE
-                L.user_id = 10
-                AND L.article_id = A.id
-        ),
-        0
-    ) as like
-FROM
-    article_view A
-WHERE
-    A.group_id = 1
-    AND A.parent IS NULL
-    AND A.created_at < 1841432480;
-
-SELECT
-    *
-FROM
+INSERT INTO
     conversations
-WHERE
-    entitie_one = 1
-    OR entitie_two_user = 1;
-
-SELECT
-    A.*,
-    COALESCE(
-        (
-            SELECT
-                like
-            FROM
-                likes L
-            WHERE
-                L.user_id = 1
-                AND L.article_id = A.id
-        ),
-        0
-    ) as like
-FROM
-    article_view A
-    LEFT JOIN followers F ON A.user_id = F.user_id
-    AND F.follower = 1
-    AND F.status = 'accepted'
-    LEFT JOIN permited_users P ON A.id = P.article_id
-    AND P.user_id = 1
-WHERE
-    parent IS NULL
-    AND (
-        A.privacy = 'public'
-        OR (A.id = 1)
-        OR (
-            A.privacy = 'almost_private'
-            AND F.id IS NOT NULL
-        )
-        OR (
-            A.privacy = 'private'
-            AND P.user_id IS NOT NULL
-        )
-    )
-    AND A.created_at < 1941432480
-ORDER BY
-    A.created_at DESC
-LIMIT
-    10;
-
-SELECT
-    C.*
-FROM
-    conversations C
-WHERE
+VALUES
     (
-        C.type = 'private'
-        AND (
-            C.entitie_one = ?
-            OR C.entitie_two_user = ?
-        )
-    )
-    OR (
-        C.type = 'group'
-        AND EXISTS (
-            SELECT
-                1
-            FROM
-                invites I
-            WHERE
-                I.group_id = C.entitie_two_group
-                AND (
-                    I.receiver = ?
-                    OR I.sender = ?
-                )
-                AND I.status = 'accepted'
-        )
-    )
-;
+        NULL,
+        1,
+        2,
+        NULL,
+        'private',
+        1676592000,
+        1676592000
+    );
+
+
+INSERT INTO
+    conversations
+VALUES
+    (
+        NULL,
+        1,
+        3,
+        NULL,
+        'private',
+        1676592000,
+        1676592000
+    );
+
+INSERT INTO
+    messages
+VALUES
+    (NULL, 1, 1, 'Hello', 0, '', NULL, 1676592000);
+
+INSERT INTO
+    messages
+VALUES
+    (NULL, 1, 2, 'Hi', '', 0, 2, 1676592000);
+
