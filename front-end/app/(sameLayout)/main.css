@@ -42,7 +42,7 @@ a{
     text-decoration: none;
 }
 
-/* 
+
 *,
 *::before,
 *::after {
@@ -53,7 +53,7 @@ a{
     text-decoration: none;
     list-style: none;
     border: none;
-} */
+}
 
 body {
     font-family: 'Poppins', sans-serif;

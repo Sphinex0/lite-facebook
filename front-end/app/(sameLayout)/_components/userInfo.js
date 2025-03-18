@@ -2,7 +2,7 @@ import { timeAgo } from '@/app/helpers'
 import Link from 'next/link'
 import React from 'react'
 
-const UserInfo = ({ userInfo, articleInfo, group , onlineDiv}) => {
+const UserInfo = ({ userInfo, articleInfo, group , onlineDiv , lastMessage}) => {
     return (
         <Link href={onlineDiv ? "" : `/profile/${userInfo.id}` }>
         <div className="user">
@@ -23,6 +23,11 @@ const UserInfo = ({ userInfo, articleInfo, group , onlineDiv}) => {
                 {articleInfo &&
                     <>
                         {articleInfo.parent ==null && <small>{articleInfo.privacy} <strong> .</strong></small>}  <small>{timeAgo(articleInfo.created_at)}</small>
+                    </>
+                }
+                {
+                    lastMessage && <>
+                        <small>{lastMessage}</small>
                     </>
                 }
             </div>

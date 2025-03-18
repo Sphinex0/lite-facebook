@@ -108,7 +108,7 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 					OR I.group_id IS NOT NULL
 				)
 				OR (
-					A.id = ?
+					A.user_id = ?
 				)
 				OR (
 					A.privacy = 'almost_private'
@@ -124,7 +124,75 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 		LIMIT 10
 	`
 
-	rows, err := data.Db.Query(query, id, id, id, id,id, id, before)
+	rows, err := data.Db.Query(query, id, id, id, id, id, id, before)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for rows.Next() {
+		var article_view models.ArticleView
+		tab := utils.GetScanFields(&article_view.UserInfo)
+		tab = append(tab, utils.GetScanFields(&article_view.Article)...)
+		tab = append(tab,
+			&article_view.Likes,
+			&article_view.DisLikes,
+			&article_view.CommentsCount,
+			&article_view.GroupName,
+			&article_view.GroupImage,
+			&article_view.Like,
+		)
+
+		err1 := rows.Scan(tab...)
+		if err1 != nil {
+			fmt.Println("here")
+			fmt.Println(err1)
+			continue
+		}
+		article_views = append(article_views, article_view)
+	}
+	rows.Close()
+	return
+}
+
+func (data *Database) GetPostsByUserId(id, user_id, before int) (article_views []models.ArticleView, err error) {
+	query := `
+		SELECT
+			A.*,
+			COALESCE((SELECT like FROM likes L WHERE L.user_id = ? AND L.article_id = A.id), 0) as like
+		FROM
+			article_view A
+			LEFT JOIN followers F ON A.user_id = F.user_id
+			AND F.follower = ?
+			AND F.status = 'accepted'
+			LEFT JOIN permited_users P ON A.id = P.article_id
+			AND P.user_id = ?
+			LEFT JOIN invites I ON A.group_id = I.group_id AND I.status = "accepted" AND (I.sender = ? OR I.receiver = ?)
+		WHERE
+			parent IS NULL
+			AND A.user_id = ?
+			AND (
+				A.privacy = 'public' AND (
+					A.group_id IS NULL
+					OR I.group_id IS NOT NULL
+				)
+				OR (
+					A.user_id = ?
+				)
+				OR (
+					A.privacy = 'almost_private'
+					AND F.id IS NOT NULL
+				)
+				OR (
+					A.privacy = 'private'
+					AND P.user_id IS NOT NULL
+				)
+			)
+			AND A.created_at < ?
+		ORDER BY A.created_at DESC
+		LIMIT 10
+	`
+
+	rows, err := data.Db.Query(query, id, id, id, id, id, user_id, id, before)
 	if err != nil {
 		fmt.Println(err)
 		return

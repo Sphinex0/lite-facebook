@@ -104,12 +104,16 @@ export default function Chat() {
                     setConversations((prev) => {
                         const conversation = prev.find((c) => c.conversation.id === conversationId);
                         if (conversation) {
-                            return [conversation, ...prev.filter((c) => c.conversation.id !== conversationId)];
+                            return [{
+                                ...conversation,
+                                last_message : data?.message?.content
+                            }, ...prev.filter((c) => c.conversation.id !== conversationId)];
                         } else {
                             return [
                                 {
                                     conversation: { id: msg.conversation_id },
                                     user_info: { ...data.user_info, online: true },
+                                    last_message : data?.message?.content
                                 },
                                 ...prev,
                             ];
@@ -295,7 +299,7 @@ export default function Chat() {
 
             <div className={styles.conversationsList}>
                 {conversations.map((conversationInfo) => {
-                    const { conversation, user_info, group } = conversationInfo;
+                    const { conversation, user_info, group , last_message} = conversationInfo;
                     const onlineDiv = true
                     return (
                         <div
@@ -304,7 +308,7 @@ export default function Chat() {
                                 }`}
                             onClick={() => handleSetSelectedConversation(conversation)}
                         >
-                            <UserInfo userInfo={user_info} group={group} onlineDiv={onlineDiv} />
+                            <UserInfo userInfo={user_info} group={group} onlineDiv={onlineDiv} lastMessage={last_message} />
                         </div>
                     );
                 })}

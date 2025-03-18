@@ -32,6 +32,7 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 	`
 	rows, err := data.Db.Query(query, conversation_id, befor)
 	if err != nil {
+		fmt.Println(err)
 		return
 	}
 
@@ -44,6 +45,7 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 		tab = append(tab, utils.GetScanFields(&msg.UserInfo)...)
 		err = rows.Scan(tab...)
 		if err != nil {
+			fmt.Println(err)
 			fmt.Println("message dosn't return")
 		}
 		messages = append(messages, msg)
