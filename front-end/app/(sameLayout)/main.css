@@ -6,6 +6,7 @@ body {
     font-family: sans-serif;
     padding: 0;
     margin: 0;
+    line-break: anywhere;
 }
 
 
@@ -36,6 +37,7 @@ body {
 
 }
 
+/* 
 *,
 *::before,
 *::after {
@@ -46,7 +48,7 @@ body {
     text-decoration: none;
     list-style: none;
     border: none;
-}
+} */
 
 body {
     font-family: 'Poppins', sans-serif;
@@ -62,7 +64,7 @@ body {
 }
 
 .profile-photo {
-    width: 2.7rem;
+    width: 50px;
     aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
@@ -90,6 +92,10 @@ img {
 .btn-primary {
     background: var(--color-primary);
     color: var(--color-white);
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: fit-content;
+    align-self: center;
 }
 
 .text-bold {
@@ -308,6 +314,9 @@ main .container .left .profile {
     padding: 10px;
     border-radius: 5px;
     cursor: pointer;
+    max-width: 700px;
+    margin-inline: auto;
+
 }
 
 .middle .create-post #create-post {
@@ -342,7 +351,11 @@ main .container .left .profile {
     margin: 1rem 0;
     font-size: 0.85rem;
     line-height: 1.5;
+    max-width: 700px;
+    margin-inline: auto;
+
 }
+
 
 .middle .feed .head {
     display: flex;
@@ -352,8 +365,57 @@ main .container .left .profile {
 .user {
     display: flex;
     gap: 1rem;
+    font-size: .85rem;
+    line-height: 1.5;
 }
-.imagePreview{
+
+/* 
+.online {
+    position: relative;
+    z-index: 200;
+}
+
+.online::after {
+    content: "";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 10px;
+    
+    background-color: #0fcc45;
+    border-radius: 50%;
+    
+    position: absolute;
+    right: 0;
+} */
+.profile-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-photo {
+    /* Your styles, e.g., border-radius: 50%; overflow: hidden; */
+}
+
+.status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.status.online {
+    background-color: limegreen;
+}
+
+.status.offline {
+    background-color: lightgray;
+}
+
+.imagePreview {
     width: 100px;
     height: auto;
     border-radius: 4px;
@@ -398,13 +460,13 @@ main .container .left .profile {
 }
 
 /* =============== Right ============== */
-/* main .container .right {
+main .container .right {
     height: max-content;
     position: sticky;
     top: var(--sticky-top-right);
     bottom: 0;
-} */
-/* 
+}
+
 .right .messages {
     background: var(--color-white);
     border-radius: var(--card-border-radius);
@@ -427,13 +489,14 @@ main .container .left .profile {
     margin-bottom: 1rem;
 }
 
-.right .messages .category {
+.groups .category {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
+    cursor: pointer;
 }
 
-.right .messages .category h6 {
+.groups .category h6 {
     width: 100%;
     text-align: center;
     border-bottom: 4px solid var(--color-light);
@@ -441,7 +504,7 @@ main .container .left .profile {
     font-size: 0.75rem;
 }
 
-.right .messages .category .active {
+.groups .category .active {
     border-color: var(--color-dark);
 }
 
@@ -470,7 +533,7 @@ main .container .left .profile {
 }
 
 .right .messages .message p {
-    font-size:0.8rem;
+    font-size: 0.8rem;
 }
 
 .right .messages .message .profile-photo .active {
@@ -510,7 +573,7 @@ main .container .left .profile {
 .right .request .action {
     display: flex;
     gap: 1rem;
-} */
+}
 
 /* =============== Theme Customization ============== */
 .customize-theme {
@@ -533,9 +596,12 @@ main .container .left .profile {
     border-radius: var(--card-border-radius);
     width: 50%;
     box-shadow: 0 0 1rem var(--color-primary);
-    max-height: 100vh;
+    max-height: 85vh;
+    margin-top: 80px;
+    overflow: auto;
 }
-.comments{
+
+.comments {
     overflow: auto;
     height: 300px;
 }
@@ -624,4 +690,3 @@ MEDIA QUERIES FOR SMALL TABLETS AND MOBILE PHONES
         width: 80vw;
     }
 }
-

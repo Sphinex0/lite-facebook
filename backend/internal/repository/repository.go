@@ -58,6 +58,6 @@ func GetUserByUuid(db *sql.DB, uuid uuid.UUID) (user models.UserInfo, err error)
 }
 
 func (data *Database) GetUserByID(id int) (user models.UserInfo, err error) {
-	err = data.Db.QueryRow("SELECT u.id,first_name,last_name,nickname,image FROM users u  WHERE id = ? ", id).Scan(utils.GetScanFields(&user)...)
+	err = data.Db.QueryRow("SELECT u.id, nickname, first_name, last_name, image FROM users u  WHERE id = ? ", id).Scan(utils.GetScanFields(&user)...)
 	return
 }

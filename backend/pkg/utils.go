@@ -94,10 +94,10 @@ func SetSessionCookie(w http.ResponseWriter, uuid string) {
 	})
 }
 
-func DeleteSessionCookie(w http.ResponseWriter, uid string) {
+func DeleteSessionCookie(w http.ResponseWriter, uuid string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session_id",
-		Value:  uid,
+		Name:   "session_token",
+		Value:  uuid,
 		Path:   "/",
 		MaxAge: -1,
 	})

@@ -1,27 +1,33 @@
+'use client'
 import { Group, Home, Mail, Message, Notifications } from '@mui/icons-material'
-import React from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation';
+import React, { useState } from 'react'
 
 const SideBar = () => {
+    const router = usePathname();
+    // const [path, setPath]= useState(router)
+  
   return (
     <div className="sidebar">
-        <a className="menu-item active">
+        <Link href={"/"} className={`menu-item ${router == "/" && "active"}`}>
             <span><Home/></span>
             <h3>Home</h3>   
-        </a>
-        <a className="menu-item">
+        </Link>
+        <Link href={"/groups"} className={`menu-item ${router == "/groups" && "active"}`}>
             <span><Group/></span>
             <h3>Groups</h3>
-        </a>
+        </Link>
 
-        <a className="menu-item"  id="notifications">
+        <Link href={"/"} className="menu-item"  id="notifications">
             <span className='i'><Notifications/><small className="notification-count">9+</small></span>
             <h3>Notification</h3>
-        </a>
+        </Link>
 
-        <a className="menu-item" id="messages-notifications">
+        <Link href={"/chat"} className={`menu-item ${router == "/chat" && "active"}`} id="messages-notifications">
             <span className='i'><Mail/><small className="notification-count">6</small></span>
             <h3>Messages</h3>
-        </a>
+        </Link>
 
        
     </div>

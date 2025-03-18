@@ -6,12 +6,6 @@ const CreatePost = ({ setModalDisplay }) => {
     setModalDisplay(true)
   }
 
-   useEffect(()=>{
-     console.log("inside create post ")
-     fetch("http://localhost:3000/temp")
-   },[])
- 
-
   return (
     <div className="create-post" onClick={show}>
       <div className="profile-photo">
