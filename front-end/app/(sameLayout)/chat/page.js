@@ -154,7 +154,7 @@ export default function Chat() {
             setReplyingTo({
                 id: message.message.id,
                 content: message.message.content,
-                sender: message.user_info?.name || "Unknown"
+                sender: message.user_info?.first_name || "Unknown"
             });
             setMessage(prev => ({ ...prev, reply: message.message.id }));
         }
@@ -168,6 +168,7 @@ export default function Chat() {
 
     const handleSendMessage = (event) => {
         if (event.key !== "Enter" || !message.content.trim()) return;
+        console.log(message)
 
         workerPortRef.current.postMessage({
             kind: "send",
@@ -176,7 +177,7 @@ export default function Chat() {
                 message: {
                     conversation_id: selectedConversation.id,
                     content: message.content,
-                    reply_to: message.reply
+                    reply: message.reply
                 },
             },
         });
@@ -248,6 +249,7 @@ export default function Chat() {
     const handleSetSelectedConversation = (conversation) => {
         if (selectedConversation?.id !== conversation.id) {
             setMessages([]);
+            cancelReply()
             beforeRef.current = Math.floor(new Date().getTime() / 1000);
             setSelectedConversation(conversation);
         }
@@ -261,12 +263,12 @@ export default function Chat() {
         `${selectedConversationInfo.user_info?.first_name} ${selectedConversationInfo.user_info?.last_name}`
         : "Select a conversation";
 
-    const handelReply = (msg) => {
-        setMessage(prev => ({
-            ...prev,
-            reply: msg.message.id
-        }));
-    }
+    // const handleReply = (msg) => {
+    //     setMessage(prev => ({
+    //         ...prev,
+    //         reply: msg.message.id
+    //     }));
+    // }
     return (
         <div className={styles.container}>
             <div className={styles.chatContainer}>
@@ -278,7 +280,12 @@ export default function Chat() {
                         messages.length > 0 ? (
                             <>
                                 {messages.map((msg) => (
-                                    <Message msg={msg} key={msg.message.id} onClick={() => handelReply(msg)} />
+                                    <Message
+                                        msg={msg}
+                                        key={msg.message.id}
+                                        onClick={() => handleReply(msg)}
+                                        isSelected={replyingTo?.id === msg.message.id}
+                                    />
                                 ))}
                             </>
                         ) : (
@@ -325,8 +332,27 @@ export default function Chat() {
                     </div>
                 )}
 
+                {/* Reply Preview Bar */}
+                {replyingTo && (
+                    <div className={styles.replyPreviewBar}>
+                        <div className={styles.replyPreviewContent}>
+                            <div className={styles.replyPreviewTitle}>
+                                Replying to {replyingTo.sender}
+                            </div>
+                            <div className={styles.replyPreviewText}>
+                                {replyingTo.content}
+                            </div>
+                        </div>
+                        <Cancel
+                            className={styles.replyCancel}
+                            onClick={cancelReply}
+                            fontSize="small"
+                        />
+                    </div>
+                )}
+
                 <div className={styles.groupInputs}>
-                    <input
+                    {/* <input
                         className={styles.chatInput}
                         value={message?.content}
                         onChange={(e) => setMessage((prev) => {
@@ -337,6 +363,16 @@ export default function Chat() {
                         })}
                         onKeyDown={handleSendMessage}
                         placeholder="Type your message..."
+                        disabled={!selectedConversation}
+                    /> */}
+
+                    <input
+                        ref={inputRef}
+                        className={styles.chatInput}
+                        value={message.content}
+                        onChange={(e) => setMessage(prev => ({ ...prev, content: e.target.value }))}
+                        onKeyDown={handleSendMessage}
+                        placeholder={replyingTo ? "Type your reply..." : "Type your message..."}
                         disabled={!selectedConversation}
                     />
                     <div className={styles.addImageInChat}>

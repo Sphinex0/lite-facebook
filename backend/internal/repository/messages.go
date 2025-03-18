@@ -8,8 +8,8 @@ import (
 	utils "social-network/pkg"
 )
 
-func (data *Database) SaveMessage(msg *models.Message) (err error) {
-	args := utils.GetExecFields(msg, "ID")
+func (data *Database) SaveMessage(msg *models.WSMessage) (err error) {
+	args := utils.GetExecFields(msg.Message, "ID")
 	res, err := data.Db.Exec(fmt.Sprintf(`
 		INSERT INTO messages
 		VALUES (NULL, %v) 
@@ -19,14 +19,28 @@ func (data *Database) SaveMessage(msg *models.Message) (err error) {
 		return
 	}
 	id, err := res.LastInsertId()
-	msg.ID = int(id)
+	msg.Message.ID = int(id)
+	if msg.Message.Reply != nil {
+		err = data.Db.QueryRow(`
+			SELECT content FROM messages WHERE id = ?
+		`,msg.Message.Reply).Scan(&msg.ReplyContent)
+	}
+
+	// conv msg.Message.ConversationID 
+	data.Db.Exec(`
+		UPDATE invites 
+		SET seen = seen + 1
+		WHERE reciver 
+	`) 
+	// Members
 	return
 }
 
 func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages []models.WSMessage, err models.Error) {
 	query := ` 
-		SELECT M.* , U.id,U.first_name,U.last_name,U.nickname,U.image
+		SELECT M.* , COALESCE(M2.content,"") , U.id,U.first_name,U.last_name,U.nickname,U.image
 		FROM messages M JOIN users U ON M.sender_id = U.id
+		LEFT JOIN messages M2 ON M2.id = M.reply
 		WHERE M.conversation_id = ?
 		AND M.created_at < ?
 		ORDER BY M.created_at , M.id
@@ -43,7 +57,7 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 	fmt.Println("hh")
 	for rows.Next() {
 		var msg models.WSMessage
-		tab := utils.GetScanFields(&msg.Message)
+		tab := append(utils.GetScanFields(&msg.Message), &msg.ReplyContent)
 		tab = append(tab, utils.GetScanFields(&msg.UserInfo)...)
 		err.Err = rows.Scan(tab...)
 		if err.Err != nil {

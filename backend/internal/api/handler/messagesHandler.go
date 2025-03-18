@@ -191,7 +191,7 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			return
 		}
 		var err error
-		if err = h.Service.CreateMessage(&msg.Message); err != nil {
+		if err = h.Service.CreateMessage(&msg); err != nil {
 			fmt.Println("Create message error:", err)
 			sendError(msg.Message.SenderID, "Failed to send message")
 			return

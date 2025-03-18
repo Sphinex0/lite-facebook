@@ -7,8 +7,8 @@ import (
 	"social-network/internal/models"
 )
 
-func (service *Service) CreateMessage(msg *models.Message) (err error) {
-	msg.CreatedAt = int(time.Now().Unix())
+func (service *Service) CreateMessage(msg *models.WSMessage) (err error) {
+	msg.Message.CreatedAt = int(time.Now().Unix())
 	err = service.Database.SaveMessage(msg)
 	return
 }
