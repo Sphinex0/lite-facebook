@@ -107,11 +107,11 @@ func (Handler *Handler) HandleUpdateProfile(w http.ResponseWriter, r *http.Reque
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
-	if profile.ID == 0 {
-		profile.ID = user.ID
-	}
 
-	err = Handler.Service.GetProfile(&profile, user.ID)
+		profile.ID = user.ID
+
+
+	err = Handler.Service.ModifyProfile(&profile)
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see"{
@@ -122,5 +122,5 @@ func (Handler *Handler) HandleUpdateProfile(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	utils.WriteJson(w, http.StatusOK, profile)
+	utils.WriteJson(w, http.StatusOK, "profile updated")
 }

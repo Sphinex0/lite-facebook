@@ -8,6 +8,7 @@ import { fetchProfile } from '../helpers';
 const Profile= ({userID}) =>{
   const [profileInfo, setProfileInfo] = useState({})
   const [profileNav, setProfileNav] = useState("posts")
+  const [isAllowed, setIsAllowed] = useState(false)
 
 
 
@@ -29,9 +30,13 @@ const Profile= ({userID}) =>{
                         setProfileNav={setProfileNav}
                       />
                     )} 
+      
+      {profileNav == "posts" ? <Followers user_id={userID}/>:""}   
       {profileNav == "followers" ? <Followers user_id={userID}/>:""}   
       {profileNav == "followings" ? <Followings user_id={userID}/>:""}   
-      {profileNav == "about" ? <About user_id={userID}/>:""}   
+      {profileNav == "about" ? <About user_id={userID}/>:""}
+
+      {!isAllowed && <div>join / follow to see</div>}
     </div>
   )
 }

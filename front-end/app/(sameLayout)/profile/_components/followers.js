@@ -3,7 +3,7 @@ import UserInfo from '../../_components/userInfo'
 import Link from 'next/link'
 import { useOnVisible } from '@/app/helpers'
 
-const Followers = ({user_id}) => {
+const Followers = ({user_id, setIsAllowed}) => {
         const [followers, setFollowers] = useState([])
         const before = useRef(Math.floor(Date.now() / 1000))
         const lastElementRef = useRef(null)
@@ -24,7 +24,9 @@ const Followers = ({user_id}) => {
                         setFollowers((prv) => [...prv, ...followersData])
                         before.current = followersData[followersData.length - 1].modified_at
                         console.log(followersData)
+                        setIsAllowed(true)
                     }
+                    
                 }
     
             } catch (error) {
@@ -47,7 +49,7 @@ const Followers = ({user_id}) => {
                 }
                 
                 return <div className='feed' key={`user${userInfo.id}`}><UserInfo userInfo={userInfo} key={userInfo.id} /></div>
-                
+
             })}
     </div>
   )

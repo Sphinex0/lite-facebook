@@ -31,7 +31,7 @@ export default function Post({ postInfo , reference}) {
             <div  className={styles.content}>{postInfo.article.content}</div>
 
 
-            {postInfo.article.image && <img src="./images/feed-1.jpg" />}
+            {postInfo.article.image && <img src="/images/feed-1.jpg" />}
 
             <div className="action-button">
                 <div className="action-buttons">
