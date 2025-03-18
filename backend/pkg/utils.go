@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 
 	"social-network/internal/models"
@@ -131,7 +132,16 @@ func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileH
 
 	randomstr := GenerateUuid()
 	fmt.Println(randomstr + handler.Filename)
-	filePath := filepath.Join(UploadDir, randomstr+handler.Filename)
+
+	extensions := []string{".png", ".jpg", ".jpeg", ".gif"}
+	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
+		return strings.HasSuffix(handler.Filename, ext)
+	})
+	if extIndex == -1 {
+		return "" , fmt.Errorf("err")
+	}
+
+	filePath := filepath.Join(UploadDir, randomstr+extensions[extIndex])
 	dst, err := os.Create(filePath)
 	if err != nil {
 		return "", errors.New("could not save file")

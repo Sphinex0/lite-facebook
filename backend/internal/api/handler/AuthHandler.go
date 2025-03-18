@@ -46,7 +46,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	file, handler, err := r.FormFile("avatar")
 	if err == nil {
 		defer file.Close()
-		user.Image, err = utils.StoreThePic("../backend/internal/repository/profile", file, handler)
+		user.Image, err = utils.StoreThePic("../front-end/public/pics", file, handler)
 		if err != nil {
 			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
 		}

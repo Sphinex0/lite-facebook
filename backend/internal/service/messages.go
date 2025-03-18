@@ -13,7 +13,7 @@ func (service *Service) CreateMessage(msg *models.Message) (err error) {
 	return
 }
 
-func (service *Service) FetchMessagesHestories(befor, conversation_id int) (messages []models.WSMessage, err error) {
+func (service *Service) FetchMessagesHestories(befor, conversation_id int) (messages []models.WSMessage, err models.Error) {
 	fmt.Println(befor, conversation_id)
 	messages, err = service.Database.GetMessagesHestories(befor, conversation_id)
 	return
