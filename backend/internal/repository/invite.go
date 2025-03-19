@@ -73,6 +73,19 @@ func (data *Database) Saveinvite(Invite *models.Invite) (int, error) {
 	return id, nil
 }
 
+func (data *Database) IsCreatore(resever int , group_Id int) bool{
+	var Create int
+	err:= data.Db.QueryRow(`
+	SELECT creator FROM groups WHERE id = ? `, group_Id).Scan(&Create)
+	if err != nil {
+		return false
+	}
+	if resever==Create {
+		return true
+	}
+	return false
+}
+
 func (data *Database) GetallInvite(id int) (*sql.Rows, error) {
 	res, err := data.Db.Query(`
 	SELECT * FROM invites WHERE 

@@ -46,6 +46,17 @@ func (S *Service) GetGroupsById(Group *models.Group) (*models.Group, error) {
 	return Group, nil
 }
 
+func (S *Service) TypeInvate(id int, group_id int) (string, error) {
+	types := ""
+	types, err := S.Database.TypeUserInvate(id, group_id)
+	if err != nil {
+		if types == "" {
+			return "", err
+		}
+	}
+	return types, nil
+}
+
 func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
 	rows, err := S.Database.Getmember(GroupId)
 	if err != nil {
@@ -54,7 +65,7 @@ func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
 	defer rows.Close()
 	fmt.Println(rows)
 
-	Group :=make(map[string]int )
+	Group := make(map[string]int)
 	for rows.Next() {
 		var groupIDScan int
 		if err := rows.Scan(&groupIDScan); err != nil {
@@ -69,13 +80,12 @@ func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
 
 	for _, v := range Group {
 		var group models.Group
-		rowGroupe:= S.Database.GetGroupById(v)
+		rowGroupe := S.Database.GetGroupById(v)
 		if err := rowGroupe.Scan(utils.GetScanFields(&group)...); err != nil {
 			return nil, fmt.Errorf("error scanning group data: %v", err)
 		}
 		groups = append(groups, group)
 	}
-	
-	return groups,nil
-}
 
+	return groups, nil
+}

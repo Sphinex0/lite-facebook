@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -31,12 +32,12 @@ func (data *Database) Getallgroup() (*sql.Rows, error) {
 	}
 	return res, nil
 }
-func (data *Database) GetGroupById(id int) *sql.Row{
-    res := data.Db.QueryRow(`SELECT * FROM groups Where id =?`, id)
-   
-    return res
-}
 
+func (data *Database) GetGroupById(id int) *sql.Row {
+	res := data.Db.QueryRow(`SELECT * FROM groups Where id =?`, id)
+
+	return res
+}
 
 func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
 	res := data.Db.QueryRow(`SELECT creator FROM groups Where id =?`, group_ID)
@@ -52,11 +53,22 @@ func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
 	return false, fmt.Errorf("not create group")
 }
 
-
-
-func (data *Database) Getmember(id int) (*sql.Rows,error){
+func (data *Database) Getmember(id int) (*sql.Rows, error) {
 	query := `SELECT group_id FROM invites WHERE (sender = ? OR receiver = ?) AND status = "accepted"`
 
-    return data.Db.Query(query, id, id)
+	return data.Db.Query(query, id, id)
+}
 
+func (data *Database) TypeUserInvate(id int, group_id int) (string, error) {
+	types :=""
+	query := `SELECT status FROM invites WHERE (sender = ? OR receiver = ?) AND group_id=? `
+
+	err := data.Db.QueryRow(query, id, id, group_id).Scan(&types)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "join", err
+		}
+	}
+	log.Println(types)
+	return types, nil
 }

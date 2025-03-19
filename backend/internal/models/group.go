@@ -9,3 +9,9 @@ type Group struct {
 	Image       string `json:"image"`
 	CreatedAt  int `json:"created_at"`
 }
+
+
+type GroupInfo struct {
+    Group `json:"group_info"`
+    Action string  `json:"action"` //join | leave | pending
+}
