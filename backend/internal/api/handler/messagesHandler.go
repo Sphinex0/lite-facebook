@@ -221,6 +221,21 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			fmt.Println("Initial message send error:", err)
 			return
 		}
+	case "read_messages_private":
+		err := h.Service.ReadMessages(msg.Message.ConversationID)
+		if err != nil {
+			fmt.Println("Read messages error:", err)
+			sendError(msg.Message.SenderID, "Failed to read messages")
+			return
+		}
+	case "read_messages_group":
+		fmt.Println(msg.Message.ConversationID,msg.Message.SenderID)
+		err := h.Service.ReadMessagesGroup(msg.Message.ConversationID,msg.Message.SenderID)
+		if err != nil {
+			fmt.Println("Read messages error:", err)
+			sendError(msg.Message.SenderID, "Failed to read messages")
+			return
+		}
 	}
 }
 

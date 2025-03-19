@@ -6,6 +6,7 @@ import { AddPhotoAlternate, Cancel, EmojiEmotions, Send } from "@mui/icons-mater
 import { emojis } from "./_components/emojis";
 import UserInfo from "../_components/userInfo";
 import { Context } from "../layout";
+import { opThrottle, useOnVisible } from "@/app/helpers";
 
 export default function Chat() {
     // Destructure context, excluding conversationsRef since it's not provided
@@ -21,51 +22,85 @@ export default function Chat() {
     const [emoji, setEmoji] = useState(false);
     const selectedConversationRef = useRef(selectedConversation);
     const chatEndRef = useRef(null);
-    const beforeRef = useRef(Math.floor(new Date().getTime() / 1000));
+    const beforeRef = useRef(Math.floor(new Date().getTime()));
     const combinadeRef = useRef(null);
     const [replyingTo, setReplyingTo] = useState(null);
     const inputRef = useRef(null);
+    // Add a ref to track previous messages
+    // const prevMessagesRef = useRef([]);
+    const chatBodyRef = useRef(null); // Ref for the chat body
+    const oldScrollHeightRef = useRef(null); // Store scroll height before loading more
+    const justLoadedMoreRef = useRef(false); // Flag for pagination
+
 
     // Update conversationsRef when conversations changes
     useEffect(() => {
         conversationsRef.current = conversations;
     }, [conversations]);
 
+    const fetchMessages = async (signal) => {
+        if (!selectedConversation) return;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messageshistories`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ conversation_id: selectedConversation.id, before: beforeRef.current }),
+            credentials: "include",
+            signal
+        });
+        if (res.ok) {
+            const data = await res.json() || [];
+            console.log("before", beforeRef.current)
+            console.log(data)
+            if (data && data.length > 0) {
+                const revercedData = data.reverse();
+                setMessages((prev) => [...revercedData, ...prev]);
+                beforeRef.current = data[0].message.created_at
+                
+            }
+        } else {
+            console.error("Error fetching messages");
+        }
+    };
+
+    const handleScroll = (event) => {
+        if (event.target.scrollTop === 0 && messages.length > 0) {
+            oldScrollHeightRef.current = chatBodyRef?.current?.scrollHeight;
+            justLoadedMoreRef.current = true;
+            const controller = new AbortController();
+            opThrottle(fetchMessages, 1000)(controller.signal);
+            return () => {
+                controller.abort();
+            };
+        }
+    };
+
+
     // Fetch messages when selectedConversation changes
     useEffect(() => {
         selectedConversationRef.current = selectedConversation;
-        const fetchMessages = async () => {
-            if (!selectedConversation) return;
-            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messageshistories`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ conversation_id: selectedConversation.id, before: beforeRef.current }),
-                credentials: "include",
-            });
-            if (res.ok) {
-                const data = await res.json() || [];
-                setMessages(data);
-            } else {
-                console.error("Error fetching messages");
-            }
-        };
-        fetchMessages();
+        const controller = new AbortController();
+        fetchMessages(controller.signal);
+
+        return () => {
+            controller.abort();
+        }
     }, [selectedConversation]);
+
+    // useOnVisible(firstElementRef, fetchMessages , true , 1);
 
     // Setup message handler for SharedWorker, depending on clientWorker
     useEffect(() => {
         if (!workerPortRef.current) return;
         const port = workerPortRef.current;
         port.start();
-
         const messageHandler = ({ data }) => {
             switch (data.type) {
                 case "conversations":
                     const onlineUsers = data.online_users;
                     setConversations(
-                        data.conversations.map((conv) => {
+                        data.conversations?.map((conv) => {
                             if (conv.user_info) {
                                 return {
                                     ...conv,
@@ -107,14 +142,16 @@ export default function Chat() {
                         if (conversation) {
                             return [{
                                 ...conversation,
-                                last_message: data?.message?.content
+                                last_message: data?.message?.content,
+                                seen: conversation.conversation.id === selectedConversationRef.current?.id ? 0 : conversation.seen + 1,
                             }, ...prev.filter((c) => c.conversation.id !== conversationId)];
                         } else {
                             return [
                                 {
                                     conversation: { id: msg.conversation_id },
                                     user_info: { ...data.user_info, online: true },
-                                    last_message: data?.message?.content
+                                    last_message: data?.message?.content,
+                                    seen: 1
                                 },
                                 ...prev,
                             ];
@@ -123,6 +160,16 @@ export default function Chat() {
 
                     if (selectedConversationRef.current?.id === conversationId) {
                         setMessages((prev) => [...prev, data]);
+                        const type = selectedConversationRef.current.type == "private" ? "read_messages_private" : "read_messages_group";
+                        workerPortRef.current.postMessage({
+                            kind: "send",
+                            payload: {
+                                type,
+                                message: {
+                                    conversation_id: conversationId,
+                                },
+                            },
+                        });
                     }
                     break;
 
@@ -140,7 +187,17 @@ export default function Chat() {
     }, [clientWorker]);
 
     useEffect(() => {
-        chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (justLoadedMoreRef.current) {
+            const chatBody = chatBodyRef.current;
+            if (chatBody) {
+                const newScrollHeight = chatBody.scrollHeight;
+                const deltaH = newScrollHeight - oldScrollHeightRef.current;
+                chatBody.scrollTop = deltaH;
+            }
+            justLoadedMoreRef.current = false;
+        } else {
+            chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+        }
     }, [messages]);
 
 
@@ -168,7 +225,6 @@ export default function Chat() {
 
     const handleSendMessage = (event) => {
         if (event.key !== "Enter" || !message.content.trim()) return;
-        console.log(message)
 
         workerPortRef.current.postMessage({
             kind: "send",
@@ -248,14 +304,35 @@ export default function Chat() {
 
     const handleSetSelectedConversation = (conversation) => {
         if (selectedConversation?.id !== conversation.id) {
+            const type = conversation.type == "private" ? "read_messages_private" : "read_messages_group";
+            workerPortRef.current.postMessage({
+                kind: "send",
+                payload: {
+                    type,
+                    message: {
+                        conversation_id: conversation.id,
+                    },
+                },
+            });
+            setConversations((prev) => {
+                return prev.map((c) => {
+                    if (c.conversation.id === conversation.id) {
+                        return {
+                            ...c,
+                            seen: 0
+                        };
+                    }
+                    return c;
+                });
+            });
             setMessages([]);
             cancelReply()
-            beforeRef.current = Math.floor(new Date().getTime() / 1000);
+            beforeRef.current = Math.floor(new Date().getTime());
             setSelectedConversation(conversation);
         }
     };
 
-    const selectedConversationInfo = conversations.find(
+    const selectedConversationInfo = conversations?.find(
         (c) => c?.conversation.id === selectedConversation?.id
     );
     const displayTitle = selectedConversationInfo
@@ -275,11 +352,11 @@ export default function Chat() {
                 <div className={styles.chatHeader}>
                     <h4>{displayTitle}</h4>
                 </div>
-                <div className={styles.chatBody}>
+                <div className={styles.chatBody} onScroll={handleScroll} >
                     {selectedConversation ? (
                         messages.length > 0 ? (
                             <>
-                                {messages.map((msg) => (
+                                {messages.map((msg, index) => (
                                     <Message
                                         msg={msg}
                                         key={msg.message.id}
@@ -294,7 +371,8 @@ export default function Chat() {
                             </div>
                         )
                     ) : (
-                        <div className={styles.emptyState}>Please select a conversation</div>
+                        // <div className={styles.emptyState}>Please select a conversation</div>
+                        <div className={styles.chatBody} onScroll={handleScroll} ref={chatBodyRef} ></div>
                     )}
                     <div ref={chatEndRef} />
                 </div>
@@ -352,19 +430,6 @@ export default function Chat() {
                 )}
 
                 <div className={styles.groupInputs}>
-                    {/* <input
-                        className={styles.chatInput}
-                        value={message?.content}
-                        onChange={(e) => setMessage((prev) => {
-                            return {
-                                ...prev,
-                                content: e.target.value
-                            }
-                        })}
-                        onKeyDown={handleSendMessage}
-                        placeholder="Type your message..."
-                        disabled={!selectedConversation}
-                    /> */}
 
                     <input
                         ref={inputRef}
@@ -394,8 +459,8 @@ export default function Chat() {
             </div>
 
             <div className={styles.conversationsList}>
-                {conversations.map((conversationInfo) => {
-                    const { conversation, user_info, group, last_message } = conversationInfo;
+                {conversations?.map((conversationInfo) => {
+                    const { conversation, user_info, group, last_message, seen } = conversationInfo;
                     const onlineDiv = true
                     return (
                         <div
@@ -404,7 +469,12 @@ export default function Chat() {
                                 }`}
                             onClick={() => handleSetSelectedConversation(conversation)}
                         >
-                            <UserInfo userInfo={user_info} group={group} onlineDiv={onlineDiv} lastMessage={last_message} />
+                            <div>
+                                <UserInfo userInfo={user_info} group={group} onlineDiv={onlineDiv} lastMessage={last_message} />
+                            </div>
+                            <div >
+                                <div className={styles.seen}>{seen}</div>
+                            </div>
                         </div>
                     );
                 })}

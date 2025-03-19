@@ -37,7 +37,6 @@
 import styles from "../styles.module.css";
 
 export default function Message({ msg, onClick, isSelected }) {
-    console.log(msg)
     return (
         <div
             className={`${styles.messageContainer} ${isSelected ? styles.selectedMessage : ''}`}
@@ -68,6 +67,7 @@ export default function Message({ msg, onClick, isSelected }) {
             {/* Metadata */}
             <div className={styles.messageMeta}>
                 <span className={styles.timestamp}>
+                    {console.log(msg.message.created_at)}
                     {new Date(msg.message.created_at).toLocaleTimeString()}
                 </span>
             </div>

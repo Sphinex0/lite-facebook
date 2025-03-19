@@ -26,19 +26,16 @@ func (data *Database) SaveMessage(msg *models.WSMessage) (err error) {
 		`, msg.Message.Reply).Scan(&msg.ReplyContent)
 	}
 
-	// conv msg.Message.ConversationID
-	data.Db.Exec(`
-		UPDATE members
-		SET seen = seen + 1
-		WHERE conversation_id = ? AND member = ?
-	`, msg.Message.ConversationID, msg.Message.SenderID)
+	if err != nil {
+		return
+	}
 
 	// Members
 
-	data.Db.Exec(`
-		UPDATE me
+	_, err = data.Db.Exec(`
+		UPDATE members
 		SET seen = seen + 1
-		WHERE conversation_id = ? AND member = ?
+		WHERE conversation_id = ?  AND member != ?
 	`, msg.Message.ConversationID, msg.Message.SenderID)
 
 	return
@@ -51,7 +48,8 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 		LEFT JOIN messages M2 ON M2.id = M.reply
 		WHERE M.conversation_id = ?
 		AND M.created_at < ?
-		ORDER BY M.created_at , M.id
+		ORDER BY M.created_at DESC , M.id DESC
+		LIMIT 10
 	`
 	var rows *sql.Rows
 	rows, err.Err = data.Db.Query(query, conversation_id, befor)
@@ -74,7 +72,19 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 		}
 		messages = append(messages, msg)
 	}
-	// fmt.Println(messages)
+	fmt.Println(messages)
 
+	return
+}
+
+func (data *Database) ReadMessages(convId int) (err error) {
+	_, err = data.Db.Exec(`
+		UPDATE messages
+		SET seen = 1
+		WHERE conversation_id = ?
+	`, convId)
+	if err != nil {
+		fmt.Println(err)
+	}
 	return
 }

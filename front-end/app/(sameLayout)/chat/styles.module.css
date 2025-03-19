@@ -1,6 +1,6 @@
 .container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     height: 90vh;
     /* max-width: 800px; */
     margin: 0 auto;
@@ -107,6 +107,17 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    gap: 10px;
+}
+
+.seen {
+    background-color: rgba(80, 102, 175, 0.404);
+    text-align: center;
+    width: fit-content;
+    padding: 2px 10px;
+    border-radius: 50px;
 }
 
 .conversationItem:hover {
@@ -331,7 +342,7 @@
 .messageContainer {
     padding: 5px;
     margin-block: 5px;
-    border: 1px solid #2195f31c ;
+    border: 1px solid #2195f31c;
     border-radius: 10px;
 }
 
@@ -416,7 +427,7 @@
     padding: 10px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .Emoji {

@@ -74,7 +74,7 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 
 			user, err := repository.GetUserByUuid(db, uuid)
 			if err != nil {
-				fmt.Println(err)
+				fmt.Println("g",err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}

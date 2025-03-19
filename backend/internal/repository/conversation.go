@@ -80,6 +80,7 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 					)
 				)
 			)
+		ORDER BY modified_at DESC
 	`
 	rows, err := data.Db.Query(query, id, id, id, id, id)
 	if err != nil {
@@ -88,7 +89,7 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 	defer rows.Close()
 	for rows.Next() {
 		var conv models.ConversationsInfo
-		tab := append(utils.GetScanFields(&conv.Conversation),&conv.LastMessage)
+		tab := append(utils.GetScanFields(&conv.Conversation), &conv.LastMessage)
 		err1 := rows.Scan(tab...)
 		if err1 != nil {
 			fmt.Println(err1)
@@ -99,22 +100,53 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 	for i, conv := range conversations {
 		if conv.Conversation.Type == "group" {
 			row := data.GetGroupById(*conv.Conversation.Entitie_two_group)
-			err1 := row.Scan(utils.GetScanFields(&conversations[i].Group)...)
-			if err1 != nil {
-				fmt.Println(err1)
+			err = row.Scan(utils.GetScanFields(&conversations[i].Group)...)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+			err = data.Db.QueryRow(`
+				SELECT seen
+				FROM members
+				WHERE conversation_id = ? AND member == ?
+			`, conv.Conversation.ID, id).Scan(&conversations[i].Seen)
+			// fmt.Println(conv.Seen)
+			if err != nil {
+				fmt.Println(err)
+				return
 			}
 		} else {
-			var err1 error
 			idUser := conv.Conversation.Entitie_one
 			if id == idUser {
 				idUser = *conv.Conversation.Entitie_two_user
 			}
-			conversations[i].UserInfo, err1 = data.GetUserByID(idUser)
-			if err1 != nil {
-				fmt.Println(err1)
+			conversations[i].UserInfo, err = data.GetUserByID(idUser)
+			if err != nil {
+				fmt.Println(err)
+				return
+			}
+
+			err = data.Db.QueryRow(`
+				SELECT COUNT(*)
+				FROM messages
+				WHERE conversation_id = ? AND sender_id != ? AND seen = 0
+			`, conv.Conversation.ID, id).Scan(&conversations[i].Seen)
+			// fmt.Println(conv.Seen)
+			if err != nil {
+				fmt.Println(err)
+				return
 			}
 		}
 	}
 
+	return
+}
+
+func (data *Database) ReadMessagesGroup(convId, id int) (err error) {
+	_, err = data.Db.Exec(`
+		UPDATE members
+		SET seen = 0
+		WHERE conversation_id = ? AND member == ?
+	`, convId, id)
 	return
 }

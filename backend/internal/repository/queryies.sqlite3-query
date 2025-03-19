@@ -1344,7 +1344,6 @@ VALUES
         1676592000
     );
 
-
 INSERT INTO
     conversations
 VALUES
@@ -1368,4 +1367,21 @@ INSERT INTO
 VALUES
     (NULL, 1, 2, 'Hi', '', 0, 2, 1676592000);
 
-
+SELECT
+    M.*,
+    COALESCE(M2.content, ""),
+    U.id,
+    U.first_name,
+    U.last_name,
+    U.nickname,
+    U.image
+FROM
+    messages M
+    JOIN users U ON M.sender_id = U.id
+    LEFT JOIN messages M2 ON M2.id = M.reply
+WHERE
+    M.conversation_id = 3
+    AND M.created_at < 4444444444444
+ORDER BY
+    M.created_at,
+    M.id;
