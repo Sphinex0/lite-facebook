@@ -24,18 +24,14 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 
 	var Group models.Group
 	Group.Creator = user.ID
-	fmt.Println("Group.Creator", Group.Creator)
 	Group.Title = strings.TrimSpace(r.FormValue("Title"))
 	Group.Description = strings.TrimSpace(r.FormValue("Description"))
 	Group.CreatedAt = int(time.Now().Unix())
-	fmt.Println(Group.Title)
-	fmt.Println(Group.Description)
 	if Group.Title == "" || len(Group.Title) > 50 || Group.Description == "" || len(Group.Description) > 250 {
 		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 	if err := Handler.Service.GreatedGroup(&Group); err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
@@ -49,7 +45,6 @@ func (Handler *Handler) GetGroups(w http.ResponseWriter, r *http.Request) {
 
 	grp, err := Handler.Service.AllGroups()
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 
@@ -71,7 +66,6 @@ func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
 
 	var Groups models.Group
 	err := utils.ParseBody(r, &Groups)
-	fmt.Println(Groups.ID)
 	group, err := Handler.Service.GetGroupsById(&Groups)
 	types, err := Handler.Service.TypeInvate(user.ID,group.ID)
 	if err != nil {
@@ -81,7 +75,6 @@ func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
 	var group_info models.GroupInfo
 	group_info.Group = *group 
 	group_info.Action = types
-	fmt.Println(group_info)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(group_info)
 }
@@ -99,7 +92,6 @@ func (Handler *Handler) GetMember(w http.ResponseWriter, r *http.Request) {
 
 	group, err := Handler.Service.GetMemberById(user.ID)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	w.Header().Set("Content-Type", "application/json")

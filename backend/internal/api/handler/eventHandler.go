@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"social-network/internal/models"
@@ -21,7 +20,6 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	var Event models.Event
 	err := utils.ParseBody(r, &Event)
-	fmt.Println(user.ID)
 	Event.UserID = user.ID
 	if err != nil || Event.UserID == 0 || Event.GroupID == 0 {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
@@ -34,7 +32,6 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := Handler.Service.CreateEvent(Event); err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
@@ -48,7 +45,6 @@ func (Handler *Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 
 	Events, err := Handler.Service.AllEvents()
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 
@@ -65,7 +61,6 @@ func (Handler *Handler) GetEvent(w http.ResponseWriter, r *http.Request) {
 	err := utils.ParseBody(r, &Events)
 	Event, err := Handler.Service.GetEventsById(&Events)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -91,13 +86,11 @@ func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 	OptionEvent.UserID = user.ID
 	err := utils.ParseBody(r, &OptionEvent)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 	err = Handler.Service.PostEventsOption(OptionEvent)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 }
@@ -110,12 +103,10 @@ func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
 	var EventOption models.EventOption
 	err := utils.ParseBody(r, &EventOption)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	EventOptions, err := Handler.Service.GetEventsOption(EventOption)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}

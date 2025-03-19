@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"log"
 	"net/http"
 
@@ -11,7 +10,6 @@ import (
 )
 
 func (Handler *Handler) AddInvite(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("handel")
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
@@ -21,19 +19,15 @@ func (Handler *Handler) AddInvite(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
-	fmt.Println("user",user)
 	var Invite models.Invite
 	err := utils.ParseBody(r, &Invite)
 	Invite.Sender = user.ID
-	
 
-	fmt.Println(Invite)
 	if err != nil || Invite.Receiver == 0 || Invite.GroupID == 0 || Invite.Sender == Invite.Receiver {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	if err := Handler.Service.CreateInvite(Invite); err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
@@ -61,10 +55,6 @@ func (Handler *Handler) HandleInviteRequest(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	fmt.Println(Invite.GroupID)
-	fmt.Println(Invite.Sender)
-	fmt.Println(Invite.Receiver)
-	fmt.Println(Invite.Status)
 	err = Handler.Service.InviderDecision(&Invite)
 	if err != nil {
 		log.Println("ttttttt", err)
@@ -86,7 +76,6 @@ func (Handler *Handler) GetInvites(w http.ResponseWriter, r *http.Request) {
 
 	Invites, err := Handler.Service.AllInvites(user.ID)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 
@@ -94,8 +83,7 @@ func (Handler *Handler) GetInvites(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(Invites)
 }
 
-
-func  (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request)  {
+func (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
@@ -108,7 +96,6 @@ func  (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request)  {
 	}
 	Invites, err := Handler.Service.AllMembers(Invite.GroupID)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	valid, err := Handler.Service.Members(Invites)

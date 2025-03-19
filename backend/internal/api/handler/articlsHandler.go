@@ -57,7 +57,6 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 
 	}
 	if err := Handler.Service.CreateArticle(&article, users, user.ID); err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
@@ -153,7 +152,6 @@ func (Handler *Handler) AfterGet(w http.ResponseWriter, r *http.Request) (user m
 
 	err = utils.ParseBody(r, &data)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Invalid request body")
 		return
 	}
