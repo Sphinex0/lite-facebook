@@ -1,5 +1,5 @@
 'use client'
-import { Group, Home, Mail, Message, Notifications } from '@mui/icons-material'
+import { Group, Groups, Home, Mail, Message, Notifications } from '@mui/icons-material'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation';
 import React, { useState } from 'react'
@@ -15,7 +15,7 @@ const SideBar = () => {
             <h3>Home</h3>   
         </Link>
         <Link href={"/groups"} className={`menu-item ${router == "/groups" && "active"}`}>
-            <span><Group/></span>
+            <span><Groups/></span>
             <h3>Groups</h3>
         </Link>
 

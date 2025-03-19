@@ -52,10 +52,10 @@ const Members = ({groupID}) => {
     <div className='feeds'>
         {members.map((memberInfo, index)=>{
             if (index == members.length-1){
-                return  <MemberInfo memberInfo={memberInfo} reference={lastElementRef} />
+                return  <MemberInfo key={`member${memberInfo.id}`} memberInfo={memberInfo} reference={lastElementRef} />
 
             }
-            return   <MemberInfo memberInfo={memberInfo} reference={lastElementRef} />
+            return   <MemberInfo key={`member${memberInfo.id}`} memberInfo={memberInfo}/>
 
 
         })}
