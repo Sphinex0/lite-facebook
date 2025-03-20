@@ -1,7 +1,6 @@
 package service
 
 import (
-	"fmt"
 	"time"
 
 	"social-network/internal/models"
@@ -14,12 +13,11 @@ func (service *Service) CreateMessage(msg *models.WSMessage) (err error) {
 }
 
 func (service *Service) FetchMessagesHestories(befor, conversation_id int) (messages []models.WSMessage, err models.Error) {
-	fmt.Println(befor, conversation_id)
 	messages, err = service.Database.GetMessagesHestories(befor, conversation_id)
 	return
 }
 
-func (service *Service) ReadMessages(convId int) (err error) {	
+func (service *Service) ReadMessages(convId int) (err error) {
 	err = service.Database.ReadMessages(convId)
 	return
 }

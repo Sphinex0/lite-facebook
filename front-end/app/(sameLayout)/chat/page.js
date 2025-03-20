@@ -7,14 +7,12 @@ import { emojis } from "./_components/emojis";
 import UserInfo from "../_components/userInfo";
 import { Context } from "../layout";
 import { opThrottle, useOnVisible } from "@/app/helpers";
+import { useWorker } from "@/app/_Context/WorkerContext";
 
 export default function Chat() {
-    // Destructure context, excluding conversationsRef since it's not provided
-    let { clientWorker, workerPortRef, conversations, setConversations } = useContext(Context);
 
-    // Define conversationsRef locally
+    const { portRef, clientWorker, conversations, setConversations } = useWorker();
     const conversationsRef = useRef(conversations);
-
     const [message, setMessage] = useState({ content: "", reply: null });
     const [messages, setMessages] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
@@ -26,8 +24,6 @@ export default function Chat() {
     const combinadeRef = useRef(null);
     const [replyingTo, setReplyingTo] = useState(null);
     const inputRef = useRef(null);
-    // Add a ref to track previous messages
-    // const prevMessagesRef = useRef([]);
     const chatBodyRef = useRef(null); // Ref for the chat body
     const oldScrollHeightRef = useRef(null); // Store scroll height before loading more
     const justLoadedMoreRef = useRef(false); // Flag for pagination
@@ -51,13 +47,11 @@ export default function Chat() {
         });
         if (res.ok) {
             const data = await res.json() || [];
-            console.log("before", beforeRef.current)
-            console.log(data)
             if (data && data.length > 0) {
                 const revercedData = data.reverse();
                 setMessages((prev) => [...revercedData, ...prev]);
                 beforeRef.current = data[0].message.created_at
-                
+
             }
         } else {
             console.error("Error fetching messages");
@@ -88,13 +82,10 @@ export default function Chat() {
         }
     }, [selectedConversation]);
 
-    // useOnVisible(firstElementRef, fetchMessages , true , 1);
 
-    // Setup message handler for SharedWorker, depending on clientWorker
     useEffect(() => {
-        if (!workerPortRef.current) return;
-        const port = workerPortRef.current;
-        port.start();
+        const port = portRef.current;
+        if (!port) return;
         const messageHandler = ({ data }) => {
             switch (data.type) {
                 case "conversations":
@@ -161,7 +152,7 @@ export default function Chat() {
                     if (selectedConversationRef.current?.id === conversationId) {
                         setMessages((prev) => [...prev, data]);
                         const type = selectedConversationRef.current.type == "private" ? "read_messages_private" : "read_messages_group";
-                        workerPortRef.current.postMessage({
+                        port.postMessage({
                             kind: "send",
                             payload: {
                                 type,
@@ -225,8 +216,10 @@ export default function Chat() {
 
     const handleSendMessage = (event) => {
         if (event.key !== "Enter" || !message.content.trim()) return;
+        const port = portRef.current;
+        if (!port || !selectedConversation) return;
 
-        workerPortRef.current.postMessage({
+        port.postMessage({
             kind: "send",
             payload: {
                 type: "new_message",
@@ -238,7 +231,6 @@ export default function Chat() {
             },
         });
 
-        // Reset state
         setMessage({ content: "", reply: null });
         setReplyingTo(null);
     };
@@ -260,8 +252,9 @@ export default function Chat() {
     // };
 
     const SendFile = () => {
+        const port = portRef.current;
         if (combinadeRef.current) {
-            workerPortRef.current.postMessage({
+            port.postMessage({
                 kind: "image",
                 payload: combinadeRef.current,
             });
@@ -303,9 +296,10 @@ export default function Chat() {
     };
 
     const handleSetSelectedConversation = (conversation) => {
+        const port = portRef.current;
         if (selectedConversation?.id !== conversation.id) {
             const type = conversation.type == "private" ? "read_messages_private" : "read_messages_group";
-            workerPortRef.current.postMessage({
+            port.postMessage({
                 kind: "send",
                 payload: {
                     type,
@@ -352,7 +346,7 @@ export default function Chat() {
                 <div className={styles.chatHeader}>
                     <h4>{displayTitle}</h4>
                 </div>
-                <div className={styles.chatBody} onScroll={handleScroll} >
+                {/* <div className={styles.chatBody} onScroll={handleScroll} >
                     {selectedConversation ? (
                         messages.length > 0 ? (
                             <>
@@ -375,6 +369,30 @@ export default function Chat() {
                         <div className={styles.chatBody} onScroll={handleScroll} ref={chatBodyRef} ></div>
                     )}
                     <div ref={chatEndRef} />
+                </div> */}
+
+                <div className={styles.chatBody} onScroll={handleScroll} ref={chatBodyRef}>
+                    {selectedConversation ? (
+                        messages.length > 0 ? (
+                            <>
+                                {messages.map((msg, index) => (
+                                    <Message
+                                        msg={msg}
+                                        key={msg.message.id}
+                                        onClick={() => handleReply(msg)}
+                                        isSelected={replyingTo?.id === msg.message.id}
+                                    />
+                                ))}
+                            </>
+                        ) : (
+                            <div className={styles.emptyState}>
+                                No messages in this conversation
+                            </div>
+                        )
+                    ) : (
+                        <div className={styles.emptyState}>Please select a conversation</div>
+                    )}
+                    <div ref={chatEndRef} />
                 </div>
 
                 {img && (
@@ -391,7 +409,7 @@ export default function Chat() {
                     </div>
                 )}
 
-                {emoji && (
+                {emoji && selectedConversation && (
                     <div className={styles.Emojis}>
                         {emojis.map((emo) => (
                             <div

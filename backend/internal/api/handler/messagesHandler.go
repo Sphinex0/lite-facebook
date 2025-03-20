@@ -96,13 +96,12 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 					fmt.Printf("error n json: %v\n", err)
 					break
 				}
-				fmt.Println(msg)
 				path := HandleImage(msg.Type, message[4+idLen:])
-				fmt.Println(path)
 				msg.Type = "new_message"
 				msg.Message.Image = path
 
 			} else if typeMessage == websocket.TextMessage {
+				fmt.Println(string(message))
 				err = json.Unmarshal(message, &msg)
 				if err != nil {
 					fmt.Printf("error n json: %v\n", err)
@@ -229,8 +228,8 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			return
 		}
 	case "read_messages_group":
-		fmt.Println(msg.Message.ConversationID,msg.Message.SenderID)
-		err := h.Service.ReadMessagesGroup(msg.Message.ConversationID,msg.Message.SenderID)
+		fmt.Println(msg.Message.ConversationID, msg.Message.SenderID)
+		err := h.Service.ReadMessagesGroup(msg.Message.ConversationID, msg.Message.SenderID)
 		if err != nil {
 			fmt.Println("Read messages error:", err)
 			sendError(msg.Message.SenderID, "Failed to read messages")

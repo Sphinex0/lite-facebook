@@ -49,11 +49,13 @@ const ports = new Set()
 
 self.onconnect = (event) => {
     const port = event.ports[0]
+    console.log("port", port)
     ports.add(port)
     port.onmessage = (event) => {
         const { kind, payload } = event.data
         if (kind == "connect") {
             if (!socket) {
+                console.log("socket lwla", socket)
                 socket = new WebSocket("http://localhost:8080/ws")
                 socket.onopen = () => {
                     console.log("socket is open now")
@@ -70,10 +72,11 @@ self.onconnect = (event) => {
                     socket = null;
                 };
             } else {
-                // console.log(socket)
-                // if (socket) {
-                //     socket.send({ type: "conversations" })
-                // }
+                console.log("socket", socket)
+                if (socket) {
+                    console.log(JSON.stringify({ type: "conversations" }))
+                    socket.send(JSON.stringify({ type: "conversations" }))
+                }
             }
         } else if (kind == "send") {
             if (socket && socket.readyState == WebSocket.OPEN) {

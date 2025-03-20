@@ -61,7 +61,9 @@ export default function Message({ msg, onClick, isSelected }) {
 
             {/* Message Content */}
             <div className={styles.messageContent}>
-                {msg.message.content}
+                {
+                    msg.message.content || <img className={styles.messageImage} src={`/images/${msg.message.image}`} />
+                }
             </div>
 
             {/* Metadata */}

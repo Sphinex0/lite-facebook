@@ -72,7 +72,6 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 		}
 		messages = append(messages, msg)
 	}
-	fmt.Println(messages)
 
 	return
 }
