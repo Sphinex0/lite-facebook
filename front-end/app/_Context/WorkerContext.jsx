@@ -50,6 +50,7 @@ export function WorkerProvider({ children }) {
 
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
+        console.log("storedUser", storedUser);
         userRef.current = storedUser ? JSON.parse(storedUser) : null;
         console.log("userRef", userRef.current);
     }, []);
