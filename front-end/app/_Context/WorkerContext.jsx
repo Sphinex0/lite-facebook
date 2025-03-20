@@ -135,8 +135,8 @@ export function WorkerProvider({ children }) {
                         setMessages((prev) => [...prev, data]);
                         console.log("userRef.current => ", userRef.current);
                         if (userRef.current && userRef.current.id !== data.user_info.id) {
-                            console.log("user", user);
-                            console.log("data", data);
+                            // console.log("user", user);
+                            // console.log("data", data);
                             const type = selectedConversationRef.current.type == "private" ? "read_messages_private" : "read_messages_group";
                             port.postMessage({
                                 kind: "send",
