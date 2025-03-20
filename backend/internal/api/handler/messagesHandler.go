@@ -36,7 +36,6 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
-			fmt.Println("WebSocket upgrade error:", err)
 			return
 		}
 		defer conn.Close()
@@ -49,7 +48,6 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 
 		conversations, err := h.Service.FetchConversations(user.ID)
 		if err != nil {
-			fmt.Println("Fetch conversations error:", err)
 			return
 		}
 
@@ -62,7 +60,6 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			OnlineUsers:   getOnlineUsers(conversations),
 		}
 		if err := conn.WriteJSON(initialMsg); err != nil {
-			fmt.Println("Initial message send error:", err)
 			return
 		}
 
@@ -73,24 +70,20 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			typeMessage, message, err := conn.ReadMessage()
 			if err != nil {
 				if websocket.IsUnexpectedCloseError(err) {
-					fmt.Printf("WebSocket closed: %v\n", err)
 				}
 				break
 			}
 
 			if typeMessage == websocket.BinaryMessage {
 				if len(message) < 4 {
-					fmt.Println("short")
 					continue
 				}
 				idLen := binary.LittleEndian.Uint32(message[0:4])
 				if len(message) < int(idLen)+4 {
-					fmt.Println("short dfdf")
 					continue
 				}
 				err = json.Unmarshal(message[4:4+idLen], &msg)
 				if err != nil {
-					fmt.Printf("error n json: %v\n", err)
 					break
 				}
 				path := HandleImage(msg.Type, message[4+idLen:])
@@ -100,7 +93,6 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			} else if typeMessage == websocket.TextMessage {
 				err = json.Unmarshal(message, &msg)
 				if err != nil {
-					fmt.Printf("error n json: %v\n", err)
 					break
 				}
 				msg.Message.Image = ""
@@ -192,7 +184,6 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 		}
 
 		if msg.UserInfo, err = h.Service.GetUserByID(msg.Message.SenderID); err != nil {
-			fmt.Println("Get user error", err)
 			sendError(msg.Message.SenderID, "Failed to send message")
 			return
 		}
@@ -202,7 +193,6 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 
 		conversations, err := h.Service.FetchConversations(msg.Message.SenderID)
 		if err != nil {
-			fmt.Println("Fetch conversations error:", err)
 			return
 		}
 
@@ -242,7 +232,6 @@ func notifyUserStatus(userID int, status string, conversations []models.Conversa
 	}
 	var err error
 	if msg.UserInfo, err = h.Service.GetUserByID(msg.Message.SenderID); err != nil {
-		fmt.Println("Get user error", err)
 		sendError(msg.Message.SenderID, "Failed to send message")
 		return
 	}
@@ -343,7 +332,6 @@ func HandleImage(filename string, buffer []byte) string {
 	imageName, _ := uuid.NewV4()
 	err := os.WriteFile("../front-end/public/images/"+imageName.String()+extensions[extIndex], buffer, 0o644)
 	if err != nil {
-		fmt.Println(err)
 		return ""
 	}
 	return imageName.String() + extensions[extIndex]

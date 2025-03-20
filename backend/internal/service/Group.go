@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -9,6 +10,7 @@ import (
 
 func (S *Service) GreatedGroup(Group *models.Group) (err error) {
 	err = S.Database.SaveGroup(Group)
+
 	return
 }
 
@@ -65,17 +67,17 @@ func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
 	defer rows.Close()
 	fmt.Println(rows)
 
-	Group := make(map[string]int)
+	Group := []int{}
 	for rows.Next() {
 		var groupIDScan int
 		if err := rows.Scan(&groupIDScan); err != nil {
 			fmt.Println("Error scanning row:", err)
 			return nil, err
 		}
-		Group["id"] = groupIDScan
-
+		Group = append(Group, groupIDScan)
 	}
 
+	log.Println(Group)
 	var groups []models.Group
 
 	for _, v := range Group {

@@ -24,8 +24,8 @@ func (data *Database) SaveEvent(Event *models.Event) (err error) {
 	return
 }
 
-func (data *Database) GetallEvents() (*sql.Rows, error) {
-	res, err := data.Db.Query(`SELECT * FROM Events`)
+func (data *Database) GetallEvents(idGroup int) (*sql.Rows, error) {
+	res, err := data.Db.Query(`SELECT * FROM Events WHERE group_id=?`,idGroup)
 	if err != nil {
 		return nil, err
 	}

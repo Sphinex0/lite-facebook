@@ -21,7 +21,7 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	var Event models.Event
 	err := utils.ParseBody(r, &Event)
-	fmt.Println(user.ID)
+	fmt.Println(Event)
 	Event.UserID = user.ID
 	if err != nil || Event.UserID == 0 || Event.GroupID == 0 {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
@@ -34,24 +34,31 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := Handler.Service.CreateEvent(Event); err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 }
 
 func (Handler *Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	fmt.Println("fffffffffffffffffffffffffffffff")
+	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-
-	Events, err := Handler.Service.AllEvents()
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	var Event models.Event
+	err := utils.ParseBody(r, &Event)
+	Event.UserID=user.ID
+	fmt.Println(Event)
+	Events, err := Handler.Service.AllEvents(Event)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
-
+	fmt.Println("eeeeeee", Events)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(Events)
 }
@@ -65,7 +72,6 @@ func (Handler *Handler) GetEvent(w http.ResponseWriter, r *http.Request) {
 	err := utils.ParseBody(r, &Events)
 	Event, err := Handler.Service.GetEventsById(&Events)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	w.Header().Set("Content-Type", "application/json")
@@ -91,13 +97,11 @@ func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 	OptionEvent.UserID = user.ID
 	err := utils.ParseBody(r, &OptionEvent)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
 	err = Handler.Service.PostEventsOption(OptionEvent)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 }
@@ -110,12 +114,10 @@ func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
 	var EventOption models.EventOption
 	err := utils.ParseBody(r, &EventOption)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	EventOptions, err := Handler.Service.GetEventsOption(EventOption)
 	if err != nil {
-		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}

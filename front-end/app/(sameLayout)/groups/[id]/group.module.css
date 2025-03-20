@@ -125,3 +125,24 @@
     }
   
   }
+
+
+
+
+ .formclass{
+  display: none; 
+} 
+
+
+.create{
+ background-color: rgb(0, 132, 255);
+ padding: 1%;
+ border-radius: 20%;
+ width: 24px;
+ height: 24px;
+ box-sizing: content-box;
+}
+
+.InputTitle, .InputDescriptopn ,.InputButton{
+ border: 1px solid black;
+}

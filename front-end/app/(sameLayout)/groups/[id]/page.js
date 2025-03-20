@@ -5,6 +5,7 @@ import { use } from "react";
 import Posts from './posts';
 import Members from './members';
 import joinGroup from "./function";
+import Events from "./Events";
 export default function ShowGroup({ params }) {
   const id = use(params).id;
 
@@ -109,6 +110,7 @@ export default function ShowGroup({ params }) {
         </div>
         {groupNav == "posts" && <Posts groupID={id} setIsAllowed={setIsAllowed} />}
         {groupNav == "members" && <Members groupID={id} />}
+        {groupNav == "events" && <Events groupID={id} />}
 
         {isAllowed ? "" : "join group first"}
 

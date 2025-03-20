@@ -13,18 +13,24 @@ const Members = ({groupID}) => {
             try {
                 const response = await fetch("http://localhost:8080/api/invites/members", {
                     method: "POST",
+                    headers:{
+                        'Content-Type': 'application/json'
+                    },
                     credentials: "include",
-                    body: JSON.stringify({ before: before.current, group_id:+groupID }),
+                    body: JSON.stringify({ group_id: parseInt(groupID) }),
                     signal
                     
                 })
     
                 console.log("status:", response.status)
+                console.log(JSON.stringify({ before: before.current, group_id:groupID }))
+
                 if (response.ok) {
                     const membersData = await response.json()
                     if (membersData) {
                         console.log(membersData)
-                        setMembers((prv) => [...prv, ...membersData])
+                        setMembers((prv) => [...prv,...membersData])
+                        
                         //before.current = membersData[membersData.length-1].article.created_at
                     }
                     
