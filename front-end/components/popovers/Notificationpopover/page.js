@@ -12,7 +12,10 @@ const Notifications = ({ notifications = [], Err }) => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/notifications?page=${page}`);
+        const res = await fetch(`http://localhost:8080/api/GetNotification`,{
+          method:"POST",
+          credentials:"include"
+        });
         const newItems = await res.json();
         setItems((prev) => [...newItems, ...prev]);
       } catch (error) {
