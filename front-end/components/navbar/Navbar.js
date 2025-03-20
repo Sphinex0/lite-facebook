@@ -1,7 +1,6 @@
 'use client'
 import './navbar.css'
 import NotificationPop from '@/components/popovers/Notificationpopover/page'
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
@@ -10,8 +9,12 @@ import { useEffect, useState } from 'react'
 
 export default function Navbar () {
   const [bool, setbool] = useState(false)
+  const [profile, setprofile] = useState(false)
   function handleclick () {
     setbool(!bool)
+  }
+  function handleProfileclick () {
+    setprofile(!profile)
   }
   const [notifications, setNotifications] = useState([
     {
@@ -93,7 +96,12 @@ export default function Navbar () {
           <MailOutlinedIcon />
         </div>
       </div>
+      <div className='profile'>
+      <div onClick={handleProfileclick}>
       <img  src={image || "/default-profile.png"} alt='Profile' />
+      </div>
+      <div className='profile'>{bool && <ProfilePop/>}</div>
+      </div>
     </nav>
   )
 }
