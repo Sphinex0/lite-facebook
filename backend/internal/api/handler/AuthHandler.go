@@ -51,7 +51,11 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
 		}
+	} else {
+		user.Image = "blank-profile-picture-973460_960_720.png"
 	}
+
+	fmt.Println("user", user)
 	// Proccess Data and Insert it
 	Uuid, err, id := H.Service.RegisterUser(&user)
 	if err != nil {
@@ -66,7 +70,6 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		Last_Name:  user.Last_Name,
 		Image:      user.Image,
 	}
-	fmt.Println("user", userinfo)
 	utils.SetSessionCookie(w, Uuid)
 	utils.WriteJson(w, http.StatusOK, userinfo)
 }

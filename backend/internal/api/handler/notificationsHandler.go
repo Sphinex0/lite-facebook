@@ -36,7 +36,7 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 		Notifications: notifications,
 		Unseen:        count,
 	}
-
+	fmt.Println(response)
 	utils.WriteJson(w, http.StatusOK, response)
 }
 

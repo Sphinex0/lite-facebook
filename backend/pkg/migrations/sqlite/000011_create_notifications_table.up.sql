@@ -7,7 +7,6 @@ CREATE TABLE notifications (
     group_id INTEGER,
     event_id INTEGER,
     seen INTEGER NOT NULL DEFAULT 0,
-    count INTEGER NOT NULL DEFAULT 0,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (invoker_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (group_id) REFERENCES groups(id) ON DELETE CASCADE,

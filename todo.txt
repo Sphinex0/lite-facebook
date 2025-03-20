@@ -1,1 +1,2 @@
 // check if the follow or the invite request is already checked
+// delete the notification when the user either accepts or refuses

@@ -49,24 +49,24 @@ func (database *Database) CheckIfUserExists(email string) bool {
 	return err == nil
 }
 
-func (database *Database) InsertUser(user models.User, Uuid string) (error, int) {
+func (database *Database) InsertUser(user models.User, Uuid string) (int, error) {
 	res, err := database.Db.Exec("INSERT INTO users (Nickname, date_birth, first_name, last_name, email, password, image, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		user.Nickname, user.DateBirth, user.First_Name, user.Last_Name, user.Email, user.Password, user.Image, time.Now())
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 
 	usrid, err := res.LastInsertId()
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
 
 	err = database.AddUuid(Uuid, int(usrid))
 	if err != nil {
-		return err, 0
+		return 0, err
 	}
-	
-	return nil, int(usrid)
+
+	return int(usrid), nil
 }
 
 func (database *Database) DeleteCookieFromdb(uuid string) error {

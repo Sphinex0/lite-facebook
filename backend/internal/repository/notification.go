@@ -14,7 +14,7 @@ SELECT
     u.first_name AS invoker_name,
     g.title AS group_name,
     n.event_id,
-    e.title AS event_name  -- Use the alias 'e' instead of 'events'
+    e.title AS event_name
 FROM 
     notifications n
 LEFT JOIN 
@@ -22,15 +22,10 @@ LEFT JOIN
 LEFT JOIN 
     groups g ON n.group_id = g.id
 LEFT JOIN 
-    events e ON n.event_id = e.id  -- Alias 'e' is defined here
-LEFT JOIN 
-    followers f ON n.type = 'follow-request' AND f.follower = n.invoker_id AND f.status = 'pending'
-LEFT JOIN 
-    invites i ON n.type = 'invites-request' AND i.receiver = n.user_id AND i.status = 'pending'
+    events e ON n.event_id = e.id
 WHERE 
     n.user_id = ?;
 `, userID);if err != nil {
-		fmt.Println("err", err)
 		return []models.Notification{}, err
 	}
 
@@ -39,6 +34,7 @@ WHERE
 		var notification models.Notification
 		err := rows.Scan(&notification.ID, &notification.Type, &notification.InvokerName, &notification.GroupTitle, &notification.EventID, &notification.EventName)
 		if err != nil {
+			fmt.Println("err",err)
 			return []models.Notification{}, err
 		}
 		notifications = append(notifications, notification)
