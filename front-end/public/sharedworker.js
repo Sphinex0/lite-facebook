@@ -55,7 +55,6 @@ self.onconnect = (event) => {
         const { kind, payload } = event.data
         if (kind == "connect") {
             if (!socket) {
-                console.log("socket lwla", socket)
                 socket = new WebSocket("http://localhost:8080/ws")
                 socket.onopen = () => {
                     console.log("socket is open now")
@@ -72,9 +71,7 @@ self.onconnect = (event) => {
                     socket = null;
                 };
             } else {
-                console.log("socket", socket)
                 if (socket) {
-                    console.log(JSON.stringify({ type: "conversations" }))
                     socket.send(JSON.stringify({ type: "conversations" }))
                 }
             }

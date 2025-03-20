@@ -79,18 +79,15 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			}
 
 			if typeMessage == websocket.BinaryMessage {
-				fmt.Println(len(message))
 				if len(message) < 4 {
 					fmt.Println("short")
 					continue
 				}
 				idLen := binary.LittleEndian.Uint32(message[0:4])
-				fmt.Println(idLen)
 				if len(message) < int(idLen)+4 {
 					fmt.Println("short dfdf")
 					continue
 				}
-				fmt.Println("idLen", idLen)
 				err = json.Unmarshal(message[4:4+idLen], &msg)
 				if err != nil {
 					fmt.Printf("error n json: %v\n", err)
@@ -101,13 +98,11 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 				msg.Message.Image = path
 
 			} else if typeMessage == websocket.TextMessage {
-				fmt.Println(string(message))
 				err = json.Unmarshal(message, &msg)
 				if err != nil {
 					fmt.Printf("error n json: %v\n", err)
 					break
 				}
-				fmt.Println(message)
 				msg.Message.Image = ""
 			}
 			msg.Message.SenderID = user.ID
@@ -221,6 +216,7 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			return
 		}
 	case "read_messages_private":
+		fmt.Println("read")
 		err := h.Service.ReadMessages(msg.Message.ConversationID)
 		if err != nil {
 			fmt.Println("Read messages error:", err)

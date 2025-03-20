@@ -11,14 +11,14 @@ import { useWorker } from "@/app/_Context/WorkerContext";
 
 export default function Chat() {
 
-    const { portRef, clientWorker, conversations, setConversations } = useWorker();
+    const { portRef, clientWorker, conversations, setConversations , selectedConversationRef , messages , setMessages } = useWorker();
     const conversationsRef = useRef(conversations);
     const [message, setMessage] = useState({ content: "", reply: null });
-    const [messages, setMessages] = useState([]);
+    // const [messages, setMessages] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [img, setImage] = useState(null);
     const [emoji, setEmoji] = useState(false);
-    const selectedConversationRef = useRef(selectedConversation);
+    // const selectedConversationRef = useRef(selectedConversation);
     const chatEndRef = useRef(null);
     const beforeRef = useRef(Math.floor(new Date().getTime()));
     const combinadeRef = useRef(null);
@@ -84,97 +84,97 @@ export default function Chat() {
 
 
     useEffect(() => {
-        const port = portRef.current;
-        if (!port) return;
-        const messageHandler = ({ data }) => {
-            switch (data.type) {
-                case "conversations":
-                    const onlineUsers = data.online_users;
-                    setConversations(
-                        data.conversations?.map((conv) => {
-                            if (conv.user_info) {
-                                return {
-                                    ...conv,
-                                    user_info: {
-                                        ...conv.user_info,
-                                        online: onlineUsers?.includes(conv.user_info.id),
-                                    },
-                                };
-                            }
-                            return conv;
-                        })
-                    );
-                    break;
+        // const port = portRef.current;
+        // if (!port) return;
+        // const messageHandler = ({ data }) => {
+        //     switch (data.type) {
+        //         case "conversations":
+        //             const onlineUsers = data.online_users;
+        //             setConversations(
+        //                 data.conversations?.map((conv) => {
+        //                     if (conv.user_info) {
+        //                         return {
+        //                             ...conv,
+        //                             user_info: {
+        //                                 ...conv.user_info,
+        //                                 online: onlineUsers?.includes(conv.user_info.id),
+        //                             },
+        //                         };
+        //                     }
+        //                     return conv;
+        //                 })
+        //             );
+        //             break;
 
-                case "online":
-                case "offline":
-                    setConversations((prev) =>
-                        prev.map((conv) => {
-                            if (conv.user_info?.id === data.user_info.id) {
-                                return {
-                                    ...conv,
-                                    user_info: {
-                                        ...conv.user_info,
-                                        online: data.type === "online",
-                                    },
-                                };
-                            }
-                            return conv;
-                        })
-                    );
-                    break;
+        //         case "online":
+        //         case "offline":
+        //             setConversations((prev) =>
+        //                 prev.map((conv) => {
+        //                     if (conv.user_info?.id === data.user_info.id) {
+        //                         return {
+        //                             ...conv,
+        //                             user_info: {
+        //                                 ...conv.user_info,
+        //                                 online: data.type === "online",
+        //                             },
+        //                         };
+        //                     }
+        //                     return conv;
+        //                 })
+        //             );
+        //             break;
 
-                case "new_message":
-                    const msg = data.message;
-                    const conversationId = msg.conversation_id;
+        //         case "new_message":
+        //             const msg = data.message;
+        //             const conversationId = msg.conversation_id;
 
-                    setConversations((prev) => {
-                        const conversation = prev.find((c) => c.conversation.id === conversationId);
-                        if (conversation) {
-                            return [{
-                                ...conversation,
-                                last_message: data?.message?.content,
-                                seen: conversation.conversation.id === selectedConversationRef.current?.id ? 0 : conversation.seen + 1,
-                            }, ...prev.filter((c) => c.conversation.id !== conversationId)];
-                        } else {
-                            return [
-                                {
-                                    conversation: { id: msg.conversation_id },
-                                    user_info: { ...data.user_info, online: true },
-                                    last_message: data?.message?.content,
-                                    seen: 1
-                                },
-                                ...prev,
-                            ];
-                        }
-                    });
+        //             setConversations((prev) => {
+        //                 const conversation = prev.find((c) => c.conversation.id === conversationId);
+        //                 if (conversation) {
+        //                     return [{
+        //                         ...conversation,
+        //                         last_message: data?.message?.content,
+        //                         seen: conversation.conversation.id === selectedConversationRef.current?.id ? 0 : conversation.seen + 1,
+        //                     }, ...prev.filter((c) => c.conversation.id !== conversationId)];
+        //                 } else {
+        //                     return [
+        //                         {
+        //                             conversation: { id: msg.conversation_id },
+        //                             user_info: { ...data.user_info, online: true },
+        //                             last_message: data?.message?.content,
+        //                             seen: 1
+        //                         },
+        //                         ...prev,
+        //                     ];
+        //                 }
+        //             });
 
-                    if (selectedConversationRef.current?.id === conversationId) {
-                        setMessages((prev) => [...prev, data]);
-                        const type = selectedConversationRef.current.type == "private" ? "read_messages_private" : "read_messages_group";
-                        port.postMessage({
-                            kind: "send",
-                            payload: {
-                                type,
-                                message: {
-                                    conversation_id: conversationId,
-                                },
-                            },
-                        });
-                    }
-                    break;
+        //             if (selectedConversationRef.current?.id === conversationId) {
+        //                 setMessages((prev) => [...prev, data]);
+        //                 const type = selectedConversationRef.current.type == "private" ? "read_messages_private" : "read_messages_group";
+        //                 port.postMessage({
+        //                     kind: "send",
+        //                     payload: {
+        //                         type,
+        //                         message: {
+        //                             conversation_id: conversationId,
+        //                         },
+        //                     },
+        //                 });
+        //             }
+        //             break;
 
-                default:
-                    console.warn("Unhandled message type:", data.type);
-            }
-        };
+        //         default:
+        //             console.warn("Unhandled message type:", data.type);
+        //     }
+        // };
 
-        port.addEventListener("message", messageHandler);
-        port.postMessage({ kind: "connect" });
+        // port.addEventListener("message", messageHandler);
+        // port.postMessage({ kind: "connect" });
 
-        return () => {
-            port.removeEventListener("message", messageHandler);
-        };
+        // return () => {
+        //     port.removeEventListener("message", messageHandler);
+        // };
     }, [clientWorker]);
 
     useEffect(() => {
@@ -233,6 +233,7 @@ export default function Chat() {
 
         setMessage({ content: "", reply: null });
         setReplyingTo(null);
+        setEmoji(false);
     };
 
     // const handleSendMessage = (event) => {
