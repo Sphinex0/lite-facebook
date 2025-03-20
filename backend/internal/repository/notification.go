@@ -2,24 +2,30 @@ package repository
 
 import (
 	"fmt"
+
 	"social-network/internal/models"
 )
 
 func (database *Database) GetUserNotifications(userID string) ([]models.Notification, error) {
-	rows, err := database.Db.Query(`SELECT 
-    n.id AS notification_id,
-    n.type,
-    u.name AS invoker_name,
-    g.name AS group_name,
-	n.event_id AS event_id,
-FROM 
-    notifications n
-LEFT JOIN 
-    users u ON n.invoker_id = u.id
-LEFT JOIN 
-    groups g ON n.group_id = g.id
-WHERE 
-    n.user_id = ?;
+	rows, err := database.Db.Query(`
+    SELECT 
+        n.id AS notification_id,
+        n.type,
+        u.name AS invoker_name,
+        g.name AS group_name,
+        n.event_id AS event_id
+    FROM 
+        notifications n
+    LEFT JOIN 
+        users u ON n.invoker_id = u.id
+    LEFT JOIN 
+        groups g ON n.group_id = g.id
+    LEFT JOIN 
+        followers f ON f.follower = n.invoker_id AND f.status = 'pending'
+    LEFT JOIN 
+        invites i ON i.receiver = n.user_id AND i.status = 'pending'
+    WHERE 
+        n.user_id = ?;
 `, userID)
 	if err != nil {
 		return []models.Notification{}, err
