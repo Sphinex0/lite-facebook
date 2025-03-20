@@ -68,7 +68,7 @@ func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
 	return user, ok
 }
 
-func (rl *RateLimiter) RateMiddleware(next http.Handler, maxTokens int, duration time.Duration, db *sql.DB) http.Handler {
+func (rl *RateLimiter) RateMiddleware(next http.Handler, maxTokens int, duration time.Duration) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		user, ok := GetUserFromContext(r.Context()); if !ok {
 			utils.WriteJson(w, http.StatusUnauthorized, "User not Found")

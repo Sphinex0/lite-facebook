@@ -80,10 +80,6 @@ export default function Navbar () {
 
       {/* Logo and Icons (Center) */}
       <div className='nav-center'>
-        <SearchOutlinedIcon />
-        <div className='search-container'>
-          <input type='search' placeholder='Search for friends, groups' />
-        </div>
         <div className='icons'>
           <HomeOutlinedIcon />
           <GroupOutlinedIcon />

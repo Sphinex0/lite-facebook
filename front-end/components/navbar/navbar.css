@@ -42,15 +42,6 @@ nav {
     color: var(--bg-color);
 }
 
-.search-container input {
-    border: none;
-    outline: none;
-    padding: 5px;
-    margin-left: 8px;
-    background: transparent;
-    font-size: 14px;
-    flex: 1;
-}
 
 .icons {
     display: flex;
@@ -94,15 +85,6 @@ nav img {
         flex-direction: column;
         align-items: center;
         padding: 15px;
-    }
-
-    .search-container {
-        width: 100%;
-        margin: 10px 0;
-    }
-
-    .search-container input {
-        width: 100%;
     }
 
     .nav-center {
