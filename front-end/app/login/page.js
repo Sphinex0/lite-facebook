@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import styles from './login.module.css'
+import './login.css'
 
 export default function Login () {
   const [email, setEmail] = useState('')

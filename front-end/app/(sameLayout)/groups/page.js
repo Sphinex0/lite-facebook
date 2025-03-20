@@ -1,11 +1,14 @@
 'use client';
 
+import Link from 'next/link';
+import GroupInfo from './_components/groupInfo';
 import styles from './groupe.module.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-const Group = () => {
+const Groups = () => {
   const [compContent, setCompContent] = useState(null); // Store data directly
   const [loading, setLoading] = useState(false); // For loading state
+  const [section , setSection] = useState("all groups")
 
   // Function to handle the link click (fetch data)
   const handleLinkClick = async (content) => {
@@ -41,42 +44,62 @@ const Group = () => {
     }
 
     return (
-      <table className={styles.table}>
-        <thead>
-          <tr>
-            <th>Title</th>
-            <th>Description</th>
+      <div className='feeds'>
+        {data.map((row) => (
+                    <Link href={`/groups/${row.id}`} key={row.id}><GroupInfo  groupInfo={row}/></Link>
+                  ))}
+      </div>
+      // <table className={styles.table}>
+      //   <thead>
+      //     <tr>
+      //       <th>Title</th>
+      //       <th>Description</th>
           
           
         
-          </tr>
-        </thead>
-        <tbody>
-          {data.map((row, index) => (
-            <tr key={index}>
+      //     </tr>
+      //   </thead>
+      //   <tbody>
+      //     {data.map((row, index) => (
+      //       <tr key={index}>
 
-              <td>{row.title}</td>
-              <td>{row.description}</td>
+      //         <td>{row.title}</td>
+      //         <td>{row.description}</td>
 
              
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      //       </tr>
+      //     ))}
+      //   </tbody>
+      // </table>
     );
   };
 
+  useEffect(()=>{
+    handleLinkClick("groups")
+  },[])
+
   return (
-    <div>
-      <h1>Groups</h1>
-      <div className={styles.typegroupes}>
+    <div className='groups'>
+      <div className="category">
+        <h6 className={section === "all groups" ? "active":""} 
+        onClick={() => {
+          setSection("all groups")
+          handleLinkClick('groups')
+        }}>All Groups</h6>
+        <h6 className={section === "your groups" ? "active":""} 
+        onClick={() => {
+          setSection("your groups")
+          handleLinkClick('members')
+        }}>Your Groups</h6>
+      </div>
+      {/* <div className={styles.typegroupes}>
         <a href="#!" onClick={() => handleLinkClick('groups')}>
           <div>All Groups</div>
         </a>
         <a href="#!" onClick={() => handleLinkClick('members')}>
           <div>Your Groups</div>
         </a>
-      </div>
+      </div> */}
 
       <div className={styles.comp}>
         {loading && <p>Loading...</p>}
@@ -86,4 +109,4 @@ const Group = () => {
   );
 };
 
-export default Group;
+export default Groups;

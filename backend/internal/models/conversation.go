@@ -15,4 +15,5 @@ type ConversationsInfo struct {
 	Conversation Conversation `json:"conversation"`
 	UserInfo     UserInfo     `json:"user_info"`
 	Group        Group        `json:"group"`
+	LastMessage  string       `json:"last_message"`
 }

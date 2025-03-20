@@ -5,7 +5,7 @@ import Post from "./_components/post"
 import CreatePost from "./_components/createPost"
 import CreatePostModal from "./_components/createPostModal"
 import { useOnVisible } from "../helpers"
-import './main.css'
+import PostList from "./_components/postList"
 
 export default function Posts() {
     const [posts, setPosts] = useState([])
@@ -13,14 +13,15 @@ export default function Posts() {
 
     const lastPostElementRef = useRef(null)
     const before = useRef(Math.floor(Date.now() / 1000))
-
-    const fetchData = async () => {
+    const fetchData = async (signal) => {
         try {
             console.log(before, posts)
             const response = await fetch("http://localhost:8080/api/posts", {
                 method: "POST",
                 credentials: "include",
-                body: JSON.stringify({ before: before.current })
+                body: JSON.stringify({ before: before.current }),
+                signal
+                
             })
 
             console.log("status:", response.status)
@@ -40,7 +41,12 @@ export default function Posts() {
     }
 
     useEffect(() => {
-        fetchData()
+        const controller = new AbortController();
+        fetchData(controller.signal)
+
+        return ()=>{
+            controller.abort()
+        }
 
     }, [])
 
@@ -52,15 +58,7 @@ export default function Posts() {
         <>
             <CreatePost setModalDisplay={setModalDisplay} />
             {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} /> : ""}
-            <div className="feeds" >
-                {console.log("all posts", posts)}
-                {posts.map((postInfo, index) => {
-                    if (index == posts.length - 1) {
-                        return <Post postInfo={postInfo} key={postInfo.article.id} reference={lastPostElementRef} />
-                    }
-                    return <Post postInfo={postInfo} key={postInfo.article.id} />
-                })}
-            </div>
+            <PostList posts={posts} reference={lastPostElementRef} />
         </>
 )
 }

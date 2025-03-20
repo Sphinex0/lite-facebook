@@ -8,11 +8,14 @@ import (
 	utils "social-network/pkg"
 )
 
+
+
 func (data *Database) GetFollowersCount(user *models.UserInfo) (count int, err error) {
 	row := data.Db.QueryRow(`
         SELECT COUNT(*)
 		FROM followers
 		WHERE user_id = ?
+		AND status = "accepted"
     `,
 		user.ID)
 
@@ -26,6 +29,7 @@ func (data *Database) GetFollowingsCount(user *models.UserInfo) (count int, err 
         SELECT COUNT(*)
 		FROM followers
 		WHERE follower = ?
+		AND status = "accepted"
     `,
 		user.ID)
 
@@ -66,6 +70,19 @@ func (data *Database) IsFollow(user1 int, user2 int) (following bool) {
 	return
 }
 
+func (data *Database) GetFollowerStatus(targetUser int, FollowerUser int) (status string, err error) {
+	err = data.Db.QueryRow(`
+        SELECT status
+		FROM followers
+		WHERE user_id = ?
+		AND follower = ?
+    `,
+	targetUser,
+	FollowerUser).Scan(&status)
+
+	return
+}
+
 func (data *Database) GetFollow(follow *models.Follower) (err error) {
 	row := data.Db.QueryRow(`
         SELECT *
@@ -92,9 +109,9 @@ func (data *Database) DeleteFollow(follow *models.Follower) (err error) {
 	return
 }
 
-func (data *Database) GetFollowersIds(userID int) (followerIds []int, err error) {
+func (data *Database) GetFollowersIds(userID int) (followerIds []int, err models.Error) {
 	var rows *sql.Rows
-	rows, err = data.Db.Query(`
+	rows, err.Err = data.Db.Query(`
         SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
 		FROM followers f
 		JOIN users u
@@ -104,32 +121,33 @@ func (data *Database) GetFollowersIds(userID int) (followerIds []int, err error)
 
     `,
 		userID)
-	if err != nil {
+	if err.Err != nil {
 		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var user models.UserInfo
-		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
+		if err.Err = rows.Scan(utils.GetScanFields(&user)...); err.Err != nil {
 			return
 		}
 		followerIds = append(followerIds, user.ID)
 	}
-	err = rows.Err()
+	err.Err = rows.Err()
 
 	return
 }
 
-func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers []models.UserInfo, err error) {
+func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers []models.FollowWithUser, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
-        SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
+        SELECT u.id, u.nickname, u.first_name, u.last_name, u.image, f.created_at, f.modified_at
 		FROM followers f
 		JOIN users u
 		ON f.follower = u.id
 		WHERE user_id = ?
 		AND status = "accepted"
 		AND modified_at < ?
+		ORDER BY modified_at DESC
 		LIMIT 10
     `,
 		user.ID,
@@ -139,27 +157,31 @@ func (data *Database) GetFollowers(user *models.UserInfo, before int) (followers
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var user models.UserInfo
-		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
+		var FollowUser models.FollowWithUser
+		scanFields := utils.GetScanFields(&FollowUser.UserInfo)
+		scanFields = append(scanFields, &FollowUser.CreatedAt, &FollowUser.ModifiedAt)
+		if err = rows.Scan(scanFields...); err != nil {
 			return
 		}
-		followers = append(followers, user)
+		followers = append(followers, FollowUser)
 	}
 	err = rows.Err()
 
 	return
 }
 
-func (data *Database) GetFollowings(user *models.UserInfo, before int) (followings []models.UserInfo, err error) {
+func (data *Database) GetFollowings(user *models.UserInfo, before int) (followings []models.FollowWithUser, err error) {
 	var rows *sql.Rows
 	rows, err = data.Db.Query(`
-        SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
+        SELECT u.id, u.nickname, u.first_name, u.last_name, u.image, f.created_at, f.modified_at
 		FROM followers f
 		JOIN users u
 		ON f.user_id = u.id
 		WHERE f.follower = ?
 		AND status = "accepted"
-		LIMIT 20
+		AND modified_at < ?
+		ORDER BY modified_at DESC
+		LIMIT 10
     `,
 		user.ID,
 		before)
@@ -168,11 +190,13 @@ func (data *Database) GetFollowings(user *models.UserInfo, before int) (followin
 	}
 	defer rows.Close()
 	for rows.Next() {
-		var user models.UserInfo
-		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
+		var FollowUser models.FollowWithUser
+		scanFields := utils.GetScanFields(&FollowUser.UserInfo)
+		scanFields = append(scanFields, &FollowUser.CreatedAt, &FollowUser.ModifiedAt)
+		if err = rows.Scan(scanFields...); err != nil {
 			return
 		}
-		followings = append(followings, user)
+		followings = append(followings, FollowUser)
 	}
 	err = rows.Err()
 
@@ -237,13 +261,13 @@ func (data *Database) AcceptFollowRequest(follow *models.Follower) (err error) {
 	return
 }
 
-func (data *Database) GetUserPrivacyByID(follow *models.Follower) (status string, err error) {
+func (data *Database) GetUserPrivacyByID(userID int ) (status string, err error) {
 	err = data.Db.QueryRow(`
         SELECT privacy 
 		FROM users
 		WHERE id = ?
     `,
-		follow.UserID).Scan(&status)
+	userID).Scan(&status)
 
 	return
 }

@@ -8,8 +8,8 @@ type Message struct {
 	Content        string `json:"content"`
 	Seen           int    `json:"seen"`
 	Image          string `json:"image"`
+	Reply          *int   `json:"reply"`
 	CreatedAt      int    `json:"created_at"`
-	ModifiedAt     int    `json:"modified_at"`
 }
 
 type WSMessage struct {

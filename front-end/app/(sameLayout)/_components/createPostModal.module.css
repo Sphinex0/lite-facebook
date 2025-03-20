@@ -18,6 +18,18 @@
     padding: 5px;
 }
 
+.addFile{
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 4px;
+}
+
+.addFile:hover{
+    background-color: #ccc;
+}
+
 .textInput{
     border: 1px solid #ccc;
     height: 100px;

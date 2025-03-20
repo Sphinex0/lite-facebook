@@ -12,6 +12,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"slices"
 	"strings"
 
 	"social-network/internal/models"
@@ -94,10 +95,10 @@ func SetSessionCookie(w http.ResponseWriter, uuid string) {
 	})
 }
 
-func DeleteSessionCookie(w http.ResponseWriter, uid string) {
+func DeleteSessionCookie(w http.ResponseWriter, uuid string) {
 	http.SetCookie(w, &http.Cookie{
-		Name:   "session_id",
-		Value:  uid,
+		Name:   "session_token",
+		Value:  uuid,
 		Path:   "/",
 		MaxAge: -1,
 	})
@@ -131,7 +132,16 @@ func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileH
 
 	randomstr := GenerateUuid()
 	fmt.Println(randomstr + handler.Filename)
-	filePath := filepath.Join(UploadDir, randomstr+handler.Filename)
+
+	extensions := []string{".png", ".jpg", ".jpeg", ".gif"}
+	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
+		return strings.HasSuffix(handler.Filename, ext)
+	})
+	if extIndex == -1 {
+		return "" , fmt.Errorf("err")
+	}
+
+	filePath := filepath.Join(UploadDir, randomstr+extensions[extIndex])
 	dst, err := os.Create(filePath)
 	if err != nil {
 		return "", errors.New("could not save file")
@@ -143,7 +153,7 @@ func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileH
 		return "", errors.New("failed to save file")
 	}
 
-	return filePath, nil
+	return randomstr+extensions[extIndex], nil
 }
 
 func GenerateUuid() string {

@@ -2,12 +2,16 @@
 import styles from './group.module.css'
 import { useState, useEffect } from 'react';
 import { use } from "react";
+import Posts from './posts';
+import Members from './members';
 export default function ShowGroup({ params }) {
   const id = use(params).id;
 
+  const [groupNav, setGroupNav] = useState("posts")
   const [groupData, setGroupData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [isAllowed, setIsAllowed] = useState(false)
   console.log(JSON.stringify({ id: parseInt(id) }))
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +30,7 @@ export default function ShowGroup({ params }) {
         }
 
         const data = await response.json();
+        
         setGroupData(data);
       } catch (error) {
         setError(error.message);
@@ -54,17 +59,51 @@ export default function ShowGroup({ params }) {
         <span className={styles.followText}>{new Date(groupData.created_at * 1000).toLocaleDateString()}</span><br/>
       </div>
       <div className={`${styles.g1} ${styles.btnSection}`}>
-        <button className={styles.editProfileBtn}></button>
+        {isAllowed 
+        ? <button className={styles.editProfileBtn} 
+        onClick={()=>{
+          leaveGroup(id,setIsAllowed)
+        }}
+        >Leave Group</button>
+
+
+        :<button className={styles.editProfileBtn} 
+        onClick={()=>{
+          joinGroup(id,setIsAllowed)
+        }}
+        >Join Group</button>}
+        
       </div>
       </div>
       <div className={styles.profileNav}>
         <ul className={styles.navUl}>
-          <li className={`${styles.navLi} ${styles.active}`}>Posts</li>
-          <li className={styles.navLi}>events</li>
-          <li className={styles.navLi}>mombers</li>
+          <li className={`${styles.navLi} ${groupNav ==="posts"? styles.active:""}`}
+          onClick={()=>{
+            setGroupNav("posts")
+          }}
+          >Posts
+          </li>
+
+          <li className={`${styles.navLi} ${groupNav ==="events"? styles.active:""}`}
+          onClick={()=>{
+            setGroupNav("events")
+          }}
+          >Events</li>
+
+          <li className={`${styles.navLi} ${groupNav ==="members"? styles.active:""}`}
+          onClick={()=>{
+            setGroupNav("members")
+          }}
+          >Members</li>
         </ul>
 
       </div>
+      { groupNav == "posts" && <Posts groupID={id} setIsAllowed={setIsAllowed}/>}
+      { groupNav == "members" && <Members groupID={id} />}
+
+      {isAllowed ? "":"join group first"}
+      
+      
     </div>
 
   </div>
