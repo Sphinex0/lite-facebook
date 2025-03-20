@@ -29,8 +29,7 @@ const Members = ({groupID}) => {
                     const membersData = await response.json()
                     if (membersData) {
                         console.log(membersData)
-                        setMembers((prv) => [...prv,membersData])
-                        console.log(membersData);
+                        setMembers((prv) => [...prv,...membersData])
                         
                         //before.current = membersData[membersData.length-1].article.created_at
                     }
@@ -59,10 +58,10 @@ const Members = ({groupID}) => {
     <div className='feeds'>
         {members.map((memberInfo, index)=>{
             if (index == members.length-1){
-                return  <MemberInfo memberInfo={memberInfo} reference={lastElementRef} />
+                return  <MemberInfo key={`member${memberInfo.id}`} memberInfo={memberInfo} reference={lastElementRef} />
 
             }
-            return   <MemberInfo memberInfo={memberInfo} reference={lastElementRef} />
+            return   <MemberInfo key={`member${memberInfo.id}`} memberInfo={memberInfo}/>
 
 
         })}

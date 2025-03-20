@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"slices"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -88,8 +89,8 @@ func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	return Invites, nil
 }
 
-func (S *Service) Members(Invite []models.Invite) (map[int]models.User, error) {
-	member := make(map[int]models.User)
+func (S *Service) Members(Invite []models.Invite) ([]models.User, error) {
+	var members []models.User
 	for _, m := range Invite {
 		fmt.Println("m.Receiver",m.Receiver)
 		row1, err := S.Database.GetUsers(m.Receiver)
@@ -97,14 +98,19 @@ func (S *Service) Members(Invite []models.Invite) (map[int]models.User, error) {
 			fmt.Println("fffffffffffff",err)
 			return nil, fmt.Errorf("error getting receiver user with ID %d: %w", m.Receiver, err)
 		}
-		member[m.Receiver] = row1
+		if !slices.Contains(members, row1){
+			members = append(members, row1)
+		}
+		
 
 		row2, err := S.Database.GetUsers(m.Sender)
 		if err != nil {
 			fmt.Println("hhhhhhhhhhhhhhhhhhh",err)
 			return nil, fmt.Errorf("error getting sender user with ID %d: %w", m.Sender, err)
 		}
-		member[m.Sender] = row2
+		if !slices.Contains(members, row2){
+			members = append(members, row2)
+		}
 	}
-	return member, nil
+	return members, nil
 }

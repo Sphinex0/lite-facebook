@@ -16,4 +16,5 @@ type Data struct {
 	Parent         int `json:"parent"`
 	GroupID        int `json:"group_id"`
 	ConversationID int `json:"conversation_id"`
+	UserID         int `json:"user_id"`
 }

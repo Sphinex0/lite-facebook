@@ -57,7 +57,7 @@ func (Handler *Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
-
+	fmt.Println("eeeeeee", Events)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(Events)
 }

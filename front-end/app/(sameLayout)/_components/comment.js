@@ -15,7 +15,7 @@ const Comment = ({ commentInfo , reference}) => {
       <UserInfo userInfo={commentInfo.user_info} articleInfo={commentInfo.article}/>
       <div className={styles.content}>{commentInfo.article.content}</div>
 
-      {commentInfo.article.image && <img src="./images/feed-1.jpg" />}
+      {commentInfo.article.image && <img src={`/posts/${commentInfo.article.image}`} />}
 
 
       <div className="action-button">

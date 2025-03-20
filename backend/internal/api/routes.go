@@ -21,16 +21,19 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/logout", handler.Logout)
 
 	// profile
-	mux.HandleFunc("/api/user", handler.GetUser)
-	mux.HandleFunc("/api/user/update", handler.UpdateUser)
+	mux.HandleFunc("/api/profile", handler.HandleGetProfile)            // post {"id":1} default to user connected
+	mux.HandleFunc("/api/profile/about", handler.HandleGetProfileAbout) // post {"id":1} default to user connected
+	mux.HandleFunc("/api/profile/update", handler.HandleUpdateProfile)
+	mux.HandleFunc("/api/profile/posts", handler.HandleGetProfilePosts)
 
 	// articls
 	mux.HandleFunc("/api/posts", handler.HandelGetPosts)       // post {"before":184525547}
 	mux.HandleFunc("/api/comments", handler.HandelGetComments) // post {"before":184525547, "parent":4}
-	Createarticle := ratelimiter.CreateArticleLimiter.RateMiddleware(http.HandlerFunc(handler.HandelCreateArticle), 10, 2*time.Second, db)
-	mux.Handle("/api/articles/store", Createarticle)                 // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
+	// Createarticle := ratelimiter.CreateArticleLimiter.RateMiddleware(http.HandlerFunc(handler.HandelCreateArticle), 10, 2*time.Second, db)
+	// mux.Handle("/api/articles/store", Createarticle)                 // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
 	mux.HandleFunc("/api/reactions/store", handler.HandelCreateReaction) // post {"like":1|-1, "article_id":4}
 	mux.HandleFunc("/api/group/posts", handler.HandelGetPostsByGroup)    // post {"before":184525547,"group_id":1}
+	mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle)
 
 	// group
 	mux.HandleFunc("/api/groups/store", handler.AddGroup)
@@ -60,7 +63,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/follow/requests", handler.HandleGetFollowRequests) // get
 	mux.HandleFunc("/api/follow", handler.HandleFollow)                     // post {"user_id":2}
 	mux.HandleFunc("/api/follow/decision", handler.HandleFollowRequest)     // post {"follower":2,"status":"accepted"}
-	
+
 	// websocket
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },
@@ -70,12 +73,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/messageshistories", handler.HandelMessagesHestories)
 
 	// notification
-	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
-
-
-
-
-
+	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) // get
 
 	go func() {
 		for {

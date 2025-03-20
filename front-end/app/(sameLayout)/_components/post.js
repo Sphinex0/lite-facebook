@@ -28,10 +28,10 @@ export default function Post({ postInfo , reference}) {
             </div>
             
             
-            <div  className={styles.content}>{postInfo.article.content}</div>
+            <div className={styles.content}>{postInfo.article.content}</div>
 
 
-            {postInfo.article.image && <img src="./images/feed-1.jpg" />}
+            {postInfo.article.image && <img src={`/posts/${postInfo.article.image}`} />}
 
             <div className="action-button">
                 <div className="action-buttons">

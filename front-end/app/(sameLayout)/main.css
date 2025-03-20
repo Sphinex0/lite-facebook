@@ -6,6 +6,7 @@ body {
     font-family: sans-serif;
     padding: 0;
     margin: 0;
+    line-break: anywhere;
 }
 
 
@@ -36,6 +37,12 @@ body {
 
 }
 
+a{
+    color: unset;
+    text-decoration: none;
+}
+
+
 *,
 *::before,
 *::after {
@@ -62,7 +69,7 @@ body {
 }
 
 .profile-photo {
-    width: 2.7rem;
+    width: 50px;
     aspect-ratio: 1/1;
     border-radius: 50%;
     overflow: hidden;
@@ -90,6 +97,11 @@ img {
 .btn-primary {
     background: var(--color-primary);
     color: var(--color-white);
+    flex-grow: 0;
+    flex-shrink: 0;
+    height: fit-content;
+    align-self: center;
+    border: none;
 }
 
 .text-bold {
@@ -363,6 +375,52 @@ main .container .left .profile {
     line-height: 1.5;
 }
 
+/* 
+.online {
+    position: relative;
+    z-index: 200;
+}
+
+.online::after {
+    content: "";
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 10px;
+    
+    background-color: #0fcc45;
+    border-radius: 50%;
+    
+    position: absolute;
+    right: 0;
+} */
+.profile-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-photo {
+    /* Your styles, e.g., border-radius: 50%; overflow: hidden; */
+}
+
+.status {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 17px;
+    height: 17px;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.status.online {
+    background-color: limegreen;
+}
+
+.status.offline {
+    background-color: lightgray;
+}
+
 .imagePreview {
     width: 100px;
     height: auto;
@@ -531,7 +589,7 @@ main .container .right {
     position: fixed;
     top: 0;
     left: 0;
-    z-index: 100%;
+    z-index: 100;
     text-align: center;
     display: grid;
     place-items: center;
@@ -544,12 +602,12 @@ main .container .right {
     border-radius: var(--card-border-radius);
     width: 50%;
     box-shadow: 0 0 1rem var(--color-primary);
-    max-height: 100vh;
+    max-height: 85vh;
+    overflow: auto;
 }
 
 .comments {
     overflow: auto;
-    height: 300px;
 }
 
 

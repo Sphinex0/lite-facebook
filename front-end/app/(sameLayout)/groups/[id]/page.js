@@ -82,7 +82,6 @@ export default function ShowGroup({ params }) {
        }}
        >{isAction}</button>
         } 
-            
 
           </div>
         </div>

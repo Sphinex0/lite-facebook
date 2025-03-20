@@ -10,12 +10,11 @@ import { Context } from "../layout";
 export default function Chat() {
     // Destructure context, excluding conversationsRef since it's not provided
     let { clientWorker, workerPortRef, conversations, setConversations } = useContext(Context);
-    console.log(workerPortRef); // Debugging workerPortRef
 
     // Define conversationsRef locally
     const conversationsRef = useRef(conversations);
 
-    const [message, setMessage] = useState("");
+    const [message, setMessage] = useState({ content: "", reply: null });
     const [messages, setMessages] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [img, setImage] = useState(null);
@@ -24,6 +23,8 @@ export default function Chat() {
     const chatEndRef = useRef(null);
     const beforeRef = useRef(Math.floor(new Date().getTime() / 1000));
     const combinadeRef = useRef(null);
+    const [replyingTo, setReplyingTo] = useState(null);
+    const inputRef = useRef(null);
 
     // Update conversationsRef when conversations changes
     useEffect(() => {
@@ -56,7 +57,6 @@ export default function Chat() {
     // Setup message handler for SharedWorker, depending on clientWorker
     useEffect(() => {
         if (!workerPortRef.current) return;
-
         const port = workerPortRef.current;
         port.start();
 
@@ -105,12 +105,16 @@ export default function Chat() {
                     setConversations((prev) => {
                         const conversation = prev.find((c) => c.conversation.id === conversationId);
                         if (conversation) {
-                            return [conversation, ...prev.filter((c) => c.conversation.id !== conversationId)];
+                            return [{
+                                ...conversation,
+                                last_message: data?.message?.content
+                            }, ...prev.filter((c) => c.conversation.id !== conversationId)];
                         } else {
                             return [
                                 {
                                     conversation: { id: msg.conversation_id },
                                     user_info: { ...data.user_info, online: true },
+                                    last_message: data?.message?.content
                                 },
                                 ...prev,
                             ];
@@ -133,27 +137,70 @@ export default function Chat() {
         return () => {
             port.removeEventListener("message", messageHandler);
         };
-    }, [clientWorker]); // Depend on clientWorker to re-run when it’s set
+    }, [clientWorker]);
 
-    // Scroll to bottom when messages change
     useEffect(() => {
         chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }, [messages]);
 
+
+    const handleReply = (message) => {
+        if (replyingTo?.id === message.message.id) {
+            // Clear reply if clicking the same message
+            setReplyingTo(null);
+            setMessage(prev => ({ ...prev, reply: null }));
+        } else {
+            // Set new reply
+            setReplyingTo({
+                id: message.message.id,
+                content: message.message.content,
+                sender: message.user_info?.name || "Unknown"
+            });
+            setMessage(prev => ({ ...prev, reply: message.message.id }));
+        }
+        inputRef.current?.focus();
+    };
+
+    const cancelReply = () => {
+        setReplyingTo(null);
+        setMessage(prev => ({ ...prev, reply: null }));
+    };
+
     const handleSendMessage = (event) => {
-        if (event.key !== "Enter" || !message.trim()) return;
+        if (event.key !== "Enter" || !message.content.trim()) return;
+
         workerPortRef.current.postMessage({
             kind: "send",
             payload: {
                 type: "new_message",
                 message: {
                     conversation_id: selectedConversation.id,
-                    content: message,
+                    content: message.content,
+                    reply_to: message.reply
                 },
             },
         });
-        setMessage("");
+
+        // Reset state
+        setMessage({ content: "", reply: null });
+        setReplyingTo(null);
     };
+
+    // const handleSendMessage = (event) => {
+    //     if (event.key !== "Enter" || !message.content.trim()) return;
+    //     workerPortRef.current.postMessage({
+    //         kind: "send",
+    //         payload: {
+    //             type: "new_message",
+    //             message: {
+    //                 conversation_id: selectedConversation.id,
+    //                 content: message.content,
+    //                 reply: message.reply
+    //             },
+    //         },
+    //     });
+    //     setMessage({ content: "", reply: null });
+    // };
 
     const SendFile = () => {
         if (combinadeRef.current) {
@@ -214,6 +261,12 @@ export default function Chat() {
         `${selectedConversationInfo.user_info?.first_name} ${selectedConversationInfo.user_info?.last_name}`
         : "Select a conversation";
 
+    const handelReply = (msg) => {
+        setMessage(prev => ({
+            ...prev,
+            reply: msg.message.id
+        }));
+    }
     return (
         <div className={styles.container}>
             <div className={styles.chatContainer}>
@@ -225,7 +278,7 @@ export default function Chat() {
                         messages.length > 0 ? (
                             <>
                                 {messages.map((msg) => (
-                                    <Message msg={msg} key={msg.message.id} />
+                                    <Message msg={msg} key={msg.message.id} onClick={() => handelReply(msg)} />
                                 ))}
                             </>
                         ) : (
@@ -259,7 +312,12 @@ export default function Chat() {
                             <div
                                 className={styles.Emoji}
                                 key={emo}
-                                onClick={() => setMessage((prev) => prev + emo)}
+                                onClick={() => setMessage((prev) => {
+                                    return {
+                                        ...prev,
+                                        content: prev.content + emo
+                                    }
+                                })}
                             >
                                 {emo}
                             </div>
@@ -270,8 +328,13 @@ export default function Chat() {
                 <div className={styles.groupInputs}>
                     <input
                         className={styles.chatInput}
-                        value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        value={message?.content}
+                        onChange={(e) => setMessage((prev) => {
+                            return {
+                                ...prev,
+                                content: e.target.value
+                            }
+                        })}
                         onKeyDown={handleSendMessage}
                         placeholder="Type your message..."
                         disabled={!selectedConversation}
@@ -296,9 +359,8 @@ export default function Chat() {
 
             <div className={styles.conversationsList}>
                 {conversations.map((conversationInfo) => {
-                    const { conversation, user_info, group } = conversationInfo;
-                    const displayText =
-                        group?.title || `${user_info?.first_name} ${user_info?.last_name}`;
+                    const { conversation, user_info, group, last_message } = conversationInfo;
+                    const onlineDiv = true
                     return (
                         <div
                             key={`conv-${conversation.id}`}
@@ -306,7 +368,7 @@ export default function Chat() {
                                 }`}
                             onClick={() => handleSetSelectedConversation(conversation)}
                         >
-                            <UserInfo userInfo={user_info} group={group} />
+                            <UserInfo userInfo={user_info} group={group} onlineDiv={onlineDiv} lastMessage={last_message} />
                         </div>
                     );
                 })}
