@@ -37,6 +37,15 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 	if Invites.Status == "accepted" {
 		err = service.Database.AcceptInviteRequest(Invites)
 		fmt.Println(err)
+		if err != nil {
+			return
+		}
+		// for create member
+		//member := models.Member{                                        
+		//	Member : Group.Creator ,                                
+		//	ConversationId : conv.ID ,
+//}                                                       
+//err = S.CreateMember()
 	} else if Invites.Status == "rejected" {
 		err = service.Database.DeleteInvites(Invites)
 	} else {
