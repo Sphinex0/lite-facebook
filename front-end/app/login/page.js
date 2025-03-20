@@ -40,7 +40,7 @@ export default function Login () {
   }
 
   return (
-    <div className={styles.container}>
+    <div className="container">
       <div className='form-box'>
         <h2>Login</h2>
 
