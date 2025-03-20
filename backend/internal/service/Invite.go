@@ -41,11 +41,19 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 			return
 		}
 		// for create member
-		//member := models.Member{                                        
-		//	Member : Group.Creator ,                                
-		//	ConversationId : conv.ID ,
-//}                                                       
-//err = S.CreateMember()
+		mb := Invites.Sender
+		idIv , err = service.Database.CheckMember(mb,Invites.GroupID)
+		if err != nil && err != sql.ErrNoRows {
+			return
+		}
+		if id == 0 {
+			mb = Invites.Receiver
+		}
+		member := models.Member{                                        
+			Member : mb ,                                
+		    ConversationId : conv.ID ,
+        }                                                       
+        err = S.CreateMember()
 	} else if Invites.Status == "rejected" {
 		err = service.Database.DeleteInvites(Invites)
 	} else {

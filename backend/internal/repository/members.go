@@ -8,3 +8,11 @@ func (data *Database) SaveMember(member models.Member) (err error) {
     `, utils.Placeholders(len(args))), args...)                                                                                           
     return
 }
+
+func (data *Database) CheckMember(mb,GroupID int) (id int ,err error) {
+    err := data.Db.QueryRow(`
+         SELECT id
+         FROM members 
+         WHERE member = ? AND group_id = ?
+    `,mb , group_id).Scan(id)
+}
