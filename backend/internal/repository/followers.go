@@ -109,9 +109,9 @@ func (data *Database) DeleteFollow(follow *models.Follower) (err error) {
 	return
 }
 
-func (data *Database) GetFollowersIds(userID int) (followerIds []int, err error) {
+func (data *Database) GetFollowersIds(userID int) (followerIds []int, err models.Error) {
 	var rows *sql.Rows
-	rows, err = data.Db.Query(`
+	rows, err.Err = data.Db.Query(`
         SELECT u.id, u.nickname, u.first_name, u.last_name, u.image
 		FROM followers f
 		JOIN users u
@@ -121,18 +121,18 @@ func (data *Database) GetFollowersIds(userID int) (followerIds []int, err error)
 
     `,
 		userID)
-	if err != nil {
+	if err.Err != nil {
 		return
 	}
 	defer rows.Close()
 	for rows.Next() {
 		var user models.UserInfo
-		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
+		if err.Err = rows.Scan(utils.GetScanFields(&user)...); err.Err != nil {
 			return
 		}
 		followerIds = append(followerIds, user.ID)
 	}
-	err = rows.Err()
+	err.Err = rows.Err()
 
 	return
 }

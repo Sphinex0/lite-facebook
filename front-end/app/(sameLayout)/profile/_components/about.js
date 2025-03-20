@@ -1,68 +1,101 @@
-import React, { useEffect,  useState } from 'react'
-import { Cake, Email, Info, PrivacyTip  } from '@mui/icons-material'
+import React, { useEffect, useState } from 'react'
+import { Cake, Email, Info, PrivacyTip } from '@mui/icons-material'
 import styles from "./about.module.css"
-const About = ({user_id}) => {
-        const [profileInfo, setProfileInfo] = useState({})
-    
-        const fetchProfileInfo = async (signal) => {
-            try {
-                const response = await fetch("http://localhost:8080/api/profile/about", {
-                    method: "POST",
-                    credentials: "include",
-                    body: JSON.stringify({id:user_id }),
-                    signal
-                })
-    
-                console.log("status:", response.status)
-                if (response.ok) {
-                    const profileData = await response.json()
-                    if (profileData){
-                        setProfileInfo(profileData)
-                        console.log(profileData)
-                    }
-                }
-    
-            } catch (error) {
-                console.log(error)
-            }
-    
-        }
-    
-        useEffect(() => {
-            const controller = new AbortController()
-            fetchProfileInfo(controller.signal)
-            return ()=>controller.abort()
-        }, [])
+const About = ({ user_id, action }) => {
+    const [profileInfo, setProfileInfo] = useState({})
+    const [privacy, setPrivacy] = useState("")
+    const fetchProfileInfo = async (signal) => {
+        try {
+            const response = await fetch("http://localhost:8080/api/profile/about", {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({ id: user_id }),
+                signal
+            })
 
-  return (
-    <div className='feeds'>
-        {profileInfo.id &&  
-        <div className='feed' style={{display:"flex", justifyContent:"space-evenly",flexWrap:"wrap",  minHeight:"250px", alignItems:"center"}}>
-            <div  className={styles.infoItem}>
-               <span> {profileInfo.privacy}</span>
-                <PrivacyTip/>
-            </div>
-            {profileInfo.about &&
-            <div className={styles.infoItem}>
-                <span>{profileInfo.about}</span>
-                <Info/>
-            </div>
+            console.log("status:", response.status)
+            if (response.ok) {
+                const profileData = await response.json()
+                if (profileData) {
+                    setProfileInfo(profileData)
+                    console.log(profileData)
+                    setPrivacy(profileData.privacy)
+                }
             }
-            <div className={styles.infoItem}>
-                <span>{profileInfo.email}</span>
-                <Email/>
-            </div>
-            <div  className={styles.infoItem}>
-               <span> {new Date(profileInfo.date_birth*1000).toLocaleDateString()}</span>
-                <Cake/>
-            </div>
-            
+
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+    // /api/profile/update
+    const changePrivacy = async (privacy) => {
+        try {
+            const response = await fetch("http://localhost:8080/api/profile/update", {
+                method: "POST",
+                credentials: "include",
+                body: JSON.stringify({ privacy }),
+            })
+
+            console.log("status:", response.status)
+            if (response.ok) {
+                const profileData = await response.json()
+                    console.log(profileData, "response")   
+                    
+                    setPrivacy(privacy) 
+            }
+
+        } catch (error) {
+            console.log(error)
+        }
+
+    }
+    useEffect(() => {
+        const controller = new AbortController()
+        fetchProfileInfo(controller.signal)
+        return () => controller.abort()
+    }, [])
+
+    return (
+        <div className='feeds'>
+            {profileInfo.id &&
+                <div className='feed' style={{ display: "flex", justifyContent: "space-evenly", flexWrap: "wrap", minHeight: "250px", alignItems: "center" }}>
+                    <div className={styles.infoItem}>
+                        {console.log(action)}
+
+                        <span>
+                            <select value={privacy} disabled={action == "edit" ? false : true}
+                            onChange={(e)=>{
+                                changePrivacy(e.target.value)
+                            }}
+                            >
+                                <option value={"public"}>Public</option>
+                                <option value={"private"}>Private</option>
+                            </select>
+                        </span>
+                        <PrivacyTip />
+                    </div>
+                    {profileInfo.about &&
+                        <div className={styles.infoItem}>
+                            <span>{profileInfo.about}</span>
+                            <Info />
+                        </div>
+                    }
+                    <div className={styles.infoItem}>
+                        <span>{profileInfo.email}</span>
+                        <Email />
+                    </div>
+                    <div className={styles.infoItem}>
+                        <span> {new Date(profileInfo.date_birth*1000).toLocaleDateString()}</span>
+                        <Cake />
+                    </div>
+
+
+                </div>
+            }
 
         </div>
-        }
-       
-    </div>
-  )
+    )
 }
 
 export default About

@@ -24,6 +24,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/profile", handler.HandleGetProfile) //post {"id":1} default to user connected
 	mux.HandleFunc("/api/profile/about", handler.HandleGetProfileAbout) //post {"id":1} default to user connected
 	mux.HandleFunc("/api/profile/update", handler.HandleUpdateProfile)
+	mux.HandleFunc("/api/profile/posts", handler.HandleGetProfilePosts)  
 
 	// articls
 	mux.HandleFunc("/api/posts", handler.HandelGetPosts)       // post {"before":184525547}

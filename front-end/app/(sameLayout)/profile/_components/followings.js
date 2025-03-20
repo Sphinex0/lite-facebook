@@ -43,9 +43,9 @@ const Followings = ({user_id}) => {
     <div className='feeds' style={{display:"flex", flexWrap:"wrap"}}>
         {followings.map((userInfo, index) => {
                 if (index == followings.length-1){
-                    return <div className='feed' key={`user${userInfo.id}`}><Link href={`/profile/${userInfo.id}`} ref={lastElementRef} ><UserInfo userInfo={userInfo} key={userInfo.id} /></Link></div>
+                    return <div className='feed' key={`user${userInfo.id}`} ref={lastElementRef}><UserInfo userInfo={userInfo} key={userInfo.id} /></div>
                 }
-                return <div className='feed'  key={`user${userInfo.id}`}><Link href={`/profile/${userInfo.id}`}><UserInfo userInfo={userInfo} key={userInfo.id} /></Link></div>
+                return <div className='feed'  key={`user${userInfo.id}`}><UserInfo userInfo={userInfo} key={userInfo.id} /></div>
             })}
     </div>
   )

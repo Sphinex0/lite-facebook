@@ -27,7 +27,7 @@ const ProfileHeader= ({profileInfo, followersCount, followingsCount, profileNav,
         <div className={`${styles.g1} ${styles.btnSection}`}>
             {action == "follow" ? <FollowBtn user_id={profileInfo.id} setAction={setAction} setFollowers={setFollowers}/>:""}
             {action == "unfollow" ? <UnfollowBtn user_id={profileInfo.id} setAction={setAction} setFollowers={setFollowers}/>:""}
-            {action == "edit" ? <EditBtn/>:""}
+            {action == "edit" ? <EditBtn setProfileNav={setProfileNav}/>:""}
             {action == "pending" ?<PendingBtn/>:""}
           
         </div>

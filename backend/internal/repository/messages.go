@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"database/sql"
 	"fmt"
 
 	"social-network/internal/models"
@@ -22,7 +23,7 @@ func (data *Database) SaveMessage(msg *models.Message) (err error) {
 	return
 }
 
-func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages []models.WSMessage, err error) {
+func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages []models.WSMessage, err models.Error) {
 	query := ` 
 		SELECT M.* , U.id,U.first_name,U.last_name,U.nickname,U.image
 		FROM messages M JOIN users U ON M.sender_id = U.id
@@ -30,8 +31,10 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 		AND M.created_at < ?
 		ORDER BY M.created_at , M.id
 	`
-	rows, err := data.Db.Query(query, conversation_id, befor)
-	if err != nil {
+	var rows *sql.Rows
+	rows, err.Err = data.Db.Query(query, conversation_id, befor)
+	if err.Err != nil {
+		fmt.Println(err)
 		return
 	}
 
@@ -42,9 +45,10 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 		var msg models.WSMessage
 		tab := utils.GetScanFields(&msg.Message)
 		tab = append(tab, utils.GetScanFields(&msg.UserInfo)...)
-		err = rows.Scan(tab...)
-		if err != nil {
-			fmt.Println("message dosn't return")
+		err.Err = rows.Scan(tab...)
+		if err.Err != nil {
+			fmt.Println(err)
+			return
 		}
 		messages = append(messages, msg)
 	}

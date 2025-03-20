@@ -7,7 +7,7 @@ const Profile = () => {
     return (
         <Link  href="/profile" className="profile">
         <div className="profile-photo">
-            <img src="./images/profile-1.jpg"/>
+            <img src="/images/profile-1.jpg"/>
         </div>
         <div className="handle">
             <h4>Nia Ridania</h4>
@@ -17,6 +17,7 @@ const Profile = () => {
         </div>
     </Link>
     )
+    
 }
 
 export default Profile;

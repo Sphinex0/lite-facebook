@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import styles from "./comment.module.css"
 // import styles from "./createPostModal.module.css"
 import { AddPhotoAlternate } from '@mui/icons-material'
@@ -8,16 +8,20 @@ const CreateComment = ({ setComments, setCommentCount, parent }) => {
     const [imagePreview, setImagePreview] = useState("")
     const [commentContent, setCommentContent] = useState("")
 
+    const fileInput = useRef(null)
 
     return (
         <>
             <form
                 className={styles.form}
                 onSubmit={async (e) => {
-                    const added = addArticle(e, setComments, { parent })
+                    const added = await addArticle(e, setComments, { parent })
                     if (added) {
                         setCommentContent("")
+                        setImagePreview("")
                         setCommentCount((prev) => prev + 1)
+                        console.log(fileInput)
+                        fileInput.current.value = ""
                     }
                 }}
             >
@@ -32,6 +36,7 @@ const CreateComment = ({ setComments, setCommentCount, parent }) => {
                     type="file"
                     id='postImage'
                     name='image'
+                    ref={fileInput}
                     onChange={(e) => {
                         if (e.target.files[0]) {
                             const file = e.target.files[0]

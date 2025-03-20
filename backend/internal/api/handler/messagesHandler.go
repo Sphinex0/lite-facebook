@@ -311,11 +311,11 @@ func uniqueInts(slice []int) []int {
 
 func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.Request) {
 	_, data, err := Handler.AfterGet(w, r)
-	if err != nil {
+	if err.Err != nil {
 		return
 	}
 	messages, err := Handler.Service.FetchMessagesHestories(data.Before, data.ConversationID)
-	if err != nil {
+	if err.Err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}

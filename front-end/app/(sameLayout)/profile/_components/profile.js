@@ -5,14 +5,16 @@ import Followings from './followings';
 import About from './about';
 import ProfileHeader from './profileHeader';
 import { fetchProfile } from '../helpers';
+import Posts from './posts';
 const Profile= ({userID}) =>{
   const [profileInfo, setProfileInfo] = useState({})
   const [profileNav, setProfileNav] = useState("posts")
+  const [isAllowed, setIsAllowed] = useState(false)
 
 
 
   useEffect(()=>{
-    fetchProfile(setProfileInfo, +userID)
+    fetchProfile(setProfileInfo, userID)
   },[])
 
 
@@ -29,9 +31,13 @@ const Profile= ({userID}) =>{
                         setProfileNav={setProfileNav}
                       />
                     )} 
+      
+      {profileNav == "posts" ? <Posts user_id={userID} setIsAllowed={setIsAllowed}/>:""}   
       {profileNav == "followers" ? <Followers user_id={userID}/>:""}   
       {profileNav == "followings" ? <Followings user_id={userID}/>:""}   
-      {profileNav == "about" ? <About user_id={userID}/>:""}   
+      {profileNav == "about" ? <About user_id={userID} action={profileInfo.action}/>:""}
+
+      {!isAllowed && <div>join / follow to see</div>}
     </div>
   )
 }
