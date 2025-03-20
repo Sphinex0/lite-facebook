@@ -23,10 +23,10 @@ export default function Login () {
 
       if (response.status == 200) {
         const data = await response.json()
-        sessionStorage.setItem('first_name', data.first_name)
-        sessionStorage.setItem('last_name', data.last_name)
-        sessionStorage.setItem('Nickname', data.nickname)
-        sessionStorage.setItem('Image', data.image)
+        localStorage.setItem('first_name', data.first_name)
+        localStorage.setItem('last_name', data.last_name)
+        localStorage.setItem('Nickname', data.nickname)
+        localStorage.setItem('Image', data.image)
 
         router.push('/')
       } else {
