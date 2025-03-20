@@ -10,98 +10,70 @@ const Events = ({ groupID }) => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
 
-
-
-
     const CreateGroup = () => {
-
-
-
-        const element = document.querySelector('#formId')
-        element.style.display = "flex"
+        const element = document.querySelector('#formId');
+        element.style.display = "flex";
     }
 
     const SeeClick = () => {
-        const element = document.querySelector('#formId')
-        element.style.display = "none"
+        const element = document.querySelector('#formId');
+        element.style.display = "none";
     }
 
     const handleSubmit = async (e) => {
+        e.preventDefault();
 
-            e.preventDefault();
+        setTitle("");
+        setDescription("");
 
+        try {
+            const response = await fetch("http://localhost:8080/api/Event/store", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                body: JSON.stringify({ group_id: parseInt(groupID), Title: title, Description: description })
+            });
 
+            if (!response.ok) {
+                setError("An error occurred while submitting the event.");
+                setLoading(false);
+            } else {
+                fetchEvents()
+            }
+        } catch (error) {
+            setError("An error occurred while submitting the event.");
+            setLoading(false);
+        }
+    };
 
+    const fetchEvents = async () => {
+        try {
+            const response = await fetch("http://localhost:8080/api/Events", {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: "include",
+                body: JSON.stringify({ group_id: parseInt(groupID) }),
+            });
 
-
-            setTitle("")
-            setDescription("")
-
-            try {
-                const response = await fetch("http://localhost:8080/api/Event/store", {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: "include",
-                    body:   JSON.stringify({ group_id: parseInt(groupID),Title:title,Description:description})
-                });
-
-                console.log(JSON.stringify({ group_id: parseInt(groupID) }));
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(data);
-                    setEventsData(data);
-                    setLoading(false);
-                    fetchEvents()
-                } else {
-                    setError("Failed to fetch events");
-                    setLoading(false);
-                }
-            } catch (error) {
-                setError("An error occurred while fetching events.");
+            if (response.ok) {
+                const data = await response.json();
+                setEventsData(data);
+                setLoading(false);
+            } else {
+                setError("Failed to fetch events");
                 setLoading(false);
             }
-        };
-
-        
-    
-
-
-
-
+        } catch (error) {
+            setError("An error occurred while fetching events.");
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-
-        const fetchEvents = async () => {
-            try {
-                const response = await fetch("http://localhost:8080/api/Events", {
-                    method: "POST",
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: "include",
-                    body: JSON.stringify({ group_id: parseInt(groupID) }),
-                });
-
-                console.log(JSON.stringify({ group_id: parseInt(groupID) }));
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log(data);
-                    setEventsData(data);
-                    setLoading(false);
-                } else {
-                    setError("Failed to fetch events");
-                    setLoading(false);
-                }
-            } catch (error) {
-                setError("An error occurred while fetching events.");
-                setLoading(false);
-            }
-        };
-
         fetchEvents();
     }, [groupID]);
 
@@ -115,29 +87,23 @@ const Events = ({ groupID }) => {
     return (
         <div>
             <div>
-                <button className={style.create}
-                    onClick={() => {
-                        CreateGroup()
-                    }}>
+                <button className={style.create} onClick={CreateGroup}>
                     <Add />
                 </button>
             </div>
 
             <div className={style.formclass} id="formId">
-                <div onClick={() => { SeeClick() }}>
+                <div onClick={SeeClick}>
                     <DisabledByDefault />
                 </div>
-                <form method='POST' aria-multiselectable  onSubmit={handleSubmit}>
-                    <label htmlFor='title' >title</label>
+                <form method='POST' aria-multiselectable onSubmit={handleSubmit}>
+                    <label htmlFor='title'>Title</label>
                     <input type='text' className={style.InputTitle} id='title' value={title} onChange={(e) => setTitle(e.target.value)} />
-                    <label htmlFor='descriptopn'>descriptopn</label>
-                    <input type='text' className={style.InputDescriptopn} id='descriptopn' value={description} onChange={(e) => setDescription(e.target.value)} />
-                    <button className={style.InputButton} type='onSubmit'> Submit </button>
+                    <label htmlFor='description'>Description</label>
+                    <input type='text' className={style.InputDescriptopn} id='description' value={description} onChange={(e) => setDescription(e.target.value)} />
+                    <button className={style.InputButton} type='submit'>Submit</button>
                 </form>
             </div>
-
-
-
 
             <div>
                 {eventsData.length === 0 ? (
@@ -145,10 +111,10 @@ const Events = ({ groupID }) => {
                 ) : (
                     <ul>
                         {eventsData.map((event, index) => (
-                            <div className='feed'>
+                            <div className='feed' key={index}>
                                 <div className="user">
-                                    <div className="ingo">
-                                        <h3>{event.title} </h3>
+                                    <div className="info">
+                                        <h3>{event.title}</h3>
                                         <small>{event.description}</small>
                                     </div>
                                 </div>
