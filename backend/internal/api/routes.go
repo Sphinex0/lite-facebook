@@ -73,11 +73,6 @@ func Routes(db *sql.DB) *http.ServeMux {
 	// notification
 	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
 
-
-
-
-
-
 	go func() {
 		for {
 			time.Sleep(120 * time.Minute)
