@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"social-network/internal/models"
@@ -38,12 +39,21 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Handler *Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	fmt.Println("fffffffffffffffffffffffffffffff")
+	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
-
-	Events, err := Handler.Service.AllEvents()
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+	var Event models.Event
+	err := utils.ParseBody(r, &Event)
+	Event.UserID=user.ID
+	fmt.Println(Event)
+	Events, err := Handler.Service.AllEvents(Event)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}

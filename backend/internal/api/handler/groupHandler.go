@@ -2,7 +2,6 @@ package handler
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 	"time"
@@ -67,13 +66,13 @@ func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
 	var Groups models.Group
 	err := utils.ParseBody(r, &Groups)
 	group, err := Handler.Service.GetGroupsById(&Groups)
-	types, err := Handler.Service.TypeInvate(user.ID,group.ID)
+	types, err := Handler.Service.TypeInvate(user.ID, group.ID)
 	if err != nil {
 		utils.WriteJson(w, http.StatusNotAcceptable, "Not Acceptable")
 		return
 	}
 	var group_info models.GroupInfo
-	group_info.Group = *group 
+	group_info.Group = *group
 	group_info.Action = types
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(group_info)

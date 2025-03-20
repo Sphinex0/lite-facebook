@@ -98,7 +98,7 @@ func (data *Database) GetallInvite(id int) (*sql.Rows, error) {
 
 func (data *Database) Getallmembers(id int) (*sql.Rows, error) {
 	res, err := data.Db.Query(`
-	SELECT * FROM invites WHERE group_id = ? AND status = "accepted"`, id, id)
+	SELECT * FROM invites WHERE group_id = ? AND status = "accepted"`, id)
 	if err != nil {
 		return nil, err
 	}

@@ -19,8 +19,9 @@ func (service *Service) CreateEvent(Events models.Event) (err error) {
 	return
 }
 
-func (service *Service) AllEvents() ([]models.Event, error) {
-	rows, err := service.Database.GetallEvents()
+func (service *Service) AllEvents(Event models.Event) ([]models.Event, error) {
+
+	rows, err := service.Database.GetallEvents(Event.GroupID)
     if err != nil {
         return nil, err
     }

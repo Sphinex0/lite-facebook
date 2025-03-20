@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
 
@@ -90,6 +91,7 @@ func (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request) {
 	}
 	var Invite models.Invite
 	err := utils.ParseBody(r, &Invite)
+	fmt.Println(Invite)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
@@ -98,6 +100,7 @@ func (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
+	fmt.Println(Invites)
 	valid, err := Handler.Service.Members(Invites)
 	utils.WriteJson(w, http.StatusOK, valid)
 }
