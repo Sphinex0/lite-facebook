@@ -27,7 +27,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 	article.UserID = user.ID
 	article.Content = strings.TrimSpace(r.FormValue("content"))
 	article.Privacy = strings.TrimSpace(r.FormValue("privacy"))
-	article.CreatedAt = int(time.Now().Unix())
+	article.CreatedAt = int(time.Now().UnixMilli())
 	article.ModifiedAt = article.CreatedAt
 	GroupID, _ := strconv.Atoi(r.FormValue("group_id"))
 	var users []string
@@ -76,6 +76,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
+	
 	utils.WriteJson(w, http.StatusCreated, article)
 }
 
@@ -175,7 +176,7 @@ func (Handler *Handler) AfterGet(w http.ResponseWriter, r *http.Request) (user m
 	}
 
 	if data.Before == 0 {
-		data.Before = int(time.Now().Unix())
+		data.Before = int(time.Now().UnixMilli())
 	}
 	return
 }

@@ -1,10 +1,10 @@
 'use client'
 
-import { useState , useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import './signup.css'
+import styles from "./signup.module.css"
 
-export default function SignupPage () {
+export default function SignupPage() {
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -39,21 +39,19 @@ export default function SignupPage () {
       const response = await fetch('http://localhost:8080/api/signup', {
         method: 'POST',
         body: data,// Send form data as a JSON string
-        credentials:"include"
+        credentials: "include"
       })
 
       if (response.status == 200) {
         // If the response is ok, navigate to the homepage
         const data = await response.json()
-        sessionStorage.setItem('first_name', data.first_name)
-        sessionStorage.setItem('last_name', data.last_name)
-        sessionStorage.setItem('Nickname', data.nickname)
-        sessionStorage.setItem('Image', data.image)
+        console.log(data);
+        localStorage.setItem('user', JSON.stringify(data))
         router.push('/')
       } else {
         const data = await response.json()
         console.log(data);
-                
+
         seterror(data)
       }
     } catch (error) {
@@ -72,60 +70,60 @@ export default function SignupPage () {
 
   return (
     <form onSubmit={handleSignup}>
-      <div className='container'>
-        <div className='form-box'>
-          <h2>Sign Up</h2>
+      <div className={styles.container}>
+        <div className={styles.formBox}>
+          <h2 className={styles.heading}>Sign Up</h2>
 
           {/* Error Popup */}
-          {error && <div className='error-popup'>{error}</div>}
+          {error && <div className={styles.errorPopup}>{error}</div>}
 
           {['email', 'password', 'firstName', 'lastName', 'dob'].map(field => (
-            <div key={field} className='input-group'>
+            <div key={field} className={styles.inputGroup}>
               <input
                 type={
                   field === 'dob'
                     ? 'date'
                     : field === 'password'
-                    ? 'password'
-                    : 'text'
+                      ? 'password'
+                      : 'text'
                 }
                 name={field}
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                 onChange={handleChange}
-                className='input-field'
+                className={styles.inputField}
               />
             </div>
           ))}
 
           {/* Optional Fields */}
-          <div className='input-group'>
+          <div className={styles.inputGroup}>
             <label className='file-label'>Upload Avatar (Optional)</label>
             <input
               type='file'
               name='avatar'
-              className='input-field file-input'
+              className={`${styles.inputField} ${styles.fileInput}`}
               onChange={handleFileChange}
             />
           </div>
 
-          <div className='input-group'>
+          <div className={styles.inputGroup}>
             <input
               type='text'
               name='nickname'
               placeholder='Nickname (Optional)'
               onChange={handleChange}
-              className='input-field'
+              className={styles.inputField}
             />
           </div>
 
           <textarea
             name='aboutMe'
             placeholder='About Me (Optional)'
-            className='input-field textarea'
+            className={`${styles.inputField} ${styles.textarea}`}
             onChange={handleChange}
           ></textarea>
 
-          <button type='submit' className='submit-btn'>
+          <button type='submit' className={styles.submitBtn}>
             Sign Up
           </button>
         </div>

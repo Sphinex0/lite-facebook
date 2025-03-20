@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"social-network/internal/models"
+	utils "social-network/pkg"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -48,23 +49,24 @@ func (database *Database) CheckIfUserExists(email string) bool {
 	return err == nil
 }
 
-func (database *Database) InsertUser(user models.User, Uuid string) error {
+func (database *Database) InsertUser(user models.User, Uuid string) (int, error) {
 	res, err := database.Db.Exec("INSERT INTO users (Nickname, date_birth, first_name, last_name, email, password, image, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		user.Nickname, user.DateBirth, user.First_Name, user.Last_Name, user.Email, user.Password, user.Image, time.Now())
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	usrid, err := res.LastInsertId()
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	err = database.AddUuid(Uuid, int(usrid))
 	if err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+
+	return int(usrid), nil
 }
 
 func (database *Database) DeleteCookieFromdb(uuid string) error {
@@ -78,8 +80,7 @@ func (database *Database) DeleteCookieFromdb(uuid string) error {
 func CheckIfUserExistsById[T int | string](usrID T, Db *sql.DB) bool {
 	var exists bool
 
-	err := Db.QueryRow("SELECT EXISTS(SELECT id FROM users WHERE usrid = ?)", usrID).Scan(&exists)
-
+	err := Db.QueryRow("SELECT EXISTS(SELECT first_name FROM users WHERE id = ?)", usrID).Scan(&exists)
 	return err == nil
 }
 
@@ -98,10 +99,10 @@ func (database *Database) CheckExpiredCookie(uid string, date time.Time) bool {
 	return date.Compare(expired) <= -1
 }
 
-func (database *Database) GetuserInfo(userId int) (models.UserInfo ,error) {
+func (database *Database) GetuserInfo(userId int) (models.UserInfo, error) {
 	var userInfo models.UserInfo
-	err := database.Db.QueryRow("SELECT id, Nickname, First_Name, Last_Name, Image FROM users WHERE id = ?", userId).Scan(&userInfo.ID, &userInfo.Nickname, &userInfo.First_Name,
-		 &userInfo.Last_Name, &userInfo.Image); if err != nil {
+	err := database.Db.QueryRow("SELECT id, Nickname, First_Name, Last_Name, Image FROM users WHERE id = ?", userId).Scan(utils.GetScanFields(&userInfo)...)
+	if err != nil {
 		return models.UserInfo{}, err
 	}
 	return userInfo, nil

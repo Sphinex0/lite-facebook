@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 
 	"social-network/internal/models"
@@ -50,9 +51,13 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
 		}
+	} else {
+		user.Image = "blank-profile-picture-973460_960_720.png"
 	}
+
+	fmt.Println("user", user)
 	// Proccess Data and Insert it
-	Uuid, err := H.Service.RegisterUser(&user)
+	Uuid, err, id := H.Service.RegisterUser(&user)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
@@ -60,17 +65,17 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	// some data that to make it easy in the front-end
 	userinfo := models.UserInfo{
+		ID:         id,
 		First_Name: user.First_Name,
 		Last_Name:  user.Last_Name,
 		Image:      user.Image,
 	}
-
 	utils.SetSessionCookie(w, Uuid)
 	utils.WriteJson(w, http.StatusOK, userinfo)
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
-	_,uuid, ok := utils.GetUserFromContext(r.Context())
+	_, uuid, ok := utils.GetUserFromContext(r.Context())
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
 		return

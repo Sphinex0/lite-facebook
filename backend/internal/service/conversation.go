@@ -18,3 +18,8 @@ func (service *Service) CheckConversation(id1, id2 int, type_obj string) (conver
 	err = service.Database.VerifyConversation(id1, id2, type_obj)
 	return
 }
+
+func (service *Service) ReadMessagesGroup(convId, id int) (err error) {
+	err = service.Database.ReadMessagesGroup(convId, id)
+	return
+}

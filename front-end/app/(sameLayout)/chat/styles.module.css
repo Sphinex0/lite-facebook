@@ -1,6 +1,6 @@
 .container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     height: 90vh;
     /* max-width: 800px; */
     margin: 0 auto;
@@ -57,10 +57,10 @@
 }
 
 .messageContent {
-    color: #2c2c2c;
+    color: #303030;
     padding: 5px;
     margin-inline: 10px;
-    background-color: #f1f1f1;
+    background-color: #eeeeee;
 }
 
 .groupInputs {
@@ -107,6 +107,17 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    gap: 10px;
+}
+
+.seen {
+    background-color: rgba(80, 102, 175, 0.404);
+    text-align: center;
+    width: fit-content;
+    padding: 2px 10px;
+    border-radius: 50px;
 }
 
 .conversationItem:hover {
@@ -204,12 +215,8 @@
     width: 50%;
     height: auto;
     border-radius: 5px;
-    border: 1px solid rgb(148, 148, 148);
     padding: 4px;
-    margin-inline: 10px;
-
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: #aabaee23;
 }
 
 .Emojis {
@@ -329,18 +336,14 @@
 
 /* Message Styles */
 .messageContainer {
-    position: relative;
-    margin: 8px 0;
-    padding: 8px 12px;
-    background: white;
-    border-radius: 8px;
-    max-width: 70%;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    padding: 5px;
+    margin-block: 5px;
+    border: 1px solid #2195f31c;
+    border-radius: 10px;
 }
 
 .messageContainer:hover {
-    background-color: #f5f5f5;
+    background-color: #f5f5f5c2;
 }
 
 .selectedMessage {
@@ -352,12 +355,18 @@
     position: relative;
     margin-bottom: 8px;
     padding-left: 10px;
-    border-left: 2px solid #ddd;
+    border-left: 2px solid #3877acd7;
+}
+
+.name {
+    color: rgba(84, 81, 255, 0.692);
+    display: block;
+    margin: 3px;
 }
 
 .replyPreviewText {
     font-size: 0.8em;
-    color: #666;
+    color: #3877acd7;
     opacity: 0.8;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -397,7 +406,7 @@
     flex: 1;
     padding: 10px 15px;
     border: 1px solid #e0e0e0;
-    border-radius: 20px;
+    border-radius: 4px;
     margin-right: 10px;
 }
 
@@ -414,7 +423,7 @@
     padding: 10px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .Emoji {

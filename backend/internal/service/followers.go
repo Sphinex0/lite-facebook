@@ -52,6 +52,11 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 				S.Database.CreateConversation(&conv)
 			}
 		}
+		var notification models.Notification
+		notification.InvokerID = follow.Follower
+		notification.UserID = follow.UserID
+		notification.Type = "follow-request"
+		S.AddNotification(notification)
 
 	}
 	return
