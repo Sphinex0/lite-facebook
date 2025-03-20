@@ -101,7 +101,7 @@ func (s *Service) RegisterUser(user *models.User) (string, error, int) {
 	// Generate Uuid
 	Uuid := GenerateUuid()
 	// Insert the user
-	err, id := s.Database.InsertUser(*user, Uuid); if err != nil {
+	id, err := s.Database.InsertUser(*user, Uuid); if err != nil {
 		return "",err, 0
 	}
 	
@@ -162,7 +162,6 @@ func (S *Service) Extractuser(r *http.Request) models.User {
 		First_Name: r.FormValue("firstName"),
 		Last_Name:  r.FormValue("lastName"),
 		DateBirth:  r.FormValue("dob"),
-		Image:      r.FormValue("avatar"),
 		Nickname:   r.FormValue("nickname"),
 		AboutMe:    r.FormValue("aboutMe"),
 	}

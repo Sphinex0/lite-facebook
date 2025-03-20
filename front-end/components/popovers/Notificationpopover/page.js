@@ -8,6 +8,7 @@ const Notifications = ({ notifications = [], Err }) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef();
+  console.log(items);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -17,8 +18,16 @@ const Notifications = ({ notifications = [], Err }) => {
           method:"POST",
           credentials:"include"
         });
+
         const newItems = await res.json();
-        setItems((prev) => [...newItems, ...prev]);
+        if (res.status == 200) {
+          console.log(newItems.notifications, "new items");
+          if (newItems.notification != null) {
+            setItems((prev) => [...newItems.notifications, ...prev]);
+          }
+        } else {
+          Err = newItems.Notifications
+        }
       } catch (error) {
         console.error('Error fetching notifications:', error);
       }

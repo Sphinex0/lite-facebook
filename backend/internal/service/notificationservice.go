@@ -62,7 +62,8 @@ func (s *Service) MarkAsseen(ntfId, userID int) error {
 		return errors.New("not valide notification")
 	}
 
-	err := s.Database.MarkAsseen(ntfId, userID); if err != nil {
+	err := s.Database.MarkAsseen(ntfId, userID)
+	if err != nil {
 		return errors.New("error while ineraction with db")
 	}
 
