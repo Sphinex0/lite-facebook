@@ -5,5 +5,6 @@ func (data *Database) SaveMember(member models.Member) (err error) {
     _, err := data.Db.Exec(fmt.Sprintf(`
         INSERT INTO members
         VALUES (NULL, %v)
-    `, utils.Placeholders(len(args))), args...)                                                                                            return
+    `, utils.Placeholders(len(args))), args...)                                                                                           
+    return
 }

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"time"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -9,6 +10,37 @@ import (
 
 func (S *Service) GreatedGroup(Group *models.Group) (err error) {
 	err = S.Database.SaveGroup(Group)
+	if err != nil {
+		return
+	}
+	// create conv and member
+	tm := int(time.Now().UnixMilli())
+	conv := &models.Conversation{
+		Entitie_one : Group.Creator,
+		Entitie_two_group : Group.ID,
+		Type : "group" ,
+		CreatedAt : tm ,
+		ModifiedAt : tm
+	}
+	err = S.CreateConversation(conv)
+	if err != nil {
+		return
+	}
+	member := models.Member{
+		Member : Group.Creator ,
+		ConversationId : conv.ID ,
+	}
+	err = S.CreateMember()
+	if err != nil {
+		return
+	}
+	invite := models.Invite{
+		GroupID : GroupID.id,
+		Sender : Group.Creator ,
+		Receiver : Group.Creator ,
+		Status : "accepted"
+	}
+	err = S.Database.SaveInvite()
 	return
 }
 
