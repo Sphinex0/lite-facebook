@@ -1,9 +1,4 @@
 
-// '\uD83D\uDE00',
-// '\u2764\uFE0F',
-// '\uD83D\uDC4D',
-// '\uD83D\uDE06',
-// '\uD83D\uDE09'
 export const emojis = [];
 
 export const emojRange = [

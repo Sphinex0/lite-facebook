@@ -14,11 +14,9 @@ export default function Chat() {
     const { portRef, clientWorker, conversations, setConversations , selectedConversationRef , messages , setMessages } = useWorker();
     const conversationsRef = useRef(conversations);
     const [message, setMessage] = useState({ content: "", reply: null });
-    // const [messages, setMessages] = useState([]);
     const [selectedConversation, setSelectedConversation] = useState(null);
     const [img, setImage] = useState(null);
     const [emoji, setEmoji] = useState(false);
-    // const selectedConversationRef = useRef(selectedConversation);
     const chatEndRef = useRef(null);
     const beforeRef = useRef(Math.floor(new Date().getTime()));
     const combinadeRef = useRef(null);
@@ -29,7 +27,6 @@ export default function Chat() {
     const justLoadedMoreRef = useRef(false); // Flag for pagination
 
 
-    // Update conversationsRef when conversations changes
     useEffect(() => {
         conversationsRef.current = conversations;
     }, [conversations]);
@@ -81,101 +78,6 @@ export default function Chat() {
             controller.abort();
         }
     }, [selectedConversation]);
-
-
-    useEffect(() => {
-        // const port = portRef.current;
-        // if (!port) return;
-        // const messageHandler = ({ data }) => {
-        //     switch (data.type) {
-        //         case "conversations":
-        //             const onlineUsers = data.online_users;
-        //             setConversations(
-        //                 data.conversations?.map((conv) => {
-        //                     if (conv.user_info) {
-        //                         return {
-        //                             ...conv,
-        //                             user_info: {
-        //                                 ...conv.user_info,
-        //                                 online: onlineUsers?.includes(conv.user_info.id),
-        //                             },
-        //                         };
-        //                     }
-        //                     return conv;
-        //                 })
-        //             );
-        //             break;
-
-        //         case "online":
-        //         case "offline":
-        //             setConversations((prev) =>
-        //                 prev.map((conv) => {
-        //                     if (conv.user_info?.id === data.user_info.id) {
-        //                         return {
-        //                             ...conv,
-        //                             user_info: {
-        //                                 ...conv.user_info,
-        //                                 online: data.type === "online",
-        //                             },
-        //                         };
-        //                     }
-        //                     return conv;
-        //                 })
-        //             );
-        //             break;
-
-        //         case "new_message":
-        //             const msg = data.message;
-        //             const conversationId = msg.conversation_id;
-
-        //             setConversations((prev) => {
-        //                 const conversation = prev.find((c) => c.conversation.id === conversationId);
-        //                 if (conversation) {
-        //                     return [{
-        //                         ...conversation,
-        //                         last_message: data?.message?.content,
-        //                         seen: conversation.conversation.id === selectedConversationRef.current?.id ? 0 : conversation.seen + 1,
-        //                     }, ...prev.filter((c) => c.conversation.id !== conversationId)];
-        //                 } else {
-        //                     return [
-        //                         {
-        //                             conversation: { id: msg.conversation_id },
-        //                             user_info: { ...data.user_info, online: true },
-        //                             last_message: data?.message?.content,
-        //                             seen: 1
-        //                         },
-        //                         ...prev,
-        //                     ];
-        //                 }
-        //             });
-
-        //             if (selectedConversationRef.current?.id === conversationId) {
-        //                 setMessages((prev) => [...prev, data]);
-        //                 const type = selectedConversationRef.current.type == "private" ? "read_messages_private" : "read_messages_group";
-        //                 port.postMessage({
-        //                     kind: "send",
-        //                     payload: {
-        //                         type,
-        //                         message: {
-        //                             conversation_id: conversationId,
-        //                         },
-        //                     },
-        //                 });
-        //             }
-        //             break;
-
-        //         default:
-        //             console.warn("Unhandled message type:", data.type);
-        //     }
-        // };
-
-        // port.addEventListener("message", messageHandler);
-        // port.postMessage({ kind: "connect" });
-
-        // return () => {
-        //     port.removeEventListener("message", messageHandler);
-        // };
-    }, [clientWorker]);
 
     useEffect(() => {
         if (justLoadedMoreRef.current) {
@@ -235,22 +137,6 @@ export default function Chat() {
         setReplyingTo(null);
         setEmoji(false);
     };
-
-    // const handleSendMessage = (event) => {
-    //     if (event.key !== "Enter" || !message.content.trim()) return;
-    //     workerPortRef.current.postMessage({
-    //         kind: "send",
-    //         payload: {
-    //             type: "new_message",
-    //             message: {
-    //                 conversation_id: selectedConversation.id,
-    //                 content: message.content,
-    //                 reply: message.reply
-    //             },
-    //         },
-    //     });
-    //     setMessage({ content: "", reply: null });
-    // };
 
     const SendFile = () => {
         const port = portRef.current;
@@ -335,42 +221,12 @@ export default function Chat() {
         `${selectedConversationInfo.user_info?.first_name} ${selectedConversationInfo.user_info?.last_name}`
         : "Select a conversation";
 
-    // const handleReply = (msg) => {
-    //     setMessage(prev => ({
-    //         ...prev,
-    //         reply: msg.message.id
-    //     }));
-    // }
     return (
         <div className={styles.container}>
             <div className={styles.chatContainer}>
                 <div className={styles.chatHeader}>
                     <h4>{displayTitle}</h4>
                 </div>
-                {/* <div className={styles.chatBody} onScroll={handleScroll} >
-                    {selectedConversation ? (
-                        messages.length > 0 ? (
-                            <>
-                                {messages.map((msg, index) => (
-                                    <Message
-                                        msg={msg}
-                                        key={msg.message.id}
-                                        onClick={() => handleReply(msg)}
-                                        isSelected={replyingTo?.id === msg.message.id}
-                                    />
-                                ))}
-                            </>
-                        ) : (
-                            <div className={styles.emptyState}>
-                                No messages in this conversation
-                            </div>
-                        )
-                    ) : (
-                        // <div className={styles.emptyState}>Please select a conversation</div>
-                        <div className={styles.chatBody} onScroll={handleScroll} ref={chatBodyRef} ></div>
-                    )}
-                    <div ref={chatEndRef} />
-                </div> */}
 
                 <div className={styles.chatBody} onScroll={handleScroll} ref={chatBodyRef}>
                     {selectedConversation ? (
