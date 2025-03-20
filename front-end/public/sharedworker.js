@@ -49,6 +49,7 @@ const ports = new Set()
 
 self.onconnect = (event) => {
     const port = event.ports[0]
+    console.log("port", port)
     ports.add(port)
     port.onmessage = (event) => {
         const { kind, payload } = event.data
@@ -70,10 +71,9 @@ self.onconnect = (event) => {
                     socket = null;
                 };
             } else {
-                // console.log(socket)
-                // if (socket) {
-                //     socket.send({ type: "conversations" })
-                // }
+                if (socket) {
+                    socket.send(JSON.stringify({ type: "conversations" }))
+                }
             }
         } else if (kind == "send") {
             if (socket && socket.readyState == WebSocket.OPEN) {

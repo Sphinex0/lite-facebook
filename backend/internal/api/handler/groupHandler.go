@@ -27,7 +27,7 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Group.Creator", Group.Creator)
 	Group.Title = strings.TrimSpace(r.FormValue("Title"))
 	Group.Description = strings.TrimSpace(r.FormValue("Description"))
-	Group.CreatedAt = int(time.Now().Unix())
+	Group.CreatedAt = int(time.Now().UnixMilli())
 	fmt.Println(Group.Title)
 	fmt.Println(Group.Description)
 	if Group.Title == "" || len(Group.Title) > 50 || Group.Description == "" || len(Group.Description) > 250 {

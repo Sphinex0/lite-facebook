@@ -28,7 +28,7 @@ func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 	err = utils.ParseBody(r, &follow)
 
 	follow.Follower = user.ID
-	follow.CreatedAt = int(time.Now().Unix())
+	follow.CreatedAt = int(time.Now().UnixMilli())
 	follow.ModifiedAt = follow.CreatedAt
 
 	// follow.UserID, err = strconv.Atoi(r.FormValue("uesr_id"))
@@ -66,7 +66,7 @@ func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Reque
 
 	err = utils.ParseBody(r, &follow)
 	follow.UserID = user.ID
-	follow.ModifiedAt = int(time.Now().Unix())
+	follow.ModifiedAt = int(time.Now().UnixMilli())
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")

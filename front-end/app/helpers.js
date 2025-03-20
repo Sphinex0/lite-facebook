@@ -140,6 +140,25 @@ export const addArticle = async(e,setAtricle, {parent, group}) => {
       
 }
 
+export const opThrottle = (func, limit) => {
+  let lastFunc;
+  let lastRan;
+  return (...args)=> {
+      if (!lastRan) {
+          func(...args);
+          lastRan = Date.now();
+      } else {
+          clearTimeout(lastFunc);
+          lastFunc = setTimeout(() => {
+              if ((Date.now() - lastRan) >= limit) {
+                  func(...args);
+                  lastRan = Date.now();
+              }
+          }, limit - (Date.now() - lastRan));
+      }
+  };
+}
+
 export const useOnVisible = (ref, callback, once = true, threshold = 0.1) => {
     const observerRef = useRef(null);
     

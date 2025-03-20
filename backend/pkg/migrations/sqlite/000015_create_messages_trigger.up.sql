@@ -2,8 +2,12 @@
 -- +migrate StatementBegin
 CREATE TRIGGER IF NOT EXISTS update_conversations_after_insert
 AFTER INSERT ON messages
+FOR EACH ROW
 BEGIN
-    UPDATE conversations SET modified_at = unixepoch() WHERE id = NEW.conversation_id;
+    -- Update the modified_at timestamp in the conversations table
+    UPDATE conversations 
+    SET modified_at = unixepoch() 
+    WHERE id = NEW.conversation_id;
 END;
 -- +migrate StatementEnd
 

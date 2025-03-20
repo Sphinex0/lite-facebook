@@ -79,26 +79,21 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 			}
 
 			if typeMessage == websocket.BinaryMessage {
-				fmt.Println(len(message))
 				if len(message) < 4 {
 					fmt.Println("short")
 					continue
 				}
 				idLen := binary.LittleEndian.Uint32(message[0:4])
-				fmt.Println(idLen)
 				if len(message) < int(idLen)+4 {
 					fmt.Println("short dfdf")
 					continue
 				}
-				fmt.Println("idLen", idLen)
 				err = json.Unmarshal(message[4:4+idLen], &msg)
 				if err != nil {
 					fmt.Printf("error n json: %v\n", err)
 					break
 				}
-				fmt.Println(msg)
 				path := HandleImage(msg.Type, message[4+idLen:])
-				fmt.Println(path)
 				msg.Type = "new_message"
 				msg.Message.Image = path
 
@@ -108,7 +103,6 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 					fmt.Printf("error n json: %v\n", err)
 					break
 				}
-				fmt.Println(message)
 				msg.Message.Image = ""
 			}
 			msg.Message.SenderID = user.ID
@@ -191,7 +185,7 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			return
 		}
 		var err error
-		if err = h.Service.CreateMessage(&msg.Message); err != nil {
+		if err = h.Service.CreateMessage(&msg); err != nil {
 			fmt.Println("Create message error:", err)
 			sendError(msg.Message.SenderID, "Failed to send message")
 			return
@@ -219,6 +213,22 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 		}
 		if err := conn.WriteJSON(initialMsg); err != nil {
 			fmt.Println("Initial message send error:", err)
+			return
+		}
+	case "read_messages_private":
+		fmt.Println("read")
+		err := h.Service.ReadMessages(msg.Message.ConversationID)
+		if err != nil {
+			fmt.Println("Read messages error:", err)
+			sendError(msg.Message.SenderID, "Failed to read messages")
+			return
+		}
+	case "read_messages_group":
+		fmt.Println(msg.Message.ConversationID, msg.Message.SenderID)
+		err := h.Service.ReadMessagesGroup(msg.Message.ConversationID, msg.Message.SenderID)
+		if err != nil {
+			fmt.Println("Read messages error:", err)
+			sendError(msg.Message.SenderID, "Failed to read messages")
 			return
 		}
 	}
