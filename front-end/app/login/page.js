@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import './login.css'
+import styles from "./login.module.css"
 
 export default function Login () {
   const [email, setEmail] = useState('')
@@ -40,15 +40,15 @@ export default function Login () {
   }
 
   return (
-    <div className="container">
-      <div className='form-box'>
-        <h2>Login</h2>
+    <div className={styles.container}>
+      <div className={styles.formBox}>
+        <h2 className={styles.heading}>Login</h2>
 
         {/* Error Popup */}
-        {error && <div className='error-popup'>{error}</div>}
+        {error && <div className={styles.errorPopup}>{error}</div>}
         <form onSubmit={handleSubmit}>
           {/* Email Input */}
-          <div className='input-group'>
+          <div className={styles.inputGroup}>
             <input
               type='text'
               value={email}
@@ -56,12 +56,12 @@ export default function Login () {
               required
               id='username'
               onChange={e => setEmail(e.target.value)}
-              className='input-field'
+              className={styles.inputField}
             />
           </div>
 
           {/* Password Input */}
-          <div className='input-group'>
+          <div className={styles.inputGroup}>
             <input
               type='password'
               value={password}
@@ -69,12 +69,12 @@ export default function Login () {
               required
               id='password'
               onChange={e => setPassword(e.target.value)}
-              className='input-field'
+              className={styles.inputField}
             />
           </div>
 
           {/* Submit Button */}
-          <button type='submit' className='submit-btn'>
+          <button type='submit' className={styles.submitBtn}>
             Login
           </button>
         </form>
