@@ -1,66 +1,86 @@
 import Link from 'next/link';
-import './notification.css'
-import { useEffect } from 'react';
+import { useEffect, useState, useRef } from 'react';
+import './notification.css';
 
 const Notifications = ({ notifications = [], Err }) => {
-  useEffect(() => {
-  const Handleacceptfollow = async (user_id, Status) => {
-    const response = fetch("http://localhost:8080/api/follow/decision",{
-      methode: "post",
-      body: JSON.stringify(
-        user_id, 
-        Status,)
+  const [items, setItems] = useState(notifications);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const containerRef = useRef();
 
-    })
-  }
-  });
+  useEffect(() => {
+    const fetchItems = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`/api/notifications?page=${page}`);
+        const newItems = await res.json();
+        setItems((prev) => [...newItems, ...prev]);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+      setLoading(false);
+    };
+
+    fetchItems();
+  }, [page]);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (containerRef.current.scrollTop === 0 && !loading) {
+        setPage((prev) => prev + 1);
+      }
+    };
+
+    const container = containerRef.current;
+    if (container) {
+      container.addEventListener('scroll', handleScroll);
+    }
+
+    return () => {
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
+      }
+    };
+  }, [loading]);
 
   return (
-    <div className="notification-wrapper">
+    <div className="notification-wrapper" ref={containerRef}>
       <div className="notification-container">
         {Err && <div className="notif-err">Error loading notifications. Please try again.</div>}
-        {notifications.map((notification, index) => {
-      switch (notification.type) {
-        case "follow-request":
-          return (
-            <div key={index} className="notification-div">
-              <h1>Follow request</h1>
-              <p>{notification.invoker} sent you a follow request</p>
-              <button className="accepte" onClick={() => {
-                Handleacceptfollow(notification.invoker, "accepte");
-              }}>
-                Accept
-              </button>
-              <button className="refuse" onClick={() => {
-                Handleacceptfollow(notification.invoker, "refuse");
-              }}>
-                Reject
-              </button>
-            </div>
-          );  
-            case "invitation-request":
+        {items.map((notification, index) => {
+          switch (notification.type) {
+            case 'follow-request':
               return (
                 <div key={index} className="notification-div">
-                  <h1>Invitation request</h1>
-                  <p>{notification.invoker} sent you an invitation to join the group {notification.group}</p>
+                  <h1>Follow Request</h1>
+                  <p>{notification.invoker} sent you a follow request</p>
                   <button className="accepte">Accept</button>
                   <button className="refuse">Reject</button>
                 </div>
               );
-            case "joine":
+            case 'invitation-request':
               return (
                 <div key={index} className="notification-div">
-                  <h1>Group joining request</h1>
+                  <h1>Invitation Request</h1>
+                  <p>{notification.invoker} invited you to join the group {notification.group}</p>
+                  <button className="accepte">Accept</button>
+                  <button className="refuse">Reject</button>
+                </div>
+              );
+            case 'joine':
+              return (
+                <div key={index} className="notification-div">
+                  <h1>Group Joining Request</h1>
                   <p>{notification.invoker} sent you a join request to {notification.group}</p>
                   <button className="accepte">Accept</button>
                   <button className="refuse">Reject</button>
                 </div>
               );
-            case "event-created":
+            case 'event-created':
               return (
                 <div key={index} className="notification-div">
                   <Link href={`/event/${notification.eventID}`}>
-                    <h1>New event</h1>
+                    <h1>New Event</h1>
                   </Link>
                   <p>{notification.invoker} created an event in {notification.group}</p>
                 </div>
@@ -70,9 +90,9 @@ const Notifications = ({ notifications = [], Err }) => {
           }
         })}
       </div>
+      {loading && <p>Loading...</p>}
     </div>
   );
-  
 };
 
 export default Notifications;
