@@ -41,58 +41,58 @@ func (S *Service) LoginUser(User *models.User) (string, error) {
 	return Uuid, nil
 }
 
-func (s *Service) RegisterUser(user *models.User) (string, error) {
+func (s *Service) RegisterUser(user *models.User) (string, error, int) {
 	// Age
 	fmt.Println((*user).DateBirth)
 
 	// First_Name
 	if len((*user).First_Name) < 3 || len((*user).First_Name) > 15 {
-		return "", errors.New("InvalideFirst_Name")
+		return "", errors.New("InvalideFirst_Name"), 0
 	}
 
 	// Last_Name
 	if len((*user).Last_Name) < 3 || len((*user).Last_Name) > 15 {
-		return "", errors.New("InvalideLast_Name")
+		return "", errors.New("InvalideLast_Name"), 0
 	}
 
 	// Password
 	if len((*user).Password) < 6 || len((*user).Password) > 30 {
-		return "", errors.New("InvalidPassword")
+		return "", errors.New("InvalidPassword"), 0
 	}
 
 	// email
 	(*user).Email = strings.ToLower((*user).Email)
 	if !EmailChecker((*user).Email) {
-		return "", errors.New("InvalidEmail")
+		return "", errors.New("InvalidEmail"), 0
 	}
 	if len((*user).Email) > 50 {
-		return "", errors.New("LongEmail")
+		return "", errors.New("LongEmail"), 0
 	}
 
 	// Nickname
 	if (*user).Nickname != "" {
 		if len(strings.TrimSpace((*user).Nickname)) < 3 || len(strings.TrimSpace((*user).Nickname)) > 15 {
-			return"",  errors.New("InvalidUsername")
+			return"",  errors.New("InvalidUsername"), 0
 		}
 	}
 
 	// AboutMe
 	if (*user).AboutMe != "" {
 		if len(strings.TrimSpace((*user).AboutMe)) < 3 || len(strings.TrimSpace((*user).AboutMe)) > 50 {
-			return "", errors.New("InvalidUsername")
+			return "", errors.New("InvalidUsername"), 0
 		}
 	}
 
 	// username or email existance
 	if s.Database.CheckIfUserExists((*user).Email) {
-		return "", errors.New("UserAlreadyExist")
+		return "", errors.New("UserAlreadyExist"), 0
 	}
 
 	// Encrypt Pass
 	var err error
 	(*user).Password, err = EncyptPassword((*user).Password)
 	if err != nil {
-		return "", err
+		return "", err, 0
 	}
 
 	// Fix username html
@@ -101,7 +101,11 @@ func (s *Service) RegisterUser(user *models.User) (string, error) {
 	// Generate Uuid
 	Uuid := GenerateUuid()
 	// Insert the user
-	return Uuid, s.Database.InsertUser(*user, Uuid)
+	err, id := s.Database.InsertUser(*user, Uuid); if err != nil {
+		return "",err, 0
+	}
+	
+	return Uuid, nil, id 
 }
 
 func ValidateLength(data string) bool {

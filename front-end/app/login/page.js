@@ -23,6 +23,7 @@ export default function Login () {
 
       if (response.status == 200) {
         const data = await response.json()
+        localStorage.setItem('ID', data.id)
         localStorage.setItem('first_name', data.first_name)
         localStorage.setItem('last_name', data.last_name)
         localStorage.setItem('Nickname', data.nickname)

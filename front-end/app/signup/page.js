@@ -45,6 +45,7 @@ export default function SignupPage () {
       if (response.status == 200) {
         // If the response is ok, navigate to the homepage
         const data = await response.json()
+        localStorage.setItem('ID', data.id)
         localStorage.setItem('first_name', data.first_name)
         localStorage.setItem('last_name', data.last_name)
         localStorage.setItem('Nickname', data.nickname)

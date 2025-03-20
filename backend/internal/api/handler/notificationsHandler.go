@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -23,6 +24,7 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 	id := strconv.Itoa(user.ID)
 	notifications, count, err := H.Service.GetUserNotifications(id)
 	if err != nil {
+		fmt.Println("err", err)
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}
@@ -47,7 +49,7 @@ func (H *Handler) MarkNotificationAsSeen(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
-	user,_, ok := utils.GetUserFromContext(r.Context())
+	user, _, ok := utils.GetUserFromContext(r.Context())
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
 		return

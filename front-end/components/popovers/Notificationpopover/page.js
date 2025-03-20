@@ -3,6 +3,7 @@ import { useEffect, useState, useRef } from 'react';
 import './notification.css';
 
 const Notifications = ({ notifications = [], Err }) => {
+  
   const [items, setItems] = useState(notifications);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);

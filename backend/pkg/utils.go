@@ -22,7 +22,7 @@ import (
 
 type contextKey string
 
-const UserIDKey contextKey = "userID"
+const UserIDKey contextKey = "user"
 
 const UserCookie contextKey = "cookie"
 

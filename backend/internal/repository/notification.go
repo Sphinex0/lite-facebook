@@ -8,33 +8,36 @@ import (
 
 func (database *Database) GetUserNotifications(userID string) ([]models.Notification, error) {
 	rows, err := database.Db.Query(`
-    SELECT 
-        n.id AS notification_id,
-        n.type,
-        u.name AS invoker_name,
-        g.name AS group_name,
-        n.event_id AS event_id
-    FROM 
-        notifications n
-    LEFT JOIN 
-        users u ON n.invoker_id = u.id
-    LEFT JOIN 
-        groups g ON n.group_id = g.id
-    LEFT JOIN 
-        followers f ON f.follower = n.invoker_id AND f.status = 'pending'
-    LEFT JOIN 
-        invites i ON i.receiver = n.user_id AND i.status = 'pending'
-    WHERE 
-        n.user_id = ?;
-`, userID)
-	if err != nil {
+SELECT 
+    n.id AS notification_id,
+    n.type,
+    u.first_name AS invoker_name,
+    g.title AS group_name,
+    n.event_id,
+    e.title AS event_name  -- Use the alias 'e' instead of 'events'
+FROM 
+    notifications n
+LEFT JOIN 
+    users u ON n.invoker_id = u.id
+LEFT JOIN 
+    groups g ON n.group_id = g.id
+LEFT JOIN 
+    events e ON n.event_id = e.id  -- Alias 'e' is defined here
+LEFT JOIN 
+    followers f ON n.type = 'follow-request' AND f.follower = n.invoker_id AND f.status = 'pending'
+LEFT JOIN 
+    invites i ON n.type = 'invites-request' AND i.receiver = n.user_id AND i.status = 'pending'
+WHERE 
+    n.user_id = ?;
+`, userID);if err != nil {
+		fmt.Println("err", err)
 		return []models.Notification{}, err
 	}
 
 	var notifications []models.Notification
 	for rows.Next() {
 		var notification models.Notification
-		err := rows.Scan(&notification.ID, &notification.Type, &notification.InvokerName, &notification.GroupTitle, &notification.EventID)
+		err := rows.Scan(&notification.ID, &notification.Type, &notification.InvokerName, &notification.GroupTitle, &notification.EventID, &notification.EventName)
 		if err != nil {
 			return []models.Notification{}, err
 		}
