@@ -1,6 +1,7 @@
 'use client'
 import './navbar.css'
 import NotificationPop from '@/components/popovers/Notificationpopover/page'
+import Profilepop from  '@/components/popovers/profile/page'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
@@ -38,15 +39,14 @@ export default function Navbar () {
     },
   ]);
   const [notificationCount, setNotificationCount] = useState(0);
-  const [image, setImage] = useState("/default-profile.png")
   const [Err, setError] = useState("")
-
-  useEffect(() => {
-      const storedData = sessionStorage.getItem("Image");
-      if (storedData!="null") {
-        setImage(storedData);
-      }
-
+   const [user, setUser] = useState({});
+ 
+     useEffect(() => {
+             const storedUser = JSON.parse(localStorage.getItem('user')) || {};
+             setUser(storedUser);
+     }, []);
+ 
    /* const fetchNotifications = async () => {
       try {
        
@@ -72,7 +72,7 @@ export default function Navbar () {
     };
 
     fetchNotifications();*/
-  }, []);
+  //}, []);
 
   return (
     <nav>
@@ -91,16 +91,16 @@ export default function Navbar () {
               <NotificationsNoneOutlinedIcon />
             </div>
             {notificationCount != 0 && <span className="count">{notificationCount}</span>}
-            <div className='pop-out none'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
+            <div className='pop-out'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
           </div>
           <MailOutlinedIcon />
         </div>
       </div>
-      <div className='profile'>
+      <div className='notification'>
       <div onClick={handleProfileclick}>
-      <img  src={image || "/default-profile.png"} alt='Profile' />
+      <img src={user.image || "/default-profile.png"} alt='Profile' />
       </div>
-      <div className='profile'>{bool && <ProfilePop/>}</div>
+      <div className='pop-out'>{profile && <Profilepop/>}</div>
       </div>
     </nav>
   )
