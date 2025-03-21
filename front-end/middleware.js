@@ -33,26 +33,27 @@ export default async function middleware(request) {
   const publicRoutes = ["/login", "/signup"];
   const { pathname } = request.nextUrl;
 
-  // Check authentication status
-  const authCheck = await fetch("http://localhost:8080/api/checkauth", {
-    credentials: "include",
-  });
+  // // Check authentication status
+  // const authCheck = await fetch("http://localhost:8080/api/checkauth", {
+  //   credentials: "include",
+  // });
   
-  const isAuthenticated = authCheck.status === 200;
+  // const isAuthenticated = authCheck.status === 200;
 
-  // Handle public routes
-  if (publicRoutes.includes(pathname)) {
-    // Redirect authenticated users away from public routes
-    if (isAuthenticated) {
-      return NextResponse.redirect(new URL("/", request.url));
-    }
-    return NextResponse.next();
-  }
+  // // Handle public routes
+  // console.log("pathname", pathname);
+  // if (publicRoutes.includes(pathname)) {
+  //   // Redirect authenticated users away from public routes
+  //   if (isAuthenticated) {
+  //     return NextResponse.redirect(new URL("/", request.url));
+  //   }
+  //   return NextResponse.next();
+  // }
 
-  // Protect private routes
-  if (!isAuthenticated) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
+  // // Protect private routes
+  // if (!isAuthenticated) {
+  //   return NextResponse.redirect(new URL("/login", request.url));
+  // }
 
   return NextResponse.next();
 }
