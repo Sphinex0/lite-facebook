@@ -430,19 +430,26 @@
         grid-template-columns: 1fr;
         height: 100vh;
         position: relative;
-    }
-
-    .chatContainer {
-        flex: 1;
-        height: 100%;
+        /* Add container padding to create spacing */
+        padding: 8px;
     }
 
     .conversationsList {
         position: absolute;
-        /* display: none; */
-        width: 99%;
-        left: 0;
-        top: 0;
+        /* Use viewport units to account for padding */
+        width: calc(100% - 16px);
+        /* 100% width minus total horizontal padding */
+        height: calc(100% - 16px);
+        /* 100% height minus total vertical padding */
+        margin: 0;
+        /* Remove original margin */
+        left: 8px;
+        top: 8px;
+    }
+
+    /* Keep existing mobile styles */
+    .chatContainer {
+        flex: 1;
         height: 100%;
     }
 }
