@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -10,7 +9,6 @@ import (
 )
 
 func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("hello")
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
@@ -24,7 +22,6 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 
 	page, err := strconv.Atoi(r.URL.Query().Get("page"))
 	if err != nil {
-		fmt.Println("err1",err)
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}
@@ -32,7 +29,6 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 	id := strconv.Itoa(user.ID)
 	notifications, count, err := H.Service.GetUserNotifications(id, page)
 	if err != nil {
-		fmt.Println("err2",err)
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}
@@ -46,6 +42,30 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 	}
 
 	utils.WriteJson(w, http.StatusOK, response)
+}
+
+func (H *Handler) HandleDeleteNotification(w http.ResponseWriter, r *http.Request) {
+	// get the notification id from body
+	var ntfID int
+	err := utils.ParseBody(r, ntfID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "bad request")
+		return
+	}
+
+	user, _, ok := utils.GetUserFromContext(r.Context())
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
+		return
+	}
+
+	err = H.Service.Deletentfc(ntfID, user.ID)
+	if err != nil {
+		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, "Marked succesfuly")
 }
 
 func (H *Handler) MarkNotificationAsSeen(w http.ResponseWriter, r *http.Request) {

@@ -87,3 +87,14 @@ func (database *Database) MarkAsseen(ntfId, userID int) error {
 	_, err := database.Db.Exec(`UPDATE notifications SET seen = 1 WHERE id = ? AND user_id = ?`, ntfId, userID)
 	return err
 }
+
+func (database *Database) CheckifUsrMatchNtfc(ntfId, userID int) bool {
+	var user int
+	err := database.Db.QueryRow(`SELECT invoker_id FROM notifications WHERE id = ? AND user_id = ?`, ntfId, userID).Scan(&user)
+	return err == nil && user != 0
+}
+
+func (database *Database) DeleteNotification(ntfId, userID int) error {
+	_, err := database.Db.Exec(`DELETE FROM notifications WHERE id = ? AND user_id = ?`, ntfId, userID)
+	return err
+}

@@ -45,12 +45,12 @@ export default function SignupPage () {
       if (response.status == 200) {
         // If the response is ok, navigate to the homepage
         const data = await response.json()
-        console.log(data);
+        console.log(data,"daaaata signup");
         localStorage.setItem('user', JSON.stringify(data))
         router.push('/')
       } else {
         const data = await response.json()
-        console.log(data);
+        console.log(data,"eroooooor signup");
                 
         seterror(data)
       }

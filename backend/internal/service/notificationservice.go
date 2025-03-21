@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 
 	"social-network/internal/models"
 	repository "social-network/internal/repository"
@@ -36,6 +37,16 @@ func (S *Service) GetUserNotifications(usrId string, page int) ([]models.Notific
 	count, err := S.Database.CountUnSeenNotifications(usrId)
 	if err != nil {
 		return []models.Notification{}, 0, errors.New("error while counting unseen notifications")
+	}
+
+	usrID, err := strconv.Atoi(usrId); if err != nil {
+		return nil, 0, errors.New("converting userid to int")
+	}
+
+	for _,notification := range notifications {
+		err = S.Database.MarkAsseen(notification.ID, usrID); if err != nil {
+			return []models.Notification{}, 0, errors.New("error while turning notifications as seen")
+		}
 	}
 
 	return notifications, count, nil
@@ -86,3 +97,15 @@ func (s *Service) MarkAsseen(ntfId, userID int) error {
 
 	return nil
 }
+
+func (s *Service) Deletentfc(ntfId, userID int) error {
+	if !s.Database.CheckifUsrMatchNtfc(ntfId, userID) {
+		return errors.New("invalide notification")
+	}
+
+	err := s.Database.DeleteNotification(ntfId, userID); if err != nil {
+		return errors.New("database error")
+	}
+	return nil
+}
+

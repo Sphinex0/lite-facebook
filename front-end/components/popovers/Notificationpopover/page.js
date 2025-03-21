@@ -5,17 +5,20 @@ import './notification.css';
 const Notifications = ({ notifications = [], Err }) => {
   
   const [items, setItems] = useState(notifications);
- // const [page, setPage] = useState(1);
-  //const [loading, setLoading] = useState(false);
-  const containerRef = useRef();
-/*
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+   const containerRef = useRef();
+
   useEffect(() => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8080/api/GetNotification`,{
-          method:"POST",
-          credentials:"include"
+        const res = await fetch(`http://localhost:8080/api/GetNotification/?page=${page}`,{
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include', 
         });
 
         const newItems = await res.json();
@@ -54,7 +57,16 @@ const Notifications = ({ notifications = [], Err }) => {
       }
     };
   }, [loading]);
-*/
+
+ const Handlefollow = async (id) => {
+    
+  /* if the request did get accepted or declined succesfuly then we delet it from the database*/
+    const response = fetch('http://localhost:8080/api/deletenotification',{
+      method: 'POST',
+      body: JSON.stringify(id)
+    })
+  }
+
   return (
     <div className="notification-wrapper" ref={containerRef}>
       <div className="notification-container">
@@ -66,7 +78,7 @@ const Notifications = ({ notifications = [], Err }) => {
                 <div key={index} className="notification-div">
                   <h1>Follow Request</h1>
                   <p>{notification.invoker} sent you a follow request</p>
-                  <button className="accepte">Accept</button>
+                  <button className="accepte" onClick={Handlefollow(notification.id)}>Accept</button>
                   <button className="refuse">Reject</button>
                 </div>
               );
@@ -104,6 +116,5 @@ const Notifications = ({ notifications = [], Err }) => {
       </div>
     </div>
   );
-};
-
+}
 export default Notifications;
