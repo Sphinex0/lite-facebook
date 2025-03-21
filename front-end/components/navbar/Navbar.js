@@ -7,17 +7,7 @@ import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
 import { useEffect, useState } from 'react'
-
-export default function Navbar () {
-  const [bool, setbool] = useState(false)
-  const [profile, setprofile] = useState(false)
-  function handleclick () {
-    setbool(!bool)
-  }
-  function handleProfileclick () {
-    setprofile(!profile)
-  }
-  const [notifications, setNotifications] = useState([
+/*[
     {
       type: 'follow-request',
       invoker: 'hamza'
@@ -37,7 +27,17 @@ export default function Navbar () {
       group: 'knowledge',
       invoker: 'mustafa'
     },
-  ]);
+  ]*/
+export default function Navbar () {
+  const [bool, setbool] = useState(false)
+  const [profile, setprofile] = useState(false)
+  function handleclick () {
+    setbool(!bool)
+  }
+  function handleProfileclick () {
+    setprofile(!profile)
+  }
+  const [notifications, setNotifications] = useState();
   const [notificationCount, setNotificationCount] = useState(0);
   const [Err, setError] = useState("")
    const [user, setUser] = useState({});
@@ -45,11 +45,9 @@ export default function Navbar () {
      useEffect(() => {
              const storedUser = JSON.parse(localStorage.getItem('user')) || {};
              setUser(storedUser);
-     }, []);
  
-   /* const fetchNotifications = async () => {
+    const fetchNotifications = async () => {
       try {
-       
         const response = await fetch("http://localhost:8080/api/GetNotification",{
           method: 'GET',
           headers: {
@@ -71,8 +69,8 @@ export default function Navbar () {
       }
     };
 
-    fetchNotifications();*/
-  //}, []);
+    fetchNotifications();
+  }, []);
 
   return (
     <nav>

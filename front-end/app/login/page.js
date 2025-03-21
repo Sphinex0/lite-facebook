@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link' // Import Link from next/link
 import './login.css'
 
 export default function Login () {
@@ -30,7 +31,7 @@ export default function Login () {
         seterror(data)
       }
     } catch (error) {
-      seterror(data)
+      seterror(error)
     }
   }
 
@@ -73,6 +74,11 @@ export default function Login () {
             Login
           </button>
         </form>
+
+        {/* Redirect to Signup if no account */}
+        <div className="signup-link">
+          <p>Don't have an account? <Link href="/signup">Sign up here</Link></p>
+        </div>
       </div>
     </div>
   )

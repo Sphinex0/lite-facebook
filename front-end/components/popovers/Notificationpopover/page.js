@@ -8,7 +8,6 @@ const Notifications = ({ notifications = [], Err }) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef();
-  console.log(items);
 
   useEffect(() => {
     const fetchItems = async () => {
