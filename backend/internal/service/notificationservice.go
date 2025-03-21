@@ -12,7 +12,6 @@ func (S *Service) GetUserNotifications(usrId string, page int) ([]models.Notific
 		return []models.Notification{}, 0, errors.New("invaibale user")
 	}
 
-
 	if page <= 0 {
 		return []models.Notification{}, 0, errors.New("invalide page")
 	}
@@ -20,11 +19,12 @@ func (S *Service) GetUserNotifications(usrId string, page int) ([]models.Notific
 	// Transfer "page" to "from" (page 1 mean page one that has 100 comment from 1 mean comment 1)
 	from := (10 * page) - 10
 
-	allntf, err := S.Database.Countallusernotif(usrId);if err != nil {
+	allntf, err := S.Database.Countallusernotif(usrId)
+	if err != nil {
 		return []models.Notification{}, 0, err
 	}
 
-	if from >= allntf {
+	if from > allntf {
 		return nil, 0, errors.New("invalide page")
 	}
 
