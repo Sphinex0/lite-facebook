@@ -138,7 +138,7 @@ export function WorkerProvider({ children }) {
     }, [conversations])
 
     const value = {
-        user: userRef.current,
+        userRef,
         portRef, clientWorker,
         conversations,
         setConversations,
