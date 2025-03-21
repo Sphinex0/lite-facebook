@@ -1,5 +1,5 @@
 "use client";
-import { createContext, useContext, useEffect, useRef, useState  } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 
 const WorkerContext = createContext();
 
@@ -135,11 +135,22 @@ export function WorkerProvider({ children }) {
         const count = conversations.reduce((acc, conv) => acc + conv.seen, 0);
         setNotifications(count);
         console.log(count)
-    } , [conversations])
+    }, [conversations])
+
+    const value = {
+        user: userRef,
+        portRef, clientWorker,
+        conversations,
+        setConversations,
+        selectedConversationRef,
+        messages,
+        setMessages,
+        notfications
+    }
 
     return (
         <WorkerContext.Provider
-            value={{ portRef, clientWorker, conversations, setConversations , selectedConversationRef , messages , setMessages , notfications }}
+            value={value}
         >
             {children}
         </WorkerContext.Provider>

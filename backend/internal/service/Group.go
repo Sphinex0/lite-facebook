@@ -16,31 +16,31 @@ func (S *Service) GreatedGroup(Group *models.Group) (err error) {
 	// create conv and member
 	tm := int(time.Now().UnixMilli())
 	conv := &models.Conversation{
-		Entitie_one : Group.Creator,
-		Entitie_two_group : Group.ID,
-		Type : "group" ,
-		CreatedAt : tm ,
-		ModifiedAt : tm
+		Entitie_one:       Group.Creator,
+		Entitie_two_group: &Group.ID,
+		Type:              "group",
+		CreatedAt:         tm,
+		ModifiedAt:        tm,
 	}
-	err = S.CreateConversation(conv)
+	_, err = S.CreateConversation(conv)
 	if err != nil {
 		return
 	}
 	member := models.Member{
-		Member : Group.Creator ,
-		ConversationId : conv.ID ,
+		Member:         Group.Creator,
+		ConversationId: conv.ID,
 	}
-	err = S.CreateMember()
+	err = S.CreateMember(member)
 	if err != nil {
 		return
 	}
 	invite := models.Invite{
-		GroupID : GroupID.id,
-		Sender : Group.Creator ,
-		Receiver : Group.Creator ,
-		Status : "accepted"
+		GroupID:  Group.ID,
+		Sender:   Group.Creator,
+		Receiver: Group.Creator,
+		Status:   "accepted",
 	}
-	err = S.Database.SaveInvite()
+	err = S.Database.SaveInvite(&invite)
 	return
 }
 
@@ -86,7 +86,7 @@ func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
 	defer rows.Close()
 	fmt.Println(rows)
 
-	Group :=make(map[string]int )
+	Group := make(map[string]int)
 	for rows.Next() {
 		var groupIDScan int
 		if err := rows.Scan(&groupIDScan); err != nil {
@@ -101,13 +101,12 @@ func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
 
 	for _, v := range Group {
 		var group models.Group
-		rowGroupe:= S.Database.GetGroupById(v)
+		rowGroupe := S.Database.GetGroupById(v)
 		if err := rowGroupe.Scan(utils.GetScanFields(&group)...); err != nil {
 			return nil, fmt.Errorf("error scanning group data: %v", err)
 		}
 		groups = append(groups, group)
 	}
-	
-	return groups,nil
-}
 
+	return groups, nil
+}

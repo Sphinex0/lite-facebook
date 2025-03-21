@@ -150,3 +150,19 @@ func (data *Database) ReadMessagesGroup(convId, id int) (err error) {
 	`, convId, id)
 	return
 }
+
+
+// GetConvByGroupID
+func (data *Database) GetConvByGroupID(id int) (conv models.Conversation, err error) {
+	row := data.Db.QueryRow(`
+		SELECT *
+		FROM conversations
+		WHERE entitie_two_group = ?
+	`, id)
+	// Scan the row into the Conversation struct
+	if err = row.Scan(utils.GetScanFields(&conv)...); err != nil {
+		return
+	}
+
+	return
+}

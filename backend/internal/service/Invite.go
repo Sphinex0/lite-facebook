@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"fmt"
 
 	"social-network/internal/models"
@@ -42,18 +43,26 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 		}
 		// for create member
 		mb := Invites.Sender
-		idIv , err = service.Database.CheckMember(mb,Invites.GroupID)
+		var idIv int
+		idIv, err = service.Database.CheckMember(mb, Invites.GroupID)
 		if err != nil && err != sql.ErrNoRows {
 			return
 		}
-		if id == 0 {
+		if idIv == 0 {
 			mb = Invites.Receiver
 		}
-		member := models.Member{                                        
-			Member : mb ,                                
-		    ConversationId : conv.ID ,
-        }                                                       
-        err = S.CreateMember()
+		// get Conv by group id
+		var conv models.Conversation
+		conv, err = service.Database.GetConvByGroupID(Invites.GroupID)
+		if err != nil {
+			return
+		}
+		// create member
+		member := models.Member{
+			Member:         mb,
+			ConversationId: conv.ID,
+		}
+		err = service.CreateMember(member)
 	} else if Invites.Status == "rejected" {
 		err = service.Database.DeleteInvites(Invites)
 	} else {
@@ -81,6 +90,7 @@ func (S *Service) AllInvites(id int) ([]models.Invite, error) {
 
 	return Invites, nil
 }
+
 func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	rows, err := S.Database.Getallmembers(id)
 	if err != nil {
@@ -101,23 +111,22 @@ func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	return Invites, nil
 }
 
-
 func (S *Service) Members(Invite []models.Invite) (map[int]models.User, error) {
-	member:= make(map[int]models.User)
+	member := make(map[int]models.User)
 	for _, m := range Invite {
-        row1, err := S.Database.GetUsers(m.Receiver)
-        if err != nil {
-            fmt.Println(err)
-            return nil, fmt.Errorf("error getting receiver user with ID %d: %w", m.Receiver, err)
-        }
-        member[m.Receiver] = row1
+		row1, err := S.Database.GetUsers(m.Receiver)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("error getting receiver user with ID %d: %w", m.Receiver, err)
+		}
+		member[m.Receiver] = row1
 
-        row2, err := S.Database.GetUsers(m.Sender)
-        if err != nil {
-            fmt.Println(err)
-            return nil, fmt.Errorf("error getting sender user with ID %d: %w", m.Sender, err)
-        }
-        member[m.Sender] = row2
-    }
-	return member ,nil
+		row2, err := S.Database.GetUsers(m.Sender)
+		if err != nil {
+			fmt.Println(err)
+			return nil, fmt.Errorf("error getting sender user with ID %d: %w", m.Sender, err)
+		}
+		member[m.Sender] = row2
+	}
+	return member, nil
 }

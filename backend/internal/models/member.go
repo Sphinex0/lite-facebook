@@ -1,6 +1,6 @@
 package models
 
-type Members struct {
+type Member struct {
 	ID             int `json:"id"`
 	Member         int `json:"member"`
 	ConversationId int `json:"conversation_id"`

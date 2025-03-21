@@ -1,5 +1,8 @@
 package service
 
-func (service *Service) CreateMember(member models.member) (err error) {
+import "social-network/internal/models"
+
+func (service *Service) CreateMember(member models.Member) (err error) {
 	err = service.Database.SaveMember(member)
+	return
 }
