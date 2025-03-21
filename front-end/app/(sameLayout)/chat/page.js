@@ -11,7 +11,7 @@ import { useWorker } from "@/app/_Context/WorkerContext";
 
 export default function Chat() {
 
-    const { portRef, clientWorker, conversations, setConversations , selectedConversationRef , messages , setMessages } = useWorker();
+    const { portRef, clientWorker, conversations, setConversations, selectedConversationRef, messages, setMessages } = useWorker();
     const conversationsRef = useRef(conversations);
     const [message, setMessage] = useState({ content: "", reply: null });
     const [selectedConversation, setSelectedConversation] = useState(null);
@@ -30,6 +30,17 @@ export default function Chat() {
     useEffect(() => {
         conversationsRef.current = conversations;
     }, [conversations]);
+
+    useEffect(() => {
+        const port = portRef.current;
+        if (!port) return;
+        port.postMessage({
+            kind: "send",
+            payload: {
+                type: "conversations"
+            }
+        });
+    }, [])
 
     const fetchMessages = async (signal) => {
         if (!selectedConversation) return;
@@ -137,6 +148,8 @@ export default function Chat() {
         setReplyingTo(null);
         setEmoji(false);
     };
+
+
 
     const SendFile = () => {
         const port = portRef.current;

@@ -33,20 +33,23 @@ export function WorkerProvider({ children }) {
             switch (data.type) {
                 case "conversations":
                     const onlineUsers = data.online_users;
-                    setConversations(
-                        data.conversations?.map((conv) => {
-                            if (conv.user_info) {
-                                return {
-                                    ...conv,
-                                    user_info: {
-                                        ...conv.user_info,
-                                        online: onlineUsers?.includes(conv.user_info.id),
-                                    },
-                                };
-                            }
-                            return conv;
-                        })
-                    );
+                    if (data.conversations && data.conversations.length > 0) {
+                        setConversations(
+                            data.conversations?.map((conv) => {
+                                if (conv.user_info) {
+                                    return {
+                                        ...conv,
+                                        user_info: {
+                                            ...conv.user_info,
+                                            online: onlineUsers?.includes(conv.user_info.id),
+                                        },
+                                    };
+                                }
+                                return conv;
+                            })
+                        );
+                    }
+
                     break;
 
                 case "online":

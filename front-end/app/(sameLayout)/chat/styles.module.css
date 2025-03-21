@@ -286,30 +286,10 @@
     stroke: rgba(102, 51, 153, 0.377);
 }
 
-/* ###################### */
-
-
-/* 
-.container {
-    display: flex;
-    height: 100vh;
-}
-
-.conversationsList {
-    width: 300px;
-    border-right: 1px solid #e0e0e0;
-    overflow-y: auto;
-}
-
-.conversationItem {
-    padding: 15px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-}
 
 .conversationItem:hover {
     background-color: #f5f5f5;
-} */
+}
 
 .active {
     background-color: #e3f2fd;
@@ -442,4 +422,27 @@
     max-width: 200px;
     border-radius: 8px;
     margin-bottom: 10px;
+}
+
+/* media */
+@media (max-width: 1000px) {
+    .container {
+        grid-template-columns: 1fr;
+        height: 100vh;
+        position: relative;
+    }
+
+    .chatContainer {
+        flex: 1;
+        height: 100%;
+    }
+
+    .conversationsList {
+        position: absolute;
+        /* display: none; */
+        width: 99%;
+        left: 0;
+        top: 0;
+        height: 100%;
+    }
 }

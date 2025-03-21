@@ -43,7 +43,7 @@ func (data *Database) VerifyConversation(id1, id2 int, type_obj string) (err err
 func (data *Database) GetConversations(id int) (conversations []models.ConversationsInfo, err error) {
 	query := `
 		SELECT
-			C.*,COALESCE((
+			DISTINCT C.*,COALESCE((
 							SELECT content 
 							FROM messages M 
 							WHERE M.conversation_id = C.id
@@ -151,7 +151,6 @@ func (data *Database) ReadMessagesGroup(convId, id int) (err error) {
 	return
 }
 
-
 // GetConvByGroupID
 func (data *Database) GetConvByGroupID(id int) (conv models.Conversation, err error) {
 	row := data.Db.QueryRow(`
@@ -164,5 +163,17 @@ func (data *Database) GetConvByGroupID(id int) (conv models.Conversation, err er
 		return
 	}
 
+	return
+}
+
+// check conversation betwen toxw users
+
+func (data *Database) GetConversationByUsers(id1, id2 int) (conv models.Conversation, err error) {
+	row := data.Db.QueryRow(`
+		SELECT *
+		FROM conversations
+		WHERE (entitie_one = ? AND entitie_two_user = ?) OR (entitie_one = ? AND entitie_two_user = ?)
+	`, id1, id2, id2, id1)
+	err = row.Scan(utils.GetScanFields(&conv)...)
 	return
 }
