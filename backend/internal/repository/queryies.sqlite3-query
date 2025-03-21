@@ -1438,4 +1438,4 @@ LIMIT
     10;
 
 
-UPDATE users SET password = '$2a$10$7ZgLpzOpAkkvEwNZhOwOb.C4xH8LV3SIGzSL4K2W0upek3Jo05raq' 
+UPDATE users SET password = '$2a$10$7ZgLpzOpAkkvEwNZhOwOb.C4xH8LV3SIGzSL4K2W0upek3Jo05raq' WHERE id = 4
