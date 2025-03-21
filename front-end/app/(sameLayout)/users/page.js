@@ -10,7 +10,6 @@ const Page = () => {
     const before = useRef(null)
     const fetchData = async (signal) => {
         try {
-            console.log(before, users)
             const response = await fetch("http://localhost:8080/api/users", {
                 method: "POST",
                 credentials: "include",
@@ -25,7 +24,6 @@ const Page = () => {
                 if (usersData) {
                     setUsers((prv) => [...prv, ...usersData])
                     before.current = usersData[usersData.length-1].id
-                    console.log("last created at", usersData[usersData.length-1].id)
                 }
             }
 

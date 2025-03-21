@@ -24,7 +24,6 @@ const SelectFollower = () => {
                 if (followersData){
                     setFollowers((prv) => [...prv, ...followersData])
                     before.current = followersData[followersData.length - 1].modified_at
-                    console.log(followersData)
                 }
             }
 

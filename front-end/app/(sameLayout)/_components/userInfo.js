@@ -19,11 +19,9 @@ const UserInfo = ({ userInfo, articleInfo, group, onlineDiv, lastMessage }) => {
 
     return (
         <Link href={onlineDiv ? "" : `/profile/${userInfo.id}`}>
-            {console.log(userInfo, "inside")}
             <div className="user">
                 <div className="profile-wrapper">
                     <div className="profile-photo">
-                        {console.log(" imageSrc => ",imageSrc)}
                         <Image
                             src={imageSrc}
                             alt={"ess"}

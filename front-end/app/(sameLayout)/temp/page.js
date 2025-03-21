@@ -22,7 +22,6 @@ const Users = () => {
         const postsData = await response.json()
         if (postsData){
           setData([...data,...postsData])
-          console.log(postsData)
         }
       }
 
@@ -113,10 +112,8 @@ const Users = () => {
         credentials: "include"
       })
       console.log("status:", response.status)
-      console.log(response)
       if (response.ok){
         const data = await response.json()
-        console.log(data)
       }
 
     } catch (error) {

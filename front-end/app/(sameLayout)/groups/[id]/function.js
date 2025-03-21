@@ -1,6 +1,6 @@
 "use client";
 
-async function JoinGroup(id,creator,setIsAction,isAction) {
+async function JoinGroup(id, creator, setIsAction, isAction) {
     console.log(id);
     console.log(creator);
 
@@ -17,9 +17,9 @@ async function JoinGroup(id,creator,setIsAction,isAction) {
         });
 
         if (response.ok) {
-            if (isAction==="pending"){
+            if (isAction === "pending") {
                 setIsAction("join")
-            }else if (isAction==="join"){
+            } else if (isAction === "join") {
                 setIsAction("pending")
             }
             console.log('Group joined successfully');

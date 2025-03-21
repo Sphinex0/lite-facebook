@@ -31,7 +31,6 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
       console.log("status:", response.status)
       if (response.ok) {
         const commentsData = await response.json()
-        console.log(commentsData)
         if (commentsData) {
 
 
@@ -39,7 +38,6 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
           
 
           before.current = commentsData[commentsData.length - 1].article.created_at
-          console.log("last created at", commentsData[commentsData.length - 1].article.created_at)
         }
       }
 

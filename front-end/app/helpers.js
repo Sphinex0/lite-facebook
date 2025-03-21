@@ -75,7 +75,6 @@ export const likeArticle = async (like, article_id, setLikes, setDislikes, likeS
 
     console.log("status:", response.status)
     if (response.ok) {
-      console.log("liked or dislike")
       if (like == 1 && likeState == 1) {
         setLikes((prv) => prv - 1)
         setLikeState(0)
@@ -111,7 +110,6 @@ export const addArticle = async (e, setAtricle, { parent, group }) => {
     const formData = new FormData(e.target)
     formData.append("group_id", group || 0)
     formData.append("parent", parent || 0)
-    console.log(formData)
     const response = await fetch("http://localhost:8080/api/articles/store", {
       method: "POST",
       credentials: "include",
@@ -164,7 +162,6 @@ export const useOnVisible = (ref, callback, once = true, threshold = 0.1) => {
   const observerRef = useRef(null);
 
   useEffect(() => {
-    console.log("heress", ref)
     if (!ref.current) return;
 
     const observer = new IntersectionObserver(
@@ -238,7 +235,6 @@ export const FetchApi = async (url, redirect, { method, body, signal }) => {
       redirect.push("/")
       return false
     }
-    console.log("status: dsfdf", response.status)
     return response
   } catch (error) {
     return false

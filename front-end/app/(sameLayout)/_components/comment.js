@@ -8,7 +8,6 @@ const Comment = ({ commentInfo , reference}) => {
   const [likes, setLikes] = useState(commentInfo.likes || 0); // Fallback to 0 if undefined
   const [disLikes, setDislikes] = useState(commentInfo.disLikes || 0);
   const [likeState, setLikeState] = useState(commentInfo.like || 0);
-  console.log(commentInfo)
   
   return (
     <div className={styles.comment} ref={reference}>

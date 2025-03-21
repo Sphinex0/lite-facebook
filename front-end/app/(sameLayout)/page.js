@@ -19,7 +19,6 @@ export default function Posts() {
     const before = useRef(Math.floor(Date.now()))
     const fetchData = async (signal) => {
         try {
-            console.log("9bl")
             const response = await FetchApi("http://localhost:8080/api/posts",redirect, {
                 method: "POST",
                 credentials: "include",
@@ -34,7 +33,6 @@ export default function Posts() {
                 if (postsData) {
                     setPosts((prv) => [...prv, ...postsData])
                     before.current = postsData[postsData.length-1].article.created_at
-                    console.log("last created at", postsData[postsData.length-1].article.created_at)
                 }
             }
 

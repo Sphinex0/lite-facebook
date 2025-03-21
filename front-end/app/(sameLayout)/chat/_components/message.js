@@ -35,7 +35,6 @@ export default function Message({ msg, onClick, isSelected }) {
             {/* Metadata */}
             <div className={styles.messageMeta}>
                 <span className={styles.timestamp}>
-                    {console.log(msg.message.created_at)}
                     {new Date(msg.message.created_at).toLocaleTimeString()}
                 </span>
             </div>

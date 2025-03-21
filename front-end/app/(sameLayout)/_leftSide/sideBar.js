@@ -11,7 +11,6 @@ const SideBar = () => {
     // const [path, setPath]= useState(router)
     useEffect(()=>{
         const count = document.querySelector("#msgCount")
-            console.log(count)
         count.textContent = notfications>0 ? notfications:""
         if (notfications>0 && count){
           count.style.opacity = 1  

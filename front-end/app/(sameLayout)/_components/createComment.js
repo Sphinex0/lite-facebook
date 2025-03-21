@@ -20,7 +20,6 @@ const CreateComment = ({ setComments, setCommentCount, parent }) => {
                         setCommentContent("")
                         setImagePreview("")
                         setCommentCount((prev) => prev + 1)
-                        console.log(fileInput)
                         fileInput.current.value = ""
                     }
                 }}

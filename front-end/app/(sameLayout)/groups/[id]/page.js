@@ -6,6 +6,7 @@ import Posts from './posts';
 import Members from './members';
 import joinGroup from "./function";
 import Events from "./Events";
+
 export default function ShowGroup({ params }) {
   const id = use(params).id;
 
@@ -15,7 +16,8 @@ export default function ShowGroup({ params }) {
   const [error, setError] = useState(null);
   const [isAllowed, setIsAllowed] = useState(false)
   const [isAction, setIsAction] = useState("")
-  console.log(JSON.stringify({ id: parseInt(id) }))
+  const [popover, setPopover] = useState(false)
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -36,9 +38,9 @@ export default function ShowGroup({ params }) {
         console.log(data);
         setIsAction(data.action)
         setGroupData(data);
-        if (data.action==="accepted"){
+        if (data.action === "accepted") {
           setIsAllowed(true)
-        }else {
+        } else {
           setIsAllowed(false)
         }
       } catch (error) {
@@ -68,20 +70,25 @@ export default function ShowGroup({ params }) {
             <span className={styles.followText}>{new Date(groupData.group_info.created_at).toLocaleDateString()}</span><br />
           </div>
           <div className={`${styles.g1} ${styles.btnSection}`}>
-        {isAllowed 
-        ? <button className={styles.editProfileBtn} 
-        onClick={()=>{
-          leaveGroup(id)
-        }}
-        >send Invite</button>
+            {isAllowed
+              ? <button className={styles.editProfileBtn}
+                onClick={() => {
+                  setPopover((prev)=>!prev)
+                }}
+              >send Invite
+                  <div className="customize-theme" onClick={()=>{
+                    
+                  }}>
+                  <div className="card"></div></div>
+              </button>
 
 
-        :<button className={styles.editProfileBtn} 
-        onClick={()=>{
-         joinGroup(id,groupData.group_info.creator,setIsAction,isAction)
-       }}
-       >{isAction}</button>
-        } 
+              : <button className={styles.editProfileBtn}
+                onClick={() => {
+                  joinGroup(id, groupData.group_info.creator, setIsAction, isAction)
+                }}
+              >{isAction}</button>
+            }
 
           </div>
         </div>
