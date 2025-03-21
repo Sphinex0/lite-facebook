@@ -49,7 +49,7 @@ export default function Navbar () {
     const fetchNotifications = async () => {
       try {
         const response = await fetch("http://localhost:8080/api/GetNotification",{
-          method: 'GET',
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
@@ -57,10 +57,10 @@ export default function Navbar () {
         });
 
         if (response.ok) {
-          const data = await response.json();
+          const data = await response.json();          
           setNotifications(data.notifications);
           setNotificationCount(data.count); 
-        } else {
+        } else {          
           setError("error while fetching notifications");
         }
       } catch (error) {

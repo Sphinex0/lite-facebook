@@ -8,31 +8,26 @@ import (
 
 func (database *Database) GetUserNotifications(userID string) ([]models.Notification, error) {
 	rows, err := database.Db.Query(`
-SELECT 
-    n.id AS notification_id,
-    n.type,
-    u.first_name AS invoker_name,
-    g.title AS group_name,
-    n.event_id,
-    e.title AS event_name
-FROM 
-    notifications n
-LEFT JOIN 
-    users u ON n.invoker_id = u.id
-LEFT JOIN 
-    groups g ON n.group_id = g.id
-LEFT JOIN 
-    events e ON n.event_id = e.id
-WHERE 
-    n.user_id = ?;
-`, userID);if err != nil {
+	SELECT notification_id, notification_type, invoker_name, group_name, group_id, event_name 
+	FROM user_notifications
+	WHERE notified_user_id = ?;
+	`, userID)
+	if err != nil {
 		return []models.Notification{}, err
-	}
+	}	
 
 	var notifications []models.Notification
 	for rows.Next() {
 		var notification models.Notification
-		err := rows.Scan(&notification.ID, &notification.Type, &notification.InvokerName, &notification.GroupTitle, &notification.EventID, &notification.EventName)
+		err := rows.Scan(
+			&notification.ID,
+			&notification.Type,
+			&notification.InvokerName,
+			&notification.GroupTitle,
+			&notification.EventID,
+			&notification.EventName,
+		)
+		
 		if err != nil {
 			fmt.Println("err",err)
 			return []models.Notification{}, err
@@ -41,6 +36,7 @@ WHERE
 	}
 
 	if err := rows.Err(); err != nil {
+		fmt.Println("err rows",err)
 		return nil, err
 	}
 	rows.Close()

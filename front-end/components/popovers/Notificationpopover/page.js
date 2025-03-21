@@ -5,10 +5,10 @@ import './notification.css';
 const Notifications = ({ notifications = [], Err }) => {
   
   const [items, setItems] = useState(notifications);
-  const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(false);
+ // const [page, setPage] = useState(1);
+  //const [loading, setLoading] = useState(false);
   const containerRef = useRef();
-
+/*
   useEffect(() => {
     const fetchItems = async () => {
       setLoading(true);
@@ -54,12 +54,12 @@ const Notifications = ({ notifications = [], Err }) => {
       }
     };
   }, [loading]);
-
+*/
   return (
     <div className="notification-wrapper" ref={containerRef}>
       <div className="notification-container">
         {Err && <div className="notif-err">Error loading notifications. Please try again.</div>}
-        {items.map((notification, index) => {
+        {items && items.map((notification, index) => {
           switch (notification.type) {
             case 'follow-request':
               return (
@@ -102,7 +102,6 @@ const Notifications = ({ notifications = [], Err }) => {
           }
         })}
       </div>
-      {loading && <p>Loading...</p>}
     </div>
   );
 };
