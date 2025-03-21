@@ -4,22 +4,26 @@ import { useEffect, useRef, useState } from "react"
 import Post from "./_components/post"
 import CreatePost from "./_components/createPost"
 import CreatePostModal from "./_components/createPostModal"
-import { useOnVisible } from "../helpers"
+import { FetchApi, useOnVisible } from "../helpers"
 import PostList from "./_components/postList"
+import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 export default function Posts() {
     const [posts, setPosts] = useState([])
     const [modalDisplay, setModalDisplay] = useState(false)
+    
+    const redirect = useRouter()
 
     const lastPostElementRef = useRef(null)
     const before = useRef(Math.floor(Date.now()))
     const fetchData = async (signal) => {
         try {
-            console.log(before, posts)
-            const response = await fetch("http://localhost:8080/api/posts", {
+            console.log("9bl")
+            const response = await FetchApi("http://localhost:8080/api/posts",redirect, {
                 method: "POST",
                 credentials: "include",
-                body: JSON.stringify({ before: before.current }),
+                body: { before: before.current },
                 signal
                 
             })

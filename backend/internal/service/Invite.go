@@ -1,6 +1,7 @@
 package service
 
 import (
+	"database/sql"
 	"fmt"
 	"slices"
 
@@ -41,6 +42,31 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 	if Invites.Status == "accepted" {
 		err = service.Database.AcceptInviteRequest(Invites)
 		fmt.Println(err)
+		if err != nil {
+			return
+		}
+		// for create member
+		mb := Invites.Sender
+		var idIv int
+		idIv, err = service.Database.CheckMember(mb, Invites.GroupID)
+		if err != nil && err != sql.ErrNoRows {
+			return
+		}
+		if idIv == 0 {
+			mb = Invites.Receiver
+		}
+		// get Conv by group id
+		var conv models.Conversation
+		conv, err = service.Database.GetConvByGroupID(Invites.GroupID)
+		if err != nil {
+			return
+		}
+		// create member
+		member := models.Member{
+			Member:         mb,
+			ConversationId: conv.ID,
+		}
+		err = service.CreateMember(member)
 	} else if Invites.Status == "rejected" {
 		err = service.Database.DeleteInvites(Invites)
 	} else {
@@ -68,6 +94,7 @@ func (S *Service) AllInvites(id int) ([]models.Invite, error) {
 
 	return Invites, nil
 }
+
 
 func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	rows, err := S.Database.Getallmembers(id)
@@ -114,3 +141,4 @@ func (S *Service) Members(Invite []models.Invite) ([]models.User, error) {
 	}
 	return members, nil
 }
+

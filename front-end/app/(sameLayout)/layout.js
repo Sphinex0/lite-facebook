@@ -10,29 +10,6 @@ export const Context = createContext()
 
 export default function MainLayout({ children }) {
 
-
-  // const [clientWorker, setClientWorker] = useState(null);
-  // const workerPortRef = useRef(null);
-  // const [conversations, setConversations] = useState([]);
-
-  // // Initialize SharedWorker
-  // useEffect(() => {
-  //   const worker = new SharedWorker("/sharedworker.js");
-  //   workerPortRef.current = worker.port;
-  //   setClientWorker(worker);
-
-  //   return () => {
-  //     worker.port.close();
-  //     workerPortRef.current = null;
-  //   };
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("conversations", conversations)
-  // }, [conversations])
-
-
-
   return (
       <WorkerProvider>
         <main>

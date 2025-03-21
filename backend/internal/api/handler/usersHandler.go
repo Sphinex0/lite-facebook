@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+
 	"social-network/internal/models"
 	utils "social-network/pkg"
 )
@@ -43,7 +44,6 @@ func (Handler *Handler) HandleGetProfile(w http.ResponseWriter, r *http.Request)
 	Handler.Service.GetFollowCounts(&fullProfile)
 	Handler.Service.SetAction(&fullProfile, user.ID)
 
-
 	utils.WriteJson(w, http.StatusOK, fullProfile)
 }
 
@@ -75,8 +75,8 @@ func (Handler *Handler) HandleGetProfileAbout(w http.ResponseWriter, r *http.Req
 	err = Handler.Service.GetProfile(&profile, user.ID)
 	if err != nil {
 		log.Println(err)
-		if err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+		if err.Error() == "profile is private, follow to see" {
+			utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -108,14 +108,13 @@ func (Handler *Handler) HandleUpdateProfile(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-		profile.ID = user.ID
-
+	profile.ID = user.ID
 
 	err = Handler.Service.ModifyProfile(&profile)
 	if err != nil {
 		log.Println(err)
-		if err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+		if err.Error() == "profile is private, follow to see" {
+			utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -125,22 +124,20 @@ func (Handler *Handler) HandleUpdateProfile(w http.ResponseWriter, r *http.Reque
 	utils.WriteJson(w, http.StatusOK, "profile updated")
 }
 
-
 func (Handler *Handler) HandleGetProfilePosts(w http.ResponseWriter, r *http.Request) {
-	
 	user, data, err := Handler.AfterGet(w, r)
 	if err.Err != nil {
 		return
 	}
-	if data.UserID ==0{
+	if data.UserID == 0 {
 		data.UserID = user.ID
 	}
 
 	article_views, err := Handler.Service.FetchPostsByProfile(data.UserID, data.Before, user.ID)
 	if err.Err != nil {
 		log.Println(err)
-		if err.Err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+		if err.Err.Error() == "profile is private, follow to see" {
+			utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -149,6 +146,17 @@ func (Handler *Handler) HandleGetProfilePosts(w http.ResponseWriter, r *http.Req
 
 	utils.WriteJson(w, http.StatusOK, article_views)
 }
+
+func (Handler *Handler) CheckAuth(w http.ResponseWriter, r *http.Request) {
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, user)
+}
+
 
 func (Handler *Handler) HandleGetUsers(w http.ResponseWriter, r *http.Request) {
 	

@@ -23,3 +23,9 @@ func (service *Service) ReadMessagesGroup(convId, id int) (err error) {
 	err = service.Database.ReadMessagesGroup(convId, id)
 	return
 }
+
+// GetConvByGroupID
+func (service *Service) GetConvByGroupID(id int) (conv models.Conversation, err error) {
+	conv, err = service.Database.GetConvByGroupID(id)
+	return
+}
