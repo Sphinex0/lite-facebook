@@ -73,7 +73,7 @@ export default function ShowGroup({ params }) {
         onClick={()=>{
           leaveGroup(id)
         }}
-        >Leave Group</button>
+        >send Invite</button>
 
 
         :<button className={styles.editProfileBtn} 

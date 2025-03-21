@@ -1,11 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import UserInfo from "../_components/userInfo";
+import { useWorker } from "@/app/_Context/WorkerContext";
 
 const Profile = () => {
-    const [userInfo, setUserInfo] = useState(JSON.parse(localStorage.getItem("user")))
+    const {user} = useWorker()
+    const [userInfo, setUserInfo] = useState(user)
+    useEffect(()=>{
+        setUserInfo(user)
+    },[user])
 
     return (
         <div  className="profile">
@@ -18,6 +23,7 @@ const Profile = () => {
                 @niaridania
             </p>
         </div> */}
+        {console.log("#######", user)}
         <UserInfo userInfo={userInfo}/>
     </div>
     )
