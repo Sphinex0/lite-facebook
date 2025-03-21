@@ -222,6 +222,7 @@ export const joinGroup = async (groupID, setIsAllowed) => {
 
 
 export const FetchApi = async (url, redirect, { method, body, signal }) => {
+  
   try {
     const response = await fetch(url, {
       method,
@@ -233,6 +234,7 @@ export const FetchApi = async (url, redirect, { method, body, signal }) => {
       redirect.push("/login")
       return false
     } else if (response.status == 403) {
+      console.log("status", response.status)
       redirect.push("/")
       return false
     }
