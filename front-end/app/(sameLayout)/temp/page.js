@@ -10,7 +10,7 @@ const Users = () => {
 
   const fetchPosts = async () => {
     try {
-      const before = data.length > 0 ? data[data.length-1].article.created_at : Math.floor(Date.now() / 1000)
+      const before = data.length > 0 ? data[data.length-1].article.created_at : Math.floor(Date.now())
       const response = await fetch("http://localhost:8080/api/posts",{
         method:"POST",
         credentials: "include",

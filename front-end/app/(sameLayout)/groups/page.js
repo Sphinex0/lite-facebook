@@ -14,7 +14,7 @@ const Groups = () => {
   const [groupCreated, setGroupCreated] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();

@@ -7,7 +7,7 @@ const Posts = ({user_id, setIsAllowed}) => {
     const [posts, setPosts] = useState([])
     
     const lastPostElementRef = useRef(null)
-    const before = useRef(Math.floor(Date.now() / 1000))
+    const before = useRef(Math.floor(Date.now()))
 
         const fetchProfilePosts = async (signal) => {
             try {

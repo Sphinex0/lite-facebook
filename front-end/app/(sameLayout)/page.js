@@ -12,7 +12,7 @@ export default function Posts() {
     const [modalDisplay, setModalDisplay] = useState(false)
 
     const lastPostElementRef = useRef(null)
-    const before = useRef(Math.floor(Date.now() / 1000))
+    const before = useRef(Math.floor(Date.now()))
     const fetchData = async (signal) => {
         try {
             console.log(before, posts)

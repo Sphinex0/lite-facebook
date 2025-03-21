@@ -86,7 +86,7 @@ const About = ({ user_id, action }) => {
                         <Email />
                     </div>
                     <div className={styles.infoItem}>
-                        <span> {new Date(profileInfo.date_birth*1000).toLocaleDateString()}</span>
+                        <span> {new Date(profileInfo.date_birth).toLocaleDateString()}</span>
                         <Cake />
                     </div>
 

@@ -18,7 +18,7 @@ const pluralize = (number, unit) => {
 }
 export const timeAgo = (unixTimestamp) => {
     // Convert Unix timestamp (in seconds) to a Date object (requires milliseconds)
-    const pastDate = new Date(unixTimestamp * 1000);
+    const pastDate = new Date(unixTimestamp);
     const currentDate = new Date();
 
     // Calculate the difference in milliseconds

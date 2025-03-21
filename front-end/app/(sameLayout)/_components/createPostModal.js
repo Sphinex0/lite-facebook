@@ -5,7 +5,7 @@ import styles from './createPostModal.module.css'
 import SelectFollower from './selectFollower'
 import { addArticle } from '@/app/helpers'
 
-const CreatePostModal = ({ setModalDisplay, setPosts }) => {
+const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
   const [content, setContent] = useState("")
   const [imagePreview, setImagePreview] = useState("")
   const [privacy, setPrivacy] = useState("")

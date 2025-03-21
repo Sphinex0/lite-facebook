@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
+import UserInfo from "../_components/userInfo";
 
 const Profile = () => {
+    const [userInfo, setUserInfo] = useState(JSON.parse(localStorage.getItem("user")))
 
     return (
-        <Link  href="/profile" className="profile">
-        <div className="profile-photo">
+        <div  className="profile">
+        {/* <div className="profile-photo">
             <img src="/images/profile-1.jpg"/>
         </div>
         <div className="handle">
@@ -14,8 +17,9 @@ const Profile = () => {
             <p className="text-muted">
                 @niaridania
             </p>
-        </div>
-    </Link>
+        </div> */}
+        <UserInfo userInfo={userInfo}/>
+    </div>
     )
     
 }

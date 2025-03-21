@@ -65,7 +65,7 @@ export default function ShowGroup({ params }) {
 
             <h1 className={styles.title}>{groupData.group_info.title}</h1>
             <span className={styles.nickname}>{groupData.group_info.description}</span><br />
-            <span className={styles.followText}>{new Date(groupData.group_info.created_at * 1000).toLocaleDateString()}</span><br />
+            <span className={styles.followText}>{new Date(groupData.group_info.created_at).toLocaleDateString()}</span><br />
           </div>
           <div className={`${styles.g1} ${styles.btnSection}`}>
         {isAllowed 

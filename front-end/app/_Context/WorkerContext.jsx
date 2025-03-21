@@ -132,14 +132,14 @@ export function WorkerProvider({ children }) {
     }, []);
 
     useEffect(() => {
-        const count = conversations.reduce((acc, conv) => acc + conv.seen, 0);
+        const count = conversations?.reduce((acc, conv) => acc + conv.seen, 0);
         setNotifications(count);
         console.log(count)
     } , [conversations])
 
     return (
         <WorkerContext.Provider
-            value={{ portRef, clientWorker, conversations, setConversations , selectedConversationRef , messages , setMessages , notfications }}
+            value={{ portRef, clientWorker, conversations, setConversations , selectedConversationRef , messages , setMessages , notfications, userRef }}
         >
             {children}
         </WorkerContext.Provider>

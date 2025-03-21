@@ -5,7 +5,7 @@ import { useOnVisible } from '@/app/helpers'
 
 const Followings = ({user_id}) => {
         const [followings, setFollowings] = useState([])
-        const before = useRef(Math.floor(Date.now() / 1000))
+        const before = useRef(Math.floor(Date.now()))
         const lastElementRef = useRef(null)
     
         const fetchFollowings = async (signal) => {

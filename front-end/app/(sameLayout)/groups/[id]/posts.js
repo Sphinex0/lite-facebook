@@ -1,12 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react'
 import PostList from '../../_components/postList'
 import { useOnVisible } from '@/app/helpers'
+import CreatePost from '../../_components/createPost'
+import CreatePostModal from '../../_components/createPostModal'
 
 const Posts = ({groupID, setIsAllowed}) => {
     const [posts, setPosts] = useState([])
-    
+    const [modalDisplay, setModalDisplay] = useState(false)
+
     const lastPostElementRef = useRef(null)
-    const before = useRef(Math.floor(Date.now() / 1000))
+    const before = useRef(Math.floor(Date.now()))
 
         const fetchGroupPosts = async (signal) => {
             try {
@@ -47,8 +50,11 @@ const Posts = ({groupID, setIsAllowed}) => {
         }, [])
     
         useOnVisible(lastPostElementRef, fetchGroupPosts)
-  return (
+  return (<>
+        <CreatePost setModalDisplay={setModalDisplay} />
+        {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} group={groupID}/> : ""}
     <PostList posts={posts} reference={lastPostElementRef} />
+  </>
   )
 }
 

@@ -10,7 +10,7 @@ import Link from "next/link";
 export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setCommentCount, setPostViewDisplay }) {
   const [comments, setComments] = useState([])
   const lastElementRef = useRef(null)
-  const before = useRef(Math.floor(Date.now() / 1000))
+  const before = useRef(Math.floor(Date.now()))
 
   const hide = (e) => {
     if (e.target.classList.contains('customize-theme')) {

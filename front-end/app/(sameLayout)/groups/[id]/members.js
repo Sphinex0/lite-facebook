@@ -7,7 +7,7 @@ const Members = ({groupID}) => {
     const [members, setMembers] = useState([])
     
     const lastElementRef = useRef(null)
-    const before = useRef(Math.floor(Date.now() / 1000))
+    const before = useRef(Math.floor(Date.now() ))
 
         const fetchGroupMembers = async (signal) => {
             try {

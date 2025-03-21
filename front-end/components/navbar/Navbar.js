@@ -7,6 +7,10 @@ import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { GroupsOutlined } from '@mui/icons-material'
+import { usePathname } from 'next/navigation'
+import { useWorker } from '@/app/_Context/WorkerContext'
 
 export default function Navbar () {
   const [bool, setbool] = useState(false)
@@ -37,8 +41,12 @@ export default function Navbar () {
   const [notificationCount, setNotificationCount] = useState(0);
   const [image, setImage] = useState("/default-profile.png")
   const [Err, setError] = useState("")
+  
+  const router = usePathname();
 
   useEffect(() => {
+    
+    
       const storedData = sessionStorage.getItem("Image");
       if (storedData!="null") {
         setImage(storedData);
@@ -72,17 +80,24 @@ export default function Navbar () {
   }, []);
 
   return (
-    <nav>
+    <nav className={router == "/login" || router == "/signup" ? "disable" : ""}>
       {/* Search Bar (Right) */}
       <div className='logo'>
         <span>Lite-Facebook</span>
       </div>
 
       {/* Logo and Icons (Center) */}
-      <div className='nav-center'>
+      <div className='nav-center '>
         <div className='icons'>
-          <HomeOutlinedIcon />
-          <GroupOutlinedIcon />
+        <Link href={"/"} className={`menu-item ${router == "/" && "active"}`}>
+                <span><HomeOutlinedIcon /></span>
+        </Link> 
+        <Link href={"/users"} className={`menu-item ${router == "/users" && "active"}`}>
+                <span><GroupOutlinedIcon /></span>
+            </Link>
+            <Link href={"/groups"} className={`menu-item ${router == "/groups" && "active"}`}>
+                <span><GroupsOutlined /></span>
+            </Link>
           <div className='notification'>
             <div onClick={handleclick}>
               <NotificationsNoneOutlinedIcon />
@@ -90,7 +105,14 @@ export default function Navbar () {
             {notificationCount != 0 && <span className="count">{notificationCount}</span>}
             <div className='pop-out none'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
           </div>
-          <MailOutlinedIcon />
+
+          <Link href={"/chat"} className={`menu-item ${router == "/chat" && "active"}`} id="messages-notifications">
+                <span className='i notification'>
+                <MailOutlinedIcon />
+                    <span className="notification-count count" id='msgCount'></span>
+                </span>
+            </Link>
+          
         </div>
       </div>
       <img  src={image || "/default-profile.png"} alt='Profile' />

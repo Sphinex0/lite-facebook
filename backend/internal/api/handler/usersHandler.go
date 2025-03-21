@@ -149,3 +149,20 @@ func (Handler *Handler) HandleGetProfilePosts(w http.ResponseWriter, r *http.Req
 
 	utils.WriteJson(w, http.StatusOK, article_views)
 }
+
+func (Handler *Handler) HandleGetUsers(w http.ResponseWriter, r *http.Request) {
+	
+	_, data, err := Handler.AfterGet(w, r)
+	if err.Err != nil {
+		return
+	}
+	var users []models.UserInfo
+	users , err.Err = Handler.Service.GetAllUser(data.Before)
+	if err.Err != nil {
+		log.Println(err)
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+
+	utils.WriteJson(w, http.StatusOK, users)
+}

@@ -25,7 +25,7 @@ func main() {
 		Handler: middlewares.CORS(middlewares.AuthMiddleware(api.Routes(db), db)),
 	}
 
-	fmt.Println("http://localhost:8000/")
+	fmt.Println("http://localhost:8080/")
 	err = server.ListenAndServe()
 	if err != nil {
 		log.Println("Error in starting of server:", err)
