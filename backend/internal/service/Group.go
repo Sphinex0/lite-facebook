@@ -31,16 +31,6 @@ func (S *Service) GreatedGroup(Group *models.Group) (err error) {
 		ConversationId: conv.ID,
 	}
 	err = S.CreateMember(member)
-	if err != nil {
-		return
-	}
-	invite := models.Invite{
-		GroupID:  Group.ID,
-		Sender:   Group.Creator,
-		Receiver: Group.Creator,
-		Status:   "accepted",
-	}
-	err = S.Database.SaveInvite(&invite)
 	return
 }
 
