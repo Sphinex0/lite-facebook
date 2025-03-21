@@ -72,7 +72,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/messageshistories", handler.HandelMessagesHestories)
 
 	// notification
-	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) //get
+	http.HandleFunc("/api/GetNotification/{page}", handler.HandleGetNotification)
 
 	go func() {
 		for {

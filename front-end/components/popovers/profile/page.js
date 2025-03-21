@@ -21,9 +21,7 @@ function Profilepop() {
                 credentials: "include",
             });
 
-            if (response.status === 200) {
-                console.log("yesssss");
-                
+            if (response.status === 200) {                
                 localStorage.removeItem('user');
                 router.push('/login')
             } else {

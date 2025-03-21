@@ -1,7 +1,6 @@
 package handler
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,10 +20,15 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	id := strconv.Itoa(user.ID)
-	notifications, count, err := H.Service.GetUserNotifications(id)
+	page, err := strconv.Atoi(r.PathValue("page"))
 	if err != nil {
-		fmt.Println("err", err)
+		utils.WriteJson(w, http.StatusBadRequest, "bad request")
+		return
+	}
+
+	id := strconv.Itoa(user.ID)
+	notifications, count, err := H.Service.GetUserNotifications(id, page)
+	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}
@@ -36,7 +40,7 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 		Notifications: notifications,
 		Unseen:        count,
 	}
-	fmt.Println("response",response)
+
 	utils.WriteJson(w, http.StatusOK, response)
 }
 

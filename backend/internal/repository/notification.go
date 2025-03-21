@@ -6,15 +6,15 @@ import (
 	"social-network/internal/models"
 )
 
-func (database *Database) GetUserNotifications(userID string) ([]models.Notification, error) {
+func (database *Database) GetUserNotifications(userID string, start int) ([]models.Notification, error) {
 	rows, err := database.Db.Query(`
 	SELECT notification_id, notification_type, invoker_name, group_name, group_id, event_name 
 	FROM user_notifications
-	WHERE notified_user_id = ?;
-	`, userID)
-	if err != nil {
-		return []models.Notification{}, err
-	}	
+	WHERE notified_user_id = ?
+	LIMIT ? OFFSET ?
+`, userID, 10, start);if err != nil{
+	return []models.Notification{}, err
+} 
 
 	var notifications []models.Notification
 	for rows.Next() {
@@ -29,7 +29,6 @@ func (database *Database) GetUserNotifications(userID string) ([]models.Notifica
 		)
 		
 		if err != nil {
-			fmt.Println("err",err)
 			return []models.Notification{}, err
 		}
 		notifications = append(notifications, notification)
@@ -64,6 +63,12 @@ func (database *Database) InsertNotification(notification models.Notification) e
 func (database *Database) CountUnSeenNotifications(userID string) (int, error) {
 	var num int
 	err := database.Db.QueryRow("SELECT COUNT(*) FROM notifications WHERE user_id = ? AND seen = 0", userID).Scan(&num)
+	return num, err
+}
+
+func (database *Database) Countallusernotif(userID string) (int, error) {
+	var num int
+	err := database.Db.QueryRow("SELECT COUNT(*) FROM notifications WHERE user_id = ?", userID).Scan(&num)
 	return num, err
 }
 
