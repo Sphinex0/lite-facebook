@@ -19,7 +19,6 @@ export default async function middleware(request) {
 
   // Check authentication status
   const authCheck = await fetch("http://localhost:8080/api/checkuser", {
-    credentials: "include",
     headers: {
       Cookie: request.headers.get('Cookie') || '',
     },

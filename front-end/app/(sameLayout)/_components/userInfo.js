@@ -12,6 +12,10 @@ const UserInfo = ({ userInfo, articleInfo, group, onlineDiv, lastMessage }) => {
         userInfo = {}
     }
 
+    useEffect(() => {
+        setImageSrc(`/pics/${userInfo ? userInfo.image : (group && group.image)}`)
+    },[userInfo])
+
 
     return (
         <Link href={onlineDiv ? "" : `/profile/${userInfo.id}`}>
@@ -19,6 +23,7 @@ const UserInfo = ({ userInfo, articleInfo, group, onlineDiv, lastMessage }) => {
             <div className="user">
                 <div className="profile-wrapper">
                     <div className="profile-photo">
+                        {console.log(" imageSrc => ",imageSrc)}
                         <Image
                             src={imageSrc}
                             alt={"ess"}

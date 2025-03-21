@@ -35,10 +35,6 @@ const SideBar = () => {
                 <h3>Groups</h3>
             </Link>
 
-            <Link href={"/"} className="menu-item" id="notifications">
-                <span className='i'><Notifications /><small className="notification-count">9+</small></span>
-                <h3>Notification</h3>
-            </Link>
 
             <Link href={"/chat"} className={`menu-item ${router == "/chat" && "active"}`} id="messages-notifications">
                 <span className='i'>

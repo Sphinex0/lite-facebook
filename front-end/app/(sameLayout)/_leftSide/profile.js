@@ -6,25 +6,12 @@ import UserInfo from "../_components/userInfo";
 import { useWorker } from "@/app/_Context/WorkerContext";
 
 const Profile = () => {
-    const {user} = useWorker()
-    const [userInfo, setUserInfo] = useState(user.current)
-    useEffect(()=>{
-        setUserInfo(user.current)
-    },[user])
+    const {userRef} = useWorker()
 
     return (
         <div  className="profile">
-        {/* <div className="profile-photo">
-            <img src="/images/profile-1.jpg"/>
-        </div>
-        <div className="handle">
-            <h4>Nia Ridania</h4>
-            <p className="text-muted">
-                @niaridania
-            </p>
-        </div> */}
-        {console.log("#######", user)}
-        <UserInfo userInfo={userInfo}/>
+
+        <UserInfo userInfo={userRef.current}/>
     </div>
     )
     
