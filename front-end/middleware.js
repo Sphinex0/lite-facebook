@@ -1,59 +1,45 @@
-// import { NextResponse} from "next/server";
-
-// async function checkuservalidity(req) {
-//   const response = await fetch(`${window.location.host}/api/checkuser`,{
-//     headers: {
-//       cookie: req.headers.get("session_token") || "",
-//     },
-//   })
-
-//   return response.status == 200
-// }
-
-// export async function middleware(req) {
-//  // const authToken =  await checkuservalidity(req)
-// //console.log("sfsgdgdfgdfg");
-
-//   if (req.nextUrl.pathname === "/") {
-//     return NextResponse.redirect(new URL("/login", req.url));
-//   }
-
-// }
-/*
-export const config = {
-  matcher: ["/"],
-};
-*/
-
-import { NextResponse } from 'next/server';
-
-const redirect = true
+import { NextResponse } from "next/server";
 
 export default async function middleware(request) {
   const publicRoutes = ["/login", "/signup"];
   const { pathname } = request.nextUrl;
 
-  // // Check authentication status
-  // const authCheck = await fetch("http://localhost:8080/api/checkauth", {
-  //   credentials: "include",
-  // });
+  // Exclude static files and API routes
+  const excludePaths = [
+    '/_next/static',
+    '/_next/image',
+    '/favicon.ico',
+    '/api/',
+    '/public/'
+  ];
+
+  if (excludePaths.some(path => pathname.startsWith(path))) {
+    return NextResponse.next();
+  }
+
+  // Check authentication status
+  const authCheck = await fetch("http://localhost:8080/api/checkuser", {
+    credentials: "include",
+    headers: {
+      Cookie: request.headers.get('Cookie') || '',
+    },
+  });
   
-  // const isAuthenticated = authCheck.status === 200;
+  const isAuthenticated = authCheck.status === 200;
+  console.log(isAuthenticated)
 
-  // // Handle public routes
-  // console.log("pathname", pathname);
-  // if (publicRoutes.includes(pathname)) {
-  //   // Redirect authenticated users away from public routes
-  //   if (isAuthenticated) {
-  //     return NextResponse.redirect(new URL("/", request.url));
-  //   }
-  //   return NextResponse.next();
-  // }
+  // Handle public routes
+  if (publicRoutes.includes(pathname)) {
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
+    return NextResponse.next();
+  }
 
-  // // Protect private routes
-  // if (!isAuthenticated) {
-  //   return NextResponse.redirect(new URL("/login", request.url));
-  // }
+  // Protect private routes
+  if (!isAuthenticated) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
 
   return NextResponse.next();
 }

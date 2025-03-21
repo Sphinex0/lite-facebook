@@ -7,9 +7,9 @@ import { useWorker } from "@/app/_Context/WorkerContext";
 
 const Profile = () => {
     const {user} = useWorker()
-    const [userInfo, setUserInfo] = useState(user)
+    const [userInfo, setUserInfo] = useState(user.current)
     useEffect(()=>{
-        setUserInfo(user)
+        setUserInfo(user.current)
     },[user])
 
     return (
