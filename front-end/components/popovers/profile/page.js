@@ -25,8 +25,7 @@ function Profilepop() {
                 console.log("yesssss");
                 
                 localStorage.removeItem('user');
-                // Try using window.location.href for redirection
-                window.location.href = '/login';
+                router.push('/login')
             } else {
                 setErr("Error while logging out.");
             }
