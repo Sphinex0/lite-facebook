@@ -30,22 +30,29 @@ import { NextResponse } from 'next/server';
 const redirect = true
 
 export default async function middleware(request) {
-  const allowed = ["/login", "/signup"];
-  const res = await fetch("http://localhost:8080/api/checkuser", {
+  const publicRoutes = ["/login", "/signup"];
+  const { pathname } = request.nextUrl;
+
+  // Check authentication status
+  const authCheck = await fetch("http://localhost:8080/api/checkauth", {
     credentials: "include",
-  })
-  // if (res.status == 200) {
-  //   // console.log("res", res)
-  //   return NextResponse.next();
-  // }
-  // // console.log("res", res)
-  // // if (user) {
-  // // return NextResponse.next();
-  // // }
-  // console.log(res.status)
-  // if (res.status == 401 && !allowed.includes(request.nextUrl.pathname)) {
-  //   return NextResponse.redirect('http://localhost:3000/login');
-  // }
-  // const response = NextResponse.redirect('/login');
+  });
+  
+  const isAuthenticated = authCheck.status === 200;
+
+  // Handle public routes
+  if (publicRoutes.includes(pathname)) {
+    // Redirect authenticated users away from public routes
+    if (isAuthenticated) {
+      return NextResponse.redirect(new URL("/", request.url));
+    }
     return NextResponse.next();
+  }
+
+  // Protect private routes
+  if (!isAuthenticated) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
 }
