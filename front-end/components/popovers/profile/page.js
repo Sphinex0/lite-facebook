@@ -3,11 +3,8 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import './profile.css';
-<<<<<<< HEAD
 import { FetchApi } from '@/app/helpers';
-=======
 import { useWorker } from '@/app/_Context/WorkerContext';
->>>>>>> houtaib
 
 function Profilepop() {
     const [err, setErr] = useState('');
