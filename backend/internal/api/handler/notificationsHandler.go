@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -46,9 +47,12 @@ func (H *Handler) HandleGetNotification(w http.ResponseWriter, r *http.Request) 
 
 func (H *Handler) HandleDeleteNotification(w http.ResponseWriter, r *http.Request) {
 	// get the notification id from body
-	var ntfID int
-	err := utils.ParseBody(r, ntfID)
+	var ntfID struct {
+		ID int `json:"id"`
+	}
+	err := utils.ParseBody(r, &ntfID)
 	if err != nil {
+		fmt.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}
@@ -59,7 +63,7 @@ func (H *Handler) HandleDeleteNotification(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	err = H.Service.Deletentfc(ntfID, user.ID)
+	err = H.Service.Deletentfc(ntfID.ID, user.ID)
 	if err != nil {
 		utils.WriteJson(w, http.StatusUnauthorized, "unothorized")
 		return

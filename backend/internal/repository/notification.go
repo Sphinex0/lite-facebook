@@ -8,7 +8,7 @@ import (
 
 func (database *Database) GetUserNotifications(userID string, start int) ([]models.Notification, error) {
 	rows, err := database.Db.Query(`
-	SELECT notification_id, notification_type, invoker_name, group_name, group_id, event_name 
+	SELECT notification_id, notified_user_id, notification_type, invoker_name, invoker_id, group_name, group_id, event_name 
 	FROM user_notifications
 	WHERE notified_user_id = ?
 	LIMIT ? OFFSET ?
@@ -21,8 +21,10 @@ func (database *Database) GetUserNotifications(userID string, start int) ([]mode
 		var notification models.Notification
 		err := rows.Scan(
 			&notification.ID,
+			&notification.UserID,
 			&notification.Type,
 			&notification.InvokerName,
+			&notification.InvokerID,
 			&notification.GroupTitle,
 			&notification.EventID,
 			&notification.EventName,
@@ -52,12 +54,29 @@ func (database *Database) CheckIfEventExists(EventId int) bool {
 }
 
 func (database *Database) InsertNotification(notification models.Notification) error {
-	_, err := database.Db.Exec("INSERT INTO notifications user_id, type, invoker_id, group_id, event_id",
-		notification.UserID, notification.Type, notification.InvokerID, notification.GroupID, notification.EventID)
-	if err != nil {
-		return err
-	}
-	return nil
+
+    // Helper function to handle nullable integer values
+    toNullInt := func(value int) interface{} {
+        if value == 0 {
+            return nil
+        }
+        return value
+    }
+
+    _, err := database.Db.Exec("INSERT INTO notifications (user_id, type, invoker_id, group_id, event_id) VALUES (?,?,?,?,?)",
+        notification.UserID,
+        notification.Type,
+        toNullInt(notification.InvokerID),
+        toNullInt(notification.GroupID),
+        toNullInt(notification.EventID),
+    )
+
+    fmt.Println(notification.UserID, notification.Type, notification.InvokerID, notification.GroupID, notification.EventID)
+
+    if err != nil {
+        return err
+    }
+    return nil
 }
 
 func (database *Database) CountUnSeenNotifications(userID string) (int, error) {

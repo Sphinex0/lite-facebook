@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 
 	"social-network/internal/models"
@@ -76,9 +77,10 @@ func (s *Service) AddNotification(notification models.Notification) error {
 	default:
 		return errors.New("invalide type")
 	}
-
+	fmt.Print("here")
 	err := s.Database.InsertNotification(notification)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 

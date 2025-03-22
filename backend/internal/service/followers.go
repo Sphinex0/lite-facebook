@@ -15,6 +15,9 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		return
 	}
 
+
+	var notification models.Notification
+
 	err = S.Database.GetFollow(follow)
 
 	if err == nil {
@@ -35,8 +38,10 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		}
 		if status == "public" {
 			follow.Status = "accepted"
+			notification.Type = "follow"
 		} else {
 			follow.Status = "pending"
+			notification.Type = "follow-request"
 		}
 
 		err = S.Database.SaveFollow(follow)
@@ -75,10 +80,10 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 				}
 			}
 		}
-		var notification models.Notification
 		notification.InvokerID = follow.Follower
 		notification.UserID = follow.UserID
-		notification.Type = "follow-request"
+		
+		fmt.Println("rrrr")
 		S.AddNotification(notification)
 
 	}
