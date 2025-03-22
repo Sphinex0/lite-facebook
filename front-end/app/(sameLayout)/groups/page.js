@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { Add, DisabledByDefault, TurnSharpLeft } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { FetchApi } from '@/app/helpers';
-import { Add, DisabledByDefault } from '@mui/icons-material';
 let type = "groups"
 
 const Groups = () => {
