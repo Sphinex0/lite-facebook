@@ -15,7 +15,6 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		return
 	}
 
-
 	var notification models.Notification
 
 	err = S.Database.GetFollow(follow)
@@ -24,7 +23,10 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		err = S.Database.DeleteFollow(follow)
 		if err != nil {
 			log.Println("error deleting the follow")
-
+			return
+		}
+		err = S.DeleteConversation(follow.UserID, follow.Follower)
+		if err != nil {
 			return
 		}
 	} else if err == sql.ErrNoRows {
@@ -82,7 +84,7 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		}
 		notification.InvokerID = follow.Follower
 		notification.UserID = follow.UserID
-		
+
 		fmt.Println("rrrr")
 		S.AddNotification(notification)
 

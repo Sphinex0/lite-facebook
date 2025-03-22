@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import './profile.css';
+import { FetchApi } from '@/app/helpers';
 
 function Profilepop() {
     const [err, setErr] = useState('');
@@ -16,9 +17,8 @@ function Profilepop() {
 
     const handleLogout = async () => {
         try {
-            const response = await fetch("/api/logout", {
+            const response = await FetchApi("/api/logout",router, {
                 method: "POST",
-                credentials: "include",
             });
 
             if (response.status === 200) {                

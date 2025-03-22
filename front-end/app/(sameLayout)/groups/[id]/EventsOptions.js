@@ -1,19 +1,21 @@
 'use client'
+import { FetchApi } from "@/app/helpers";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 
 const EventsOptions = ({ event_id }) => {
     const [going, setGoing] = useState(0);
     const [notgoing, setNotGoing] = useState(0);
+    const redirect = useRouter()
     const handelcount = async (going) => {
       
         try {
-            const response = await fetch("http://localhost:8080/api/Event/options/store", {
+            const response = await FetchApi("/api/Event/options/store",redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: "include",
                 body: JSON.stringify({ event_id, going: going })
             });
             if (response.ok) {
@@ -33,12 +35,11 @@ const EventsOptions = ({ event_id }) => {
 
     const fetchEventsOptions = async (going) => {
         try {
-            const response = await fetch("http://localhost:8080/api/Event/options/choise", {
+            const response = await FetchApi("http://localhost:8080/api/Event/options/choise",redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: "include",
                 body: JSON.stringify({ event_id, going: going })
             });
          
