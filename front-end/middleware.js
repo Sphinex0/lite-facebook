@@ -25,7 +25,6 @@ export default async function middleware(request) {
   });
   
   const isAuthenticated = authCheck.status === 200;
-  console.log(isAuthenticated)
 
   // Handle public routes
   if (publicRoutes.includes(pathname)) {

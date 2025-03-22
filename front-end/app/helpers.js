@@ -75,7 +75,6 @@ export const likeArticle = async (like, article_id, setLikes, setDislikes, likeS
 
     console.log("status:", response.status)
     if (response.ok) {
-      console.log("liked or dislike")
       if (like == 1 && likeState == 1) {
         setLikes((prv) => prv - 1)
         setLikeState(0)
@@ -164,7 +163,6 @@ export const useOnVisible = (ref, callback, once = true, threshold = 0.1) => {
   const observerRef = useRef(null);
 
   useEffect(() => {
-    console.log("heress", ref)
     if (!ref.current) return;
 
     const observer = new IntersectionObserver(
@@ -241,9 +239,6 @@ export const FetchApi = async (path, redirect, { method, body, signal, headers }
       return false
     } else if (response.status == 500) {
       redirect.push("/500")
-      return false
-    } else if (response.status == 400) {
-      redirect.push("/400")
       return false
     }
     return response

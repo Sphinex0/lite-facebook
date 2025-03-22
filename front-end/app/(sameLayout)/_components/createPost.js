@@ -1,15 +1,17 @@
 'use client'
+import { useWorker } from '@/app/_Context/WorkerContext'
 import React, { useEffect } from 'react'
 
 const CreatePost = ({ setModalDisplay }) => {
   const show = () => {
     setModalDisplay(true)
   }
+  const {userRef} = useWorker()
 
   return (
     <div className="create-post" onClick={show}>
       <div className="profile-photo">
-        <img src="./images/profile-1.jpg" />
+        {userRef.current && <img src={`/pics/${userRef.current.image}`} />}
       </div>
       <div id="create-post" >What's on your mind, Diana ?</div>
     </div>

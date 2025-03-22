@@ -31,7 +31,6 @@ const Members = ({ groupID }) => {
             if (response.ok) {
                 const membersData = await response.json()
                 if (membersData) {
-                    console.log(membersData)
                     setMembers((prv) => [...prv, ...membersData])
 
                     //before.current = membersData[membersData.length-1].article.created_at

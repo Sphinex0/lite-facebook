@@ -9,6 +9,8 @@ import Events from "./Events";
 import { useRouter } from 'next/navigation';
 import { red } from '@mui/material/colors';
 import { FetchApi } from '@/app/helpers';
+import Popover from '../_components/popover';
+
 export default function ShowGroup({ params }) {
   const id = use(params).id;
 
@@ -22,6 +24,8 @@ export default function ShowGroup({ params }) {
 
   const redirect = useRouter()
   console.log(JSON.stringify({ id: parseInt(id) }))
+  const [popover, setPopover] = useState(false)
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -64,7 +68,7 @@ export default function ShowGroup({ params }) {
       <div className={styles.profileHeader}>
         <div className={styles.basicInfo}>
           <div className={styles.p10}>
-            <img className={styles.image}></img>
+            <img className={styles.image} ></img>
           </div>
           <div className={styles.g2}>
 
@@ -74,16 +78,32 @@ export default function ShowGroup({ params }) {
           </div>
           <div className={`${styles.g1} ${styles.btnSection}`}>
             {isAllowed
-              ? <button className={styles.editProfileBtn}
+            
+              ?<div> 
+              <button className={styles.editProfileBtn}
                 onClick={() => {
-                  leaveGroup(id)
+                  setPopover((prev)=>!prev)
                 }}
-              >send Invite</button>
+              >send Invite
 
+              </button>
+              {popover && 
+              <Popover/>
+              //  <div className={"customize-theme"} onClick={(e)=>{
+              //   if (e.target.classList.contains('customize-theme')) {
+              //     setPopover(false)
+              //   }
+              //  }}>
+
+              //    <div className='card'></div>
+              //  </div>
+              }
+             
+              </div>
 
               : <button className={styles.editProfileBtn}
                 onClick={() => {
-                  joinGroup(id, groupData.group_info.creator, setIsAction, isAction, redirect)
+                  joinGroup(id, groupData.group_info.creator, setIsAction, isAction)
                 }}
               >{isAction}</button>
             }
