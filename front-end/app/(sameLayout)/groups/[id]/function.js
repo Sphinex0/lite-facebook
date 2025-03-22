@@ -3,7 +3,7 @@
 import { FetchApi } from "@/app/helpers";
 
 async function JoinGroup(id,creator,setIsAction,isAction,redirect) {
-    console.log(id);
+    console.log("group_id",id);
     console.log(creator);
 
 

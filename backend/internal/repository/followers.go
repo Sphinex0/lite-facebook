@@ -318,6 +318,7 @@ func (data *Database) GetGroupInvitables(currentUser int, before int, group_id i
         }
         users = append(users, user)
     }
+	
     err = rows.Err()
 
     return

@@ -17,7 +17,7 @@ const Popover = ({group_id}) => {
             const response = await fetch("http://localhost:8080/api/group/invitelist", {
                 method: "POST",
                 credentials: "include",
-                body: JSON.stringify({ before: before.current , group_id}),
+                body: JSON.stringify({ before_id: before.current , group_id}),
                 signal
             })
 
@@ -53,7 +53,7 @@ const Popover = ({group_id}) => {
                             <UserInfo redirect={false} userInfo={userInfo} key={userInfo.id} />
                             </label>                     
                             <button className={styles.addMember} onClick={()=>{
-                        JoinGroup(id, groupData.group_info.creator, setIsAction, isAction)
+                        JoinGroup(group_id, userInfo.id)
       
                       }}><Add/></button>
                       </div>
@@ -63,7 +63,7 @@ const Popover = ({group_id}) => {
                         <UserInfo redirect={false} userInfo={userInfo} key={userInfo.id} />
                     </label> 
                     <button className={styles.addMember} onClick={()=>{
-                  JoinGroup(id, groupData.group_info.creator, setIsAction, isAction)
+                  JoinGroup(group_id, userInfo.id)
                 }}><Add/></button></div>
             })}
         </div>

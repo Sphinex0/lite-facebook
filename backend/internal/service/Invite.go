@@ -24,21 +24,29 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 			}
 			err = service.Database.SaveInvite(&Invites)
 		}
-	}else {
+	} else {
 		resA := service.Database.IsFollow(Invites.Sender, Invites.Receiver)
 		resB := service.Database.IsFollow(Invites.Receiver, Invites.Sender)
 		if resA && resB {
-			err= service.Database.SaveInvite(&Invites)
-			return
+			Invites.Status = "pending"
+			id := 0
+			id, err = service.Database.Saveinvite(&Invites)
+			if err != nil {
+				return fmt.Errorf("bad request")
+			}
+			if id == 0 {
+				if Invites.Sender == Invites.Receiver {
+					return fmt.Errorf("bad request")
+				}
+				err = service.Database.SaveInvite(&Invites)
+			}
 		} else {
 			return fmt.Errorf("not follow")
 		}
 	}
-	
+
 	return
 }
-
-
 
 func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 	if Invites.Status == "accepted" {
@@ -97,7 +105,6 @@ func (S *Service) AllInvites(id int) ([]models.Invite, error) {
 	return Invites, nil
 }
 
-
 func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	rows, err := S.Database.Getallmembers(id)
 	if err != nil {
@@ -109,7 +116,7 @@ func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	for rows.Next() {
 		var Invite models.Invite
 		if err := rows.Scan(utils.GetScanFields(&Invite)...); err != nil {
-			fmt.Println("ttttttt",err)
+			fmt.Println("ttttttt", err)
 			return nil, err
 		}
 		Invites = append(Invites, Invite)
@@ -121,26 +128,24 @@ func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 func (S *Service) Members(Invite []models.Invite) ([]models.User, error) {
 	var members []models.User
 	for _, m := range Invite {
-		fmt.Println("m.Receiver",m.Receiver)
+		fmt.Println("m.Receiver", m.Receiver)
 		row1, err := S.Database.GetUsers(m.Receiver)
 		if err != nil {
-			fmt.Println("fffffffffffff",err)
+			fmt.Println("fffffffffffff", err)
 			return nil, fmt.Errorf("error getting receiver user with ID %d: %w", m.Receiver, err)
 		}
-		if !slices.Contains(members, row1){
+		if !slices.Contains(members, row1) {
 			members = append(members, row1)
 		}
-		
 
 		row2, err := S.Database.GetUsers(m.Sender)
 		if err != nil {
-			fmt.Println("hhhhhhhhhhhhhhhhhhh",err)
+			fmt.Println("hhhhhhhhhhhhhhhhhhh", err)
 			return nil, fmt.Errorf("error getting sender user with ID %d: %w", m.Sender, err)
 		}
-		if !slices.Contains(members, row2){
+		if !slices.Contains(members, row2) {
 			members = append(members, row2)
 		}
 	}
 	return members, nil
 }
-

@@ -23,12 +23,15 @@ func (Handler *Handler) AddInvite(w http.ResponseWriter, r *http.Request) {
 	var Invite models.Invite
 	err := utils.ParseBody(r, &Invite)
 	Invite.Sender = user.ID
-
+	fmt.Println(Invite.GroupID)
+	fmt.Println(Invite.Receiver)
 	if err != nil || Invite.Receiver == 0 || Invite.GroupID == 0 || Invite.Sender == Invite.Receiver {
+		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 	if err := Handler.Service.CreateInvite(Invite); err != nil {
+		fmt.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}

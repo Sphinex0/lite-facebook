@@ -153,11 +153,12 @@ func (Handler *Handler) HandleGetGroupInvitable(w http.ResponseWriter, r *http.R
 		return
 	}
 
-	users, err := Handler.Service.GetGroupInvitables(data.Before, user.ID, data.GroupID)
+	users, err := Handler.Service.GetGroupInvitables(data.BeforeID, user.ID, data.GroupID)
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
+	log.Println("users are :", data.GroupID, data.BeforeID)
 	utils.WriteJson(w, http.StatusOK, users)
 }

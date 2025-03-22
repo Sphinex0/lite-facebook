@@ -88,7 +88,7 @@ export default function ShowGroup({ params }) {
 
               </button>
               {popover && 
-              <Popover/>
+              <Popover group_id={groupData.group_info.id}/>
               //  <div className={"customize-theme"} onClick={(e)=>{
               //   if (e.target.classList.contains('customize-theme')) {
               //     setPopover(false)

@@ -18,7 +18,7 @@ const UserInfo = ({redirect, userInfo, articleInfo, group, onlineDiv, lastMessag
 
 
     return (
-        <Link href={onlineDiv && !redirect ? "" : `/profile/${userInfo.id}`}>
+        <Link href={onlineDiv || !redirect ? "" : `/profile/${userInfo.id}`}>
             <div className="user">
                 <div className="profile-wrapper">
                     <div className="profile-photo">
