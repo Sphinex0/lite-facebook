@@ -1,8 +1,9 @@
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
-import './notification.css';
 import { FetchApi } from '@/app/helpers';
 import { useRouter } from 'next/navigation';
+
+import "./notification.css"
 
 const Notifications = ({ notifications = [], Err }) => {
 
