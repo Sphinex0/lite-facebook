@@ -62,16 +62,17 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		article.Privacy = "public"
 	} else if GroupID != 0 {
 		/// select
-		// err := Handler.Service.VerifyGroup(GroupID, user.ID)
-		// if err.Err != nil {
-		// 	utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
-		// 	return
-		// }
-		_, err := Handler.Service.CheckMember(GroupID, user.ID)
-		if err != nil {
+		err := Handler.Service.VerifyGroup(GroupID, user.ID)
+		if err.Err != nil {
 			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 			return
 		}
+		// _, err := Handler.Service.CheckMember(GroupID, user.ID)
+		// if err != nil {
+		// 	fmt.Println("grouggggp")
+		// 	utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		// 	return
+		// }
 		article.GroupID = &GroupID
 		article.Privacy = "public"
 

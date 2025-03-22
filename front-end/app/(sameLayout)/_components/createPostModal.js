@@ -19,7 +19,7 @@ const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
   }
 
   const addPost = async (e) => {
-    const added = await addArticle(e, setPosts, {},redirect)
+    const added = await addArticle(e, setPosts, {group},redirect)
     if (added) {
       setModalDisplay(false)
       setContent("")
