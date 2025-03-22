@@ -3,7 +3,8 @@ import styles from "./popover.module.css"
 import UserInfo from '../../_components/userInfo'
 import { Add } from '@mui/icons-material'
 import JoinGroup from '../[id]/function'
-import { useOnVisible } from '@/app/helpers'
+import { FetchApi, useOnVisible } from '@/app/helpers'
+import { useRouter } from 'next/navigation'
 
 
 
@@ -11,12 +12,12 @@ const Popover = ({group_id}) => {
     const [followers, setFollowers] = useState([])
     const before = useRef(0)
     const lastElementRef = useRef(null)
+    const redirect = useRouter()
 
     const fetchFollowers = async (signal) => {
         try {
-            const response = await fetch("http://localhost:8080/api/group/invitelist", {
+            const response = await FetchApi("/api/group/invitelist",redirect, {
                 method: "POST",
-                credentials: "include",
                 body: JSON.stringify({ before_id: before.current , group_id}),
                 signal
             })

@@ -131,14 +131,17 @@ func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
 
 
 func (Handler *Handler) GetEventchoise(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("GetEventchoise")
 	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
 
 
-
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
 
 	var EventOption models.EventOption
 	err := utils.ParseBody(r, &EventOption)
@@ -146,12 +149,21 @@ func (Handler *Handler) GetEventchoise(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	fmt.Println("EventOption",EventOption)
-	Event, err := Handler.Service.GetEventgoing(EventOption)
+	Event, action,err := Handler.Service.GetEventgoing(EventOption ,user.ID)	
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	
 	}
+	fmt.Println("Event",Event)
+	fmt.Println("action",action)
+	response := struct {
+		Event  interface{} `json:"event"`
+		Action interface{} `json:"action"`
+	}{
+		Event:  Event,
+		Action: action,
+	}
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(Event)
+	json.NewEncoder(w).Encode(response)
 }

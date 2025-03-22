@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Add, DisabledByDefault, TurnSharpLeft } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
 import { FetchApi } from '@/app/helpers';
+import { Add, DisabledByDefault } from '@mui/icons-material';
 let type = "groups"
 
 const Groups = () => {
@@ -19,6 +20,11 @@ const Groups = () => {
   const [image, setImage] = useState('');
   const redirect = useRouter()
 
+  const handleImage =(e)=>{
+    setImage(e.target.files[0])
+  
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -30,7 +36,8 @@ const Groups = () => {
     setTitle("")
     setDescription("")
     setImage(null)
-
+    console.log(formDataToSend);
+    
 
     try {
       const response = await FetchApi(`/api/groups/store`, redirect , {
@@ -151,13 +158,13 @@ const Groups = () => {
         <div onClick={() => { SeeClick() }}>
           <DisabledByDefault />
         </div>
-        <form method='POST' aria-multiselectable onSubmit={handleSubmit}>
+        <form method='POST' onSubmit={handleSubmit}>
           <label htmlFor='title' >title</label>
           <input type='text' className='title' id='title'   value={title} onChange={(e) => setTitle(e.target.value)} />
           <label htmlFor='descriptopn'>descriptopn</label>
           <input type='text' className='descriptopn' id='descriptopn' value={description}  onChange={(e) => setDescription(e.target.value)} />
           <label htmlFor='image'>image</label>
-          <input type='file' className='image' id='image' value={image} onChange={(e) => setImage(e.target.value)} />
+          <input type='file' className='image' id='image'  onChange={handleImage} />
           <button className='button' type='onSubmit'> Submit </button>
         </form>
       </div>
