@@ -1,6 +1,5 @@
+all done
 // check if the follow or the invite request is already checked
 // delete the notification when the user either accepts or refuses
 // date is requirement && check if it is over the 2025
-
-
 // add homelink in the logo

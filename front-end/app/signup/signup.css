@@ -122,3 +122,21 @@
     }
   }
   
+/* login Link Section */
+.login-link {
+  text-align: center;
+  margin-top: 0; /* Remove top margin */
+}
+
+.login-link p {
+  font-size: 14px;
+}
+
+.login-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.login-link a:hover {
+  text-decoration: underline;
+}

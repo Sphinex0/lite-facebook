@@ -1,7 +1,8 @@
 'use client'
 
-import { useState , useEffect} from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import './signup.css'
 
 export default function SignupPage () {
@@ -16,7 +17,7 @@ export default function SignupPage () {
     aboutMe: ''
   })
 
-  const [error, seterror] = useState("")
+  const [error, seterror] = useState('')
 
   const router = useRouter()
 
@@ -38,24 +39,24 @@ export default function SignupPage () {
     try {
       const response = await fetch('http://localhost:8080/api/signup', {
         method: 'POST',
-        body: data,// Send form data as a JSON string
-        credentials:"include"
+        body: data, // Send form data as a JSON string
+        credentials: 'include'
       })
 
       if (response.status == 200) {
         // If the response is ok, navigate to the homepage
         const data = await response.json()
-        console.log(data,"daaaata signup");
+        console.log(data, 'daaaata signup')
         localStorage.setItem('user', JSON.stringify(data))
         router.push('/')
       } else {
         const data = await response.json()
-        console.log(data,"eroooooor signup");
-                
+        console.log(data, 'eroooooor signup')
+
         seterror(data)
       }
     } catch (error) {
-      console.log(data);
+      console.log(data)
 
       seterror(data)
     }
@@ -63,10 +64,10 @@ export default function SignupPage () {
 
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => seterror(""), 3000);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => seterror(''), 3000)
+      return () => clearTimeout(timer)
     }
-  }, [error]);
+  }, [error])
 
   return (
     <form onSubmit={handleSignup}>
@@ -126,8 +127,13 @@ export default function SignupPage () {
           <button type='submit' className='submit-btn'>
             Sign Up
           </button>
-        </div>
+        <div className='login-link'>
+          <p>
+            Don't have an account? <Link href='/login'>Login in here</Link>
+          </p>
       </div>
+        </div>
+        </div>
     </form>
   )
 }

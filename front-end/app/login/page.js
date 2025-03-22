@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link' // Import Link from next/link
+import Link from 'next/link' 
 import './login.css'
 
 export default function Login () {
@@ -69,13 +69,11 @@ export default function Login () {
             />
           </div>
 
-          {/* Submit Button */}
           <button type='submit' className='submit-btn'>
             Login
           </button>
         </form>
 
-        {/* Redirect to Signup if no account */}
         <div className="signup-link">
           <p>Don't have an account? <Link href="/signup">Sign up here</Link></p>
         </div>
