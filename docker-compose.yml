@@ -1,0 +1,22 @@
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    volumes:
+      - db_data:/app/data
+      - static_data:/app/static
+    environment:
+      - DB_PATH=/app/data/database.db
+
+  frontend:
+    build: ./front-end
+    ports:
+      - "3000:3000"
+    environment:
+      - API_URL=http://backend:8080
+
+volumes:
+  db_data:
+  static_data:

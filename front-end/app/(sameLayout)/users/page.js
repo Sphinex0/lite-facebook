@@ -26,7 +26,6 @@ const Page = () => {
                 if (usersData) {
                     setUsers((prv) => [...prv, ...usersData])
                     before.current = usersData[usersData.length-1].id
-                    console.log("last created at", usersData[usersData.length-1].id)
                 }
             }
 

@@ -26,9 +26,7 @@ const Groups = () => {
     formDataToSend.append('Title', title);
     formDataToSend.append('Description', description);
     formDataToSend.append('image', image);
-
-    console.log(formDataToSend);
-
+    type
     setTitle("")
     setDescription("")
     setImage(null)
@@ -121,7 +119,7 @@ const Groups = () => {
   };
 
   useEffect(() => {
-    handleLinkClick(type)
+    handleLinkClick("groups")
   }, [])
 
   return (

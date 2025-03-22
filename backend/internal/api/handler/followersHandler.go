@@ -146,3 +146,18 @@ func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Reque
 	}
 	utils.WriteJson(w, http.StatusOK, followings)
 }
+
+func (Handler *Handler) HandleGetGroupInvitable(w http.ResponseWriter, r *http.Request) {
+	user, data, err1 := Handler.AfterGet(w, r)
+	if err1.Err != nil {
+		return
+	}
+
+	users, err := Handler.Service.GetGroupInvitables(data.Before, user.ID, data.GroupID)
+	if err != nil {
+		log.Println(err)
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, users)
+}

@@ -18,9 +18,9 @@ async function JoinGroup(id,creator,setIsAction,isAction,redirect) {
         });
 
         if (response.ok) {
-            if (isAction==="pending"){
+            if (isAction === "pending") {
                 setIsAction("join")
-            }else if (isAction==="join"){
+            } else if (isAction === "join") {
                 setIsAction("pending")
             }
             console.log('Group joined successfully');

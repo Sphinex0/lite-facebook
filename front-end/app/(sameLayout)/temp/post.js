@@ -18,7 +18,6 @@ export default function Post({ postInfo }) {
 
             console.log("status:", response.status)
             if (response.ok) {
-                console.log("liked or dislike")
                 if (like == 1 && likeState == 1) {
                     setLikes(likes - 1)
                     setLikeState(0)
