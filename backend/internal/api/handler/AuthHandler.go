@@ -75,15 +75,22 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		utils.WriteJson(w, http.StatusMethodNotAllowed, "Method not allowed")
+		return
+	}
+
 	_, uuid, ok := utils.GetUserFromContext(r.Context())
 	if !ok {
-		utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
+		utils.WriteJson(w, http.StatusUnauthorized, "User not found")
 		return
 	}
+
 	err := H.Service.DeleteSessionCookie(w, uuid)
 	if err != nil {
-		utils.WriteJson(w, http.StatusOK, err.Error())
+		utils.WriteJson(w, http.StatusInternalServerError, "Error logging out: "+err.Error())
 		return
 	}
-	utils.WriteJson(w, http.StatusOK, "You Logged Out Successfuly!")
+
+	utils.WriteJson(w, http.StatusOK, "You logged out successfully!")
 }

@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import styles from "./login.module.css"
 import { FetchApi } from '../helpers'
+import Link from 'next/link' 
 
 export default function Login () {
   const [email, setEmail] = useState('')
@@ -30,7 +31,7 @@ export default function Login () {
         seterror(data)
       }
     } catch (error) {
-      seterror(data)
+      seterror(error)
     }
   }
 
@@ -73,6 +74,10 @@ export default function Login () {
             Login
           </button>
         </form>
+
+        <div className="signup-link">
+          <p>Don't have an account? <Link href="/signup">Sign up here</Link></p>
+        </div>
       </div>
     </div>
   )

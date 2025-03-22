@@ -1,7 +1,7 @@
 'use client'
 import './navbar.css'
 import NotificationPop from '@/components/popovers/Notificationpopover/page'
-import SearchOutlinedIcon from '@mui/icons-material/SearchOutlined'
+import Profilepop from  '@/components/popovers/profile/page'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
@@ -11,7 +11,7 @@ import Link from 'next/link'
 import { GroupsOutlined } from '@mui/icons-material'
 import { usePathname } from 'next/navigation'
 import { useWorker } from '@/app/_Context/WorkerContext'
-
+/*
 export default function Navbar () {
   const [bool, setbool] = useState(false)
   function handleclick () {
@@ -37,36 +37,44 @@ export default function Navbar () {
       group: 'knowledge',
       invoker: 'mustafa'
     },
-  ]);
+  ]*/
+export default function Navbar () {
+  const [bool, setbool] = useState(false)
+  const [profile, setprofile] = useState(false)
+  function handleclick () {
+    setbool(!bool)
+  }
+  function handleProfileclick () {
+    setprofile(!profile)
+  }
+  const [notifications, setNotifications] = useState();
   const [notificationCount, setNotificationCount] = useState(0);
-  const [image, setImage] = useState("/default-profile.png")
   const [Err, setError] = useState("")
-  
+   const [user, setUser] = useState({});
+   
   const router = usePathname();
 
-  useEffect(() => {
+     useEffect(() => {
+           
     
-    
-      const storedData = sessionStorage.getItem("Image");
-      if (storedData!="null") {
-        setImage(storedData);
-      }
-
-   /* const fetchNotifications = async () => {
+      const storedUser = JSON.parse(localStorage.getItem('user')) || {};
+             setUser(storedUser);
+ 
+    const fetchNotifications = async () => {
       try {
-       
-        const response = await fetch("http://localhost:8080/api/GetNotification",{
-          method: 'GET',
+        const response = await fetch("http://localhost:8080/api/GetNotification/?page=1",{
+          method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
           credentials: 'include', 
         });
 
-        if (response.ok) {
-          const data = await response.json();
+        if (response.status == 200) {
+          const data = await response.json();          
           setNotifications(data.notifications);
-          setNotificationCount(data.count); 
+          setNotificationCount(data.unseen); 
+          
         } else {
           setError("error while fetching notifications");
         }
@@ -76,14 +84,16 @@ export default function Navbar () {
       }
     };
 
-    fetchNotifications();*/
+    fetchNotifications();
   }, []);
 
   return (
     <nav className={router == "/login" || router == "/signup" ? "disable" : ""}>
       {/* Search Bar (Right) */}
       <div className='logo'>
+        <Link href={'/'}>
         <span>Lite-Facebook</span>
+        </Link>
       </div>
 
       {/* Logo and Icons (Center) */}
@@ -103,7 +113,8 @@ export default function Navbar () {
               <NotificationsNoneOutlinedIcon />
             </div>
             {notificationCount != 0 && <span className="count">{notificationCount}</span>}
-            <div className='pop-out none'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
+            <div className='pop-out'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
+          
           </div>
 
           <Link href={"/chat"} className={`menu-item ${router == "/chat" && "active"}`} id="messages-notifications">
@@ -115,7 +126,12 @@ export default function Navbar () {
           
         </div>
       </div>
-      <img  src={image || "/default-profile.png"} alt='Profile' />
+      <div className='notification'>
+      <div onClick={handleProfileclick}>
+      <img src={user.image || "/default-profile.png"} alt='Profile' />
+      </div>
+      <div className='pop-out'>{profile && <Profilepop/>}</div>
+      </div>
     </nav>
   )
 }

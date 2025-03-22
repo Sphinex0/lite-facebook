@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import styles from "./signup.module.css"
 import { FetchApi } from '../helpers'
 
@@ -18,7 +19,7 @@ export default function SignupPage() {
   })
   const redirect = useRouter()
 
-  const [error, seterror] = useState("")
+  const [error, seterror] = useState('')
 
   const router = useRouter()
 
@@ -46,17 +47,19 @@ export default function SignupPage() {
       if (response.status == 200) {
         // If the response is ok, navigate to the homepage
         const data = await response.json()
-        console.log(data);
+        console.log(data, 'daaaata signup')
         localStorage.setItem('user', JSON.stringify(data))
         router.push('/')
       } else {
         const data = await response.json()
+        console.log(data, 'eroooooor signup')
+
         console.log(data);
 
         seterror(data)
       }
     } catch (error) {
-      console.log(data);
+      console.log(data)
 
       seterror(data)
     }
@@ -64,10 +67,10 @@ export default function SignupPage() {
 
   useEffect(() => {
     if (error) {
-      const timer = setTimeout(() => seterror(""), 3000);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => seterror(''), 3000)
+      return () => clearTimeout(timer)
     }
-  }, [error]);
+  }, [error])
 
   return (
     <form onSubmit={handleSignup}>
@@ -127,8 +130,13 @@ export default function SignupPage() {
           <button type='submit' className={styles.submitBtn}>
             Sign Up
           </button>
-        </div>
+        <div className='login-link'>
+          <p>
+            Don't have an account? <Link href='/login'>Login in here</Link>
+          </p>
       </div>
+        </div>
+        </div>
     </form>
   )
 }

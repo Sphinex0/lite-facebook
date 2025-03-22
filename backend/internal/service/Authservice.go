@@ -2,11 +2,11 @@ package service
 
 import (
 	"errors"
-	"fmt"
 	"html"
 	"net/http"
 	"net/mail"
 	"strings"
+	"time"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -42,9 +42,6 @@ func (S *Service) LoginUser(User *models.User) (string, error) {
 }
 
 func (s *Service) RegisterUser(user *models.User) (string, error, int) {
-	// Age
-	fmt.Println((*user).DateBirth)
-
 	// First_Name
 	if len((*user).First_Name) < 3 || len((*user).First_Name) > 15 {
 		return "", errors.New("InvalideFirst_Name"), 0
@@ -69,10 +66,16 @@ func (s *Service) RegisterUser(user *models.User) (string, error, int) {
 		return "", errors.New("LongEmail"), 0
 	}
 
+	//dob
+	err := validateDOB((*user).DateBirth)
+	if err != nil {
+		return "", err, 0
+	}
+
 	// Nickname
 	if (*user).Nickname != "" {
 		if len(strings.TrimSpace((*user).Nickname)) < 3 || len(strings.TrimSpace((*user).Nickname)) > 15 {
-			return"",  errors.New("InvalidUsername"), 0
+			return "", errors.New("InvalidUsername"), 0
 		}
 	}
 
@@ -89,7 +92,6 @@ func (s *Service) RegisterUser(user *models.User) (string, error, int) {
 	}
 
 	// Encrypt Pass
-	var err error
 	(*user).Password, err = EncyptPassword((*user).Password)
 	if err != nil {
 		return "", err, 0
@@ -101,11 +103,12 @@ func (s *Service) RegisterUser(user *models.User) (string, error, int) {
 	// Generate Uuid
 	Uuid := GenerateUuid()
 	// Insert the user
-	id, err := s.Database.InsertUser(*user, Uuid); if err != nil {
-		return "",err, 0
+	id, err := s.Database.InsertUser(*user, Uuid)
+	if err != nil {
+		return "", err, 0
 	}
-	
-	return Uuid, nil, id 
+
+	return Uuid, nil, id
 }
 
 func ValidateLength(data string) bool {
@@ -166,4 +169,27 @@ func (S *Service) Extractuser(r *http.Request) models.User {
 		AboutMe:    r.FormValue("aboutMe"),
 	}
 	return user
+}
+
+func validateDOB(dobStr string) error {
+	dob, err := time.Parse("2006-01-02", dobStr)
+	if err != nil {
+		return errors.New("invalid date format, expected YYYY-MM-DD")
+	}
+
+	today := time.Now()
+	age := today.Year() - dob.Year()
+	if today.YearDay() < dob.YearDay() {
+		age--
+	}
+
+	if age < 18 {
+		return errors.New("you must be at least 18 years old")
+	}
+	
+	if age > 100 {
+		return errors.New("invalid age, please check the date of birth")
+	}
+
+	return nil
 }

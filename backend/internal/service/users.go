@@ -10,7 +10,7 @@ func (service *Service) GetUserByID(id int) (user models.UserInfo, err error) {
 }
 
 
-func (service *Service) GetAllUser(before int) (users []models.UserInfo, err error) {
-	users, err = service.Database.GetAllUsers(before)
+func (service *Service) GetAllUser(before int, currentUser int) (users []models.UserInfo, err error) {
+	users, err = service.Database.GetAllUsers(before, currentUser)
 	return
 }
