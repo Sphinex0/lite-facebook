@@ -64,7 +64,6 @@ const Popover = ({group_id}) => {
                     </label> 
                     <button className={styles.addMember} onClick={()=>{
                   JoinGroup(id, groupData.group_info.creator, setIsAction, isAction)
-
                 }}><Add/></button></div>
             })}
         </div>
