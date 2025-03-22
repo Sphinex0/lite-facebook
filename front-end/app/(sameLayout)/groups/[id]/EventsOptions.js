@@ -3,8 +3,8 @@ import { useEffect, useState } from "react";
 
 
 const EventsOptions = ({ event_id }) => {
-    const [going, setGoing] = useState(0);
-    const [notgoing, setNotGoing] = useState(0);
+    const [going, setGoing] = useState({});
+    const [notgoing, setNotGoing] = useState({});
     const handelcount = async (going) => {
       
         try {
@@ -16,8 +16,9 @@ const EventsOptions = ({ event_id }) => {
                 credentials: "include",
                 body: JSON.stringify({ event_id, going: going })
             });
+            console.log(response);
+            
             if (response.ok) {
-               
                 fetchEventsOptions(true);
                 fetchEventsOptions(false);
             }
@@ -68,10 +69,10 @@ const EventsOptions = ({ event_id }) => {
     }, [event_id]);
     return (
         <div>
-            <label>going :{going}</label>
-            <input onClick={() => handelcount(true)}  type="radio" name={`go${event_id}`} /><br/>
-            <label>not going :{notgoing}</label>
-            <input onClick={() => handelcount(false)}  type="radio" name={`go${event_id}`}  />
+            <label>going :{going.event}</label>
+            <input onClick={() => handelcount(true)} onChange={()=>{}}  checked={going.action === "action"  && true} type="radio" name={`go${event_id}`} /><br/>
+            <label>not going :{notgoing.event}</label>
+            <input onClick={() => handelcount(false)} onChange={()=>{}}  checked={notgoing.action === "action" && true}  type="radio" name={`go${event_id}`}  />
         </div>
     );
 };

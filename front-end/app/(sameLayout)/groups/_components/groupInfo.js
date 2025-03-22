@@ -5,7 +5,7 @@ const GroupInfo = ({groupInfo}) => {
     <div className='feed'>
       <div className="user">
           <div className="profile-photo">
-              <img src="./images/profile-13.jpg" />
+              <img src={`./pics/${groupInfo.image}`} />
           </div>
           <div className="ingo">
               <h3>{groupInfo.title} </h3>  

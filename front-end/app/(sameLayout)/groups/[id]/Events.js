@@ -107,7 +107,7 @@ const Events = ({ groupID }) => {
             </div>
 
             <div>
-                {eventsData.length === 0 ? (
+                {eventsData === null ? (
                     <div>No events found.</div>
                 ) : (
                     <ul>
@@ -120,7 +120,6 @@ const Events = ({ groupID }) => {
                                     </div>
                                     <div>
                                         <EventsOptions event_id={event.id}/>
-                                        {/*  */}
                                     </div>
                                 </div>
                             </div>

@@ -36,6 +36,8 @@ export default function ShowGroup({ params }) {
         console.log(data);
         setIsAction(data.action)
         setGroupData(data);
+        console.log(groupData);
+        
         if (data.action==="accepted"){
           setIsAllowed(true)
         }else {
@@ -59,7 +61,8 @@ export default function ShowGroup({ params }) {
       <div className={styles.profileHeader}>
         <div className={styles.basicInfo}>
           <div className={styles.p10}>
-            <img className={styles.image}></img>
+             <img className={styles.image}  src={`/pics/${groupData.group_info.image}`}></img>
+            {/* <img className={styles.image} src="../images/profile-13.jpg" /> */}
           </div>
           <div className={styles.g2}>
 
