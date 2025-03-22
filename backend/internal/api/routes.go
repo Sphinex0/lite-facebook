@@ -42,6 +42,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/group", handler.GetGroup)
 	mux.HandleFunc("/api/members", handler.GetMember)
 
+
 	// Invites
 	mux.HandleFunc("/api/invite/store", handler.AddInvite)
 	mux.HandleFunc("/api/invite/decision", handler.HandleInviteRequest)
@@ -64,7 +65,8 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/follow/requests", handler.HandleGetFollowRequests) // get
 	mux.HandleFunc("/api/follow", handler.HandleFollow)                     // post {"user_id":2}
 	mux.HandleFunc("/api/follow/decision", handler.HandleFollowRequest)     // post {"follower":2,"status":"accepted"}
-
+	mux.HandleFunc("/api/group/invitelist", handler.HandleGetGroupInvitable)
+	
 	// check auth
 	mux.HandleFunc("/api/checkuser", handler.CheckAuth)
 	

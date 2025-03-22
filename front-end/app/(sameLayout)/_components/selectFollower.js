@@ -46,9 +46,9 @@ const SelectFollower = () => {
         <div className={styles.container} >
             {followers.map((userInfo, index) => {
                 if (index == followers.length-1){
-                    return <div ref={lastElementRef} className={styles.fullUser} key={`user${userInfo.id}`}><label htmlFor={`user${userInfo.id}`}><UserInfo userInfo={userInfo} key={userInfo.id} /></label> <input type='checkbox' id={`user${userInfo.id}`} name='users' value={userInfo.id} /></div>
+                    return <div ref={lastElementRef} className={styles.fullUser} key={`user${userInfo.id}`}><label htmlFor={`user${userInfo.id}`}><UserInfo redirect={false} userInfo={userInfo} key={userInfo.id} /></label> <input type='checkbox' id={`user${userInfo.id}`} name='users' value={userInfo.id} /></div>
                 }
-                return <div className={styles.fullUser} key={`user${userInfo.id}`}><label htmlFor={`user${userInfo.id}`}><UserInfo userInfo={userInfo} key={userInfo.id} /></label> <input type='checkbox' id={`user${userInfo.id}`} name='users' value={userInfo.id} /></div>
+                return <div className={styles.fullUser} key={`user${userInfo.id}`}><label htmlFor={`user${userInfo.id}`}><UserInfo redirect={false} userInfo={userInfo} key={userInfo.id} /></label> <input type='checkbox' id={`user${userInfo.id}`} name='users' value={userInfo.id} /></div>
             })}
         </div>
     </>

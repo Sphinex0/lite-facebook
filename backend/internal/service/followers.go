@@ -124,3 +124,11 @@ func (S *Service) GetFollowings(user *models.UserInfo, before int, currentUser i
 	followings, err = S.Database.GetFollowings(user, before)
 	return
 }
+
+
+func (S *Service) GetGroupInvitables(before int, currentUser int, group_id int) (friends []models.UserInfo, err error) {
+
+	friends, err = S.Database.GetGroupInvitables(currentUser,before, group_id)
+	return
+}
+

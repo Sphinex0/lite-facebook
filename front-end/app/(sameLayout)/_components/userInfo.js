@@ -4,7 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
 
-const UserInfo = ({ userInfo, articleInfo, group, onlineDiv, lastMessage }) => {
+const UserInfo = ({redirect, userInfo, articleInfo, group, onlineDiv, lastMessage }) => {
 
     const [imageSrc, setImageSrc] = useState(`/pics/${userInfo ? userInfo.image : (group && group.image)}`)
 
@@ -18,7 +18,7 @@ const UserInfo = ({ userInfo, articleInfo, group, onlineDiv, lastMessage }) => {
 
 
     return (
-        <Link href={onlineDiv ? "" : `/profile/${userInfo.id}`}>
+        <Link href={onlineDiv && !redirect ? "" : `/profile/${userInfo.id}`}>
             <div className="user">
                 <div className="profile-wrapper">
                     <div className="profile-photo">

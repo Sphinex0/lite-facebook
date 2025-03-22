@@ -152,20 +152,20 @@
 }
 
 /* Scrollbar styling */
-::-webkit-scrollbar {
+.container ::-webkit-scrollbar {
     width: 8px;
 }
 
-::-webkit-scrollbar-track {
+.container ::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
-::-webkit-scrollbar-thumb {
+.container ::-webkit-scrollbar-thumb {
     background: #bdc3c7;
     border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.container ::-webkit-scrollbar-thumb:hover {
     background: #95a5a6;
 }
 

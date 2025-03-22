@@ -17,8 +17,14 @@
   border-bottom: 1px solid #ccc;
 }
 
-.profileHeader * {
-  /* border:1px solid red; */
+.invitesPopup{
+  position: absolute;
+  width: 200px;
+  height: 300px;
+  border: 1px solid black;
+  top: 0;
+  left: 0;
+  /* transform: translateX(-25%); */
 }
 
 .g1 {
@@ -49,6 +55,7 @@
 }
 
 .editProfileBtn {
+  position: relative;
   border: none;
   background-color: #e2e5e9;
   border-radius: 5px;
