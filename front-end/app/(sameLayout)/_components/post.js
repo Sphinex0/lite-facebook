@@ -5,6 +5,7 @@ import PostViewer from "./postViewer"
 import { likeArticle, timeAgo } from "@/app/helpers"
 import UserInfo from "./userInfo"
 import Link from "next/link"
+import { useRouter } from "next/navigation"
 
 export default function Post({ postInfo , reference}) {
     const [likes, setLikes] = useState(postInfo.likes || 0); // Fallback to 0 if undefined
@@ -12,10 +13,11 @@ export default function Post({ postInfo , reference}) {
     const [commentsCount, setCommentCount] = useState(postInfo.comments_count || 0);
     const [likeState, setLikeState] = useState(postInfo.like || 0);
     const [postViewDisplay, setPostViewDisplay] = useState(false);
+    const redirect = useRouter()
   
 
     const likePost = (like, article_id)=>{
-        likeArticle(like, article_id, setLikes,setDislikes, likeState, setLikeState)
+        likeArticle(like, article_id, setLikes,setDislikes, likeState, setLikeState,redirect)
     }
 
 

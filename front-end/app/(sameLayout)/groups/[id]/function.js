@@ -1,25 +1,26 @@
 "use client";
 
-async function JoinGroup(id,creator,setIsAction,isAction) {
+import { FetchApi } from "@/app/helpers";
+
+async function JoinGroup(id,creator,setIsAction,isAction,redirect) {
     console.log(id);
     console.log(creator);
 
 
 
     try {
-        const response = await fetch('http://localhost:8080/api/invite/store', {
+        const response = await FetchApi('/api/invite/store',redirect, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            credentials: 'include',
             body: JSON.stringify({ "group_id": parseInt(id), "receiver": creator }),
         });
 
         if (response.ok) {
-            if (isAction==="pending"){
+            if (isAction === "pending") {
                 setIsAction("join")
-            }else if (isAction==="join"){
+            } else if (isAction === "join") {
                 setIsAction("pending")
             }
             console.log('Group joined successfully');

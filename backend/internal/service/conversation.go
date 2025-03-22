@@ -14,7 +14,24 @@ func (service *Service) CreateConversation(conv *models.Conversation) (conversat
 	return
 }
 
+// delete conv
+func (service *Service) DeleteConversation(id1, id2 int) (err error) {
+	err = service.Database.DeleteConversation(id1, id2)
+	return
+}
+
 func (service *Service) CheckConversation(id1, id2 int, type_obj string) (conversations []models.ConversationsInfo, err error) {
 	err = service.Database.VerifyConversation(id1, id2, type_obj)
+	return
+}
+
+func (service *Service) ReadMessagesGroup(convId, id int) (err error) {
+	err = service.Database.ReadMessagesGroup(convId, id)
+	return
+}
+
+// GetConvByGroupID
+func (service *Service) GetConvByGroupID(id int) (conv models.Conversation, err error) {
+	conv, err = service.Database.GetConvByGroupID(id)
 	return
 }

@@ -11,7 +11,6 @@ type Handler struct {
 	Service *service.Service
 }
 
-
 func NewHandler(db *sql.DB) *Handler {
 	userData := repository.Database{
 		Db: db,

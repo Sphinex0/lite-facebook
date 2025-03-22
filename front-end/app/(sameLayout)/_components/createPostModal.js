@@ -4,11 +4,13 @@ import React, { useEffect, useRef, useState } from 'react'
 import styles from './createPostModal.module.css'
 import SelectFollower from './selectFollower'
 import { addArticle } from '@/app/helpers'
+import { useRouter } from 'next/navigation'
 
-const CreatePostModal = ({ setModalDisplay, setPosts }) => {
+const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
   const [content, setContent] = useState("")
   const [imagePreview, setImagePreview] = useState("")
   const [privacy, setPrivacy] = useState("")
+  const redirect = useRouter()
 
   const hide = (e) => {
     if (e.target.classList.contains('customize-theme')) {
@@ -17,7 +19,7 @@ const CreatePostModal = ({ setModalDisplay, setPosts }) => {
   }
 
   const addPost = async (e) => {
-    const added = await addArticle(e, setPosts, {})
+    const added = await addArticle(e, setPosts, {},redirect)
     if (added) {
       setModalDisplay(false)
       setContent("")

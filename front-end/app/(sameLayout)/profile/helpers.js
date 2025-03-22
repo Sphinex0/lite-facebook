@@ -1,8 +1,10 @@
-export const fetchProfile = async(setProfileInfo, id)=>{
+import { FetchApi } from "@/app/helpers"
+import { red } from "@mui/material/colors"
+
+export const fetchProfile = async(setProfileInfo, id,redirect)=>{
     try {
-        const response = await fetch("http://localhost:8080/api/profile", {
+        const response = await FetchApi("/api/profile",redirect, {
             method: "POST",
-            credentials: "include",
             body: JSON.stringify({ id })
         })
         console.log(JSON.stringify({ id }))

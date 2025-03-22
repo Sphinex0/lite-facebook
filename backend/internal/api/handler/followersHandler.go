@@ -28,7 +28,7 @@ func (Handler *Handler) HandleFollow(w http.ResponseWriter, r *http.Request) {
 	err = utils.ParseBody(r, &follow)
 
 	follow.Follower = user.ID
-	follow.CreatedAt = int(time.Now().Unix())
+	follow.CreatedAt = int(time.Now().UnixMilli())
 	follow.ModifiedAt = follow.CreatedAt
 
 	// follow.UserID, err = strconv.Atoi(r.FormValue("uesr_id"))
@@ -66,7 +66,7 @@ func (Handler *Handler) HandleFollowRequest(w http.ResponseWriter, r *http.Reque
 
 	err = utils.ParseBody(r, &follow)
 	follow.UserID = user.ID
-	follow.ModifiedAt = int(time.Now().Unix())
+	follow.ModifiedAt = int(time.Now().UnixMilli())
 	if err != nil {
 		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -91,7 +91,7 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+			utils.WriteJson(w, http.StatusBadRequest, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -114,7 +114,7 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+			utils.WriteJson(w, http.StatusBadRequest, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -138,11 +138,26 @@ func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText( http.StatusForbidden))
+			utils.WriteJson(w, http.StatusBadRequest, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
 	utils.WriteJson(w, http.StatusOK, followings)
+}
+
+func (Handler *Handler) HandleGetGroupInvitable(w http.ResponseWriter, r *http.Request) {
+	user, data, err1 := Handler.AfterGet(w, r)
+	if err1.Err != nil {
+		return
+	}
+
+	users, err := Handler.Service.GetGroupInvitables(data.Before, user.ID, data.GroupID)
+	if err != nil {
+		log.Println(err)
+		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
+		return
+	}
+	utils.WriteJson(w, http.StatusOK, users)
 }

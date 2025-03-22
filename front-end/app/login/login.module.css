@@ -1,10 +1,4 @@
-/* Global styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
-}
+
 
 /* Centering */
 .container {
@@ -16,7 +10,7 @@
 }
 
 /* Form box */
-.form-box {
+.formBox {
   display: flex;
   flex-direction: column;
   background: white;
@@ -24,23 +18,24 @@
   border-radius: 12px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   text-align: center;
-  height: 45vh;
+  height: auto; /* Set to auto to fit content */
   width: 50vh;
+  gap: 16px; /* Adds gap between elements */
 }
 
 /* Heading */
-h2 {
+.heading {
   margin-bottom: 20px;
   font-size: 24px;
 }
 
 /* Input fields */
-.input-group {
+.inputGroup {
   margin-bottom: 12px;
   text-align: left;
 }
 
-.input-field {
+.inputField {
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -50,14 +45,14 @@ h2 {
 }
 
 /* Scale effect on focus */
-.input-field:focus {
+.inputField:focus {
   border-color: #66a6ff;
   box-shadow: 0px 0px 8px rgba(102, 166, 255, 0.6);
   transform: scale(1.05);
 }
 
 /* Submit Button */
-.submit-btn {
+.submitBtn {
   width: 100%;
   background: #66a6ff;
   color: white;
@@ -70,7 +65,26 @@ h2 {
 }
 
 /* Button hover effect */
-.submit-btn:hover {
+.submitBtn:hover {
   background: #5590e3;
   transform: scale(1.05);
+}
+
+/* Signup Link Section */
+.signup-link {
+  text-align: center;
+  margin-top: 0; /* Remove top margin */
+}
+
+.signup-link p {
+  font-size: 14px;
+}
+
+.signup-link a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.signup-link a:hover {
+  text-decoration: underline;
 }

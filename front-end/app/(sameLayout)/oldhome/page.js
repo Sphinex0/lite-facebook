@@ -10,7 +10,6 @@ const Home = () => {
   const [screen, setScreen] = useState("");
   const switchRequest = (sideNav)=>{
 
-    console.log("yes")
     setScreen("home")
   }
   return (

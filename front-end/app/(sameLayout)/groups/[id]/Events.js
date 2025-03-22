@@ -1,8 +1,10 @@
 'use client'
+import { FetchApi } from "@/app/helpers";
 import style from "./group.module.css";
 import { Add, DisabledByDefault } from "@mui/icons-material";
 import EventsOptions from "./EventsOptions";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Events = ({ groupID }) => {
     const [eventsData, setEventsData] = useState([]);
@@ -10,6 +12,7 @@ const Events = ({ groupID }) => {
     const [error, setError] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const redirect = useRouter()
 
     const CreateGroup = () => {
         const element = document.querySelector('#formId');
@@ -28,12 +31,11 @@ const Events = ({ groupID }) => {
         setDescription("");
 
         try {
-            const response = await fetch("http://localhost:8080/api/Event/store", {
+            const response = await FetchApi("/api/Event/store",redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: "include",
                 body: JSON.stringify({ group_id: parseInt(groupID), Title: title, Description: description })
             });
 
@@ -51,14 +53,14 @@ const Events = ({ groupID }) => {
 
     const fetchEvents = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/Events", {
+            const response = await FetchApi("/api/Events",redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                credentials: "include",
                 body: JSON.stringify({ group_id: parseInt(groupID) }),
             });
+
 
             if (response.ok) {
                 const data = await response.json();

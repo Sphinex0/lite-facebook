@@ -1,19 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react'
 import PostList from '../../_components/postList'
-import { useOnVisible } from '@/app/helpers'
+import { FetchApi, useOnVisible } from '@/app/helpers'
+import { useRouter } from 'next/navigation'
 
 
 const Posts = ({user_id, setIsAllowed}) => {
     const [posts, setPosts] = useState([])
     
+    const redirect = useRouter()
     const lastPostElementRef = useRef(null)
-    const before = useRef(Math.floor(Date.now() / 1000))
+    const before = useRef(Math.floor(Date.now()))
 
         const fetchProfilePosts = async (signal) => {
             try {
-                const response = await fetch("http://localhost:8080/api/profile/posts", {
+                const response = await FetchApi("/api/profile/posts",redirect, {
                     method: "POST",
-                    credentials: "include",
                     body: JSON.stringify({ before: before.current, user_id }),
                     signal
                     

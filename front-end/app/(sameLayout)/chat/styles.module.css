@@ -1,6 +1,6 @@
 .container {
     display: grid;
-    grid-template-columns: 2fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
     height: 90vh;
     /* max-width: 800px; */
     margin: 0 auto;
@@ -26,7 +26,31 @@
     padding: 1.5rem;
     border-bottom: 1px solid #e0e0e0;
     background-color: #f8f9fa;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
+
+.Hide {
+    display: none;
+}
+
+.ConversationsBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e7e7e7;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem;
+    color: rgb(162, 73, 252);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Hide is ckecked */
+
 
 .chatHeader h4 {
     margin: 0;
@@ -57,10 +81,10 @@
 }
 
 .messageContent {
-    color: #2c2c2c;
+    color: #303030;
     padding: 5px;
     margin-inline: 10px;
-    background-color: #f1f1f1;
+    background-color: #eeeeee;
 }
 
 .groupInputs {
@@ -107,6 +131,17 @@
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    display: grid;
+    grid-template-columns: 4fr 1fr;
+    gap: 10px;
+}
+
+.seen {
+    background-color: rgba(80, 102, 175, 0.404);
+    text-align: center;
+    width: fit-content;
+    padding: 2px 10px;
+    border-radius: 50px;
 }
 
 .conversationItem:hover {
@@ -141,20 +176,20 @@
 }
 
 /* Scrollbar styling */
-::-webkit-scrollbar {
+.container ::-webkit-scrollbar {
     width: 8px;
 }
 
-::-webkit-scrollbar-track {
+.container ::-webkit-scrollbar-track {
     background: #f1f1f1;
 }
 
-::-webkit-scrollbar-thumb {
+.container ::-webkit-scrollbar-thumb {
     background: #bdc3c7;
     border-radius: 4px;
 }
 
-::-webkit-scrollbar-thumb:hover {
+.container ::-webkit-scrollbar-thumb:hover {
     background: #95a5a6;
 }
 
@@ -204,12 +239,8 @@
     width: 50%;
     height: auto;
     border-radius: 5px;
-    border: 1px solid rgb(148, 148, 148);
     padding: 4px;
-    margin-inline: 10px;
-
-    background-color: #ffffff;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background-color: #aabaee23;
 }
 
 .Emojis {
@@ -279,30 +310,10 @@
     stroke: rgba(102, 51, 153, 0.377);
 }
 
-/* ###################### */
-
-
-/* 
-.container {
-    display: flex;
-    height: 100vh;
-}
-
-.conversationsList {
-    width: 300px;
-    border-right: 1px solid #e0e0e0;
-    overflow-y: auto;
-}
-
-.conversationItem {
-    padding: 15px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-}
 
 .conversationItem:hover {
     background-color: #f5f5f5;
-} */
+}
 
 .active {
     background-color: #e3f2fd;
@@ -329,18 +340,14 @@
 
 /* Message Styles */
 .messageContainer {
-    position: relative;
-    margin: 8px 0;
-    padding: 8px 12px;
-    background: white;
-    border-radius: 8px;
-    max-width: 70%;
-    cursor: pointer;
-    transition: background-color 0.2s;
+    padding: 5px;
+    margin-block: 5px;
+    border: 1px solid #2195f31c;
+    border-radius: 10px;
 }
 
 .messageContainer:hover {
-    background-color: #f5f5f5;
+    background-color: #f5f5f5c2;
 }
 
 .selectedMessage {
@@ -352,12 +359,18 @@
     position: relative;
     margin-bottom: 8px;
     padding-left: 10px;
-    border-left: 2px solid #ddd;
+    border-left: 2px solid #3877acd7;
+}
+
+.name {
+    color: rgba(84, 81, 255, 0.692);
+    display: block;
+    margin: 3px;
 }
 
 .replyPreviewText {
     font-size: 0.8em;
-    color: #666;
+    color: #3877acd7;
     opacity: 0.8;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -397,7 +410,7 @@
     flex: 1;
     padding: 10px 15px;
     border: 1px solid #e0e0e0;
-    border-radius: 20px;
+    border-radius: 4px;
     margin-right: 10px;
 }
 
@@ -414,7 +427,7 @@
     padding: 10px;
     background: white;
     border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .Emoji {
@@ -433,4 +446,37 @@
     max-width: 200px;
     border-radius: 8px;
     margin-bottom: 10px;
+}
+
+/* media */
+@media (max-width: 1000px) {
+    .container {
+        grid-template-columns: 1fr;
+        /* height: 100vh; */
+        position: relative;
+        padding: 8px;
+    }
+
+    .Hide:checked ~ .conversationsList {
+        /* width: 0; */
+
+        width: 80%;
+        padding: 0;
+    }
+
+    .conversationsList {
+        position: absolute;
+        /* Use viewport units to account for padding */
+        width: calc(100% - 100px);
+        /* 100% width minus total horizontal padding */
+        height: calc(100% - 120px);
+        /* 100% height minus total vertical padding */
+        margin: 0;
+        /* Remove original margin */
+        right: 8px;
+        top: 8px;
+        width: 0;
+        padding: 0;
+        transition: all 1s ease;
+    }
 }

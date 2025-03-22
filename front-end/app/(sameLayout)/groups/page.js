@@ -4,6 +4,9 @@ import Link from 'next/link';
 import GroupInfo from './_components/groupInfo';
 import './groupe.css';
 import { useEffect, useState } from 'react';
+import { Add, DisabledByDefault, TurnSharpLeft } from '@mui/icons-material';
+import { useRouter } from 'next/navigation';
+import { FetchApi } from '@/app/helpers';
 import { Add, DisabledByDefault } from '@mui/icons-material';
 let type = "groups"
 
@@ -14,7 +17,8 @@ const Groups = () => {
   const [groupCreated, setGroupCreated] = useState(false);
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState('');
+  const redirect = useRouter()
 
   const handleImage =(e)=>{
     setImage(e.target.files[0])
@@ -28,9 +32,7 @@ const Groups = () => {
     formDataToSend.append('Title', title);
     formDataToSend.append('Description', description);
     formDataToSend.append('image', image);
-
-    console.log(formDataToSend);
-
+    type
     setTitle("")
     setDescription("")
     setImage(null)
@@ -38,11 +40,11 @@ const Groups = () => {
     
 
     try {
-      const response = await fetch(`http://localhost:8080/api/groups/store`, {
+      const response = await FetchApi(`/api/groups/store`, redirect , {
         method: 'POST',
-        credentials: 'include',
         body: formDataToSend
       });
+
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -85,13 +87,13 @@ const Groups = () => {
     type = content
     setLoading(true); // Show loading spinner or text
     try {
-      const response = await fetch(`http://localhost:8080/api/` + content, {
+      const response = await FetchApi(`/api/` + content,redirect ,{
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
       });
+
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
@@ -124,7 +126,7 @@ const Groups = () => {
   };
 
   useEffect(() => {
-    handleLinkClick(type)
+    handleLinkClick("groups")
   }, [])
 
   return (

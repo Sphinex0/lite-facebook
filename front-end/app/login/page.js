@@ -2,7 +2,9 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import './login.css'
+import styles from "./login.module.css"
+import { FetchApi } from '../helpers'
+import Link from 'next/link' 
 
 export default function Login () {
   const [email, setEmail] = useState('')
@@ -15,39 +17,34 @@ export default function Login () {
     e.preventDefault()
 
     try {
-      const response = await fetch('http://localhost:8080/api/login', {
+      const response = await FetchApi('/api/login', router,{
         method: 'POST',
-        body: JSON.stringify({ email, password }),
-        credentials:"include"
+        body: JSON.stringify({ email, password })
       })
 
       if (response.status == 200) {
         const data = await response.json()
-        sessionStorage.setItem('first_name', data.first_name)
-        sessionStorage.setItem('last_name', data.last_name)
-        sessionStorage.setItem('Nickname', data.nickname)
-        sessionStorage.setItem('Image', data.image)
-
+        localStorage.setItem('user', JSON.stringify(data))
         router.push('/')
-      } else {
-        const data = await response.json()
+      } else {  
+        const data = await response.json()      
         seterror(data)
       }
     } catch (error) {
-      seterror(data)
+      seterror('Network error accured')
     }
   }
 
   return (
-    <div className="container">
-      <div className='form-box'>
-        <h2>Login</h2>
+    <div className={styles.container}>
+      <div className={styles.formBox}>
+        <h2 className={styles.heading}>Login</h2>
 
         {/* Error Popup */}
-        {error && <div className='error-popup'>{error}</div>}
+        {error && <div className={styles.errorPopup}>{error}</div>}
         <form onSubmit={handleSubmit}>
           {/* Email Input */}
-          <div className='input-group'>
+          <div className={styles.inputGroup}>
             <input
               type='text'
               value={email}
@@ -55,12 +52,12 @@ export default function Login () {
               required
               id='username'
               onChange={e => setEmail(e.target.value)}
-              className='input-field'
+              className={styles.inputField}
             />
           </div>
 
           {/* Password Input */}
-          <div className='input-group'>
+          <div className={styles.inputGroup}>
             <input
               type='password'
               value={password}
@@ -68,15 +65,19 @@ export default function Login () {
               required
               id='password'
               onChange={e => setPassword(e.target.value)}
-              className='input-field'
+              className={styles.inputField}
             />
           </div>
 
           {/* Submit Button */}
-          <button type='submit' className='submit-btn'>
+          <button type='submit' className={styles.submitBtn}>
             Login
           </button>
         </form>
+
+        <div className="signup-link">
+          <p>Don't have an account? <Link href="/signup">Sign up here</Link></p>
+        </div>
       </div>
     </div>
   )

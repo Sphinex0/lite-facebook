@@ -27,7 +27,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 	article.UserID = user.ID
 	article.Content = strings.TrimSpace(r.FormValue("content"))
 	article.Privacy = strings.TrimSpace(r.FormValue("privacy"))
-	article.CreatedAt = int(time.Now().Unix())
+	article.CreatedAt = int(time.Now().UnixMilli())
 	article.ModifiedAt = article.CreatedAt
 	GroupID, _ := strconv.Atoi(r.FormValue("group_id"))
 	var users []string
@@ -62,8 +62,13 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		article.Privacy = "public"
 	} else if GroupID != 0 {
 		/// select
-		err := Handler.Service.VerifyGroup(GroupID, user.ID)
-		if err.Err != nil {
+		// err := Handler.Service.VerifyGroup(GroupID, user.ID)
+		// if err.Err != nil {
+		// 	utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		// 	return
+		// }
+		_, err := Handler.Service.CheckMember(GroupID, user.ID)
+		if err != nil {
 			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 			return
 		}
@@ -76,6 +81,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
+
 	utils.WriteJson(w, http.StatusCreated, article)
 }
 
@@ -99,7 +105,7 @@ func (Handler *Handler) HandelGetPostsByGroup(w http.ResponseWriter, r *http.Req
 	}
 	err = Handler.Service.VerifyGroup(data.GroupID, user.ID)
 	if err.Err != nil {
-		utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
+		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 		return
 	}
 	article_views, err := Handler.Service.FetchPostsByGroup(user.ID, data.GroupID, data.Before)
@@ -175,7 +181,7 @@ func (Handler *Handler) AfterGet(w http.ResponseWriter, r *http.Request) (user m
 	}
 
 	if data.Before == 0 {
-		data.Before = int(time.Now().Unix())
+		data.Before = int(time.Now().UnixMilli())
 	}
 	return
 }

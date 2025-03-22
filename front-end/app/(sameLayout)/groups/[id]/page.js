@@ -6,6 +6,11 @@ import Posts from './posts';
 import Members from './members';
 import joinGroup from "./function";
 import Events from "./Events";
+import { useRouter } from 'next/navigation';
+import { red } from '@mui/material/colors';
+import { FetchApi } from '@/app/helpers';
+import Popover from '../_components/popover';
+
 export default function ShowGroup({ params }) {
   const id = use(params).id;
 
@@ -15,16 +20,20 @@ export default function ShowGroup({ params }) {
   const [error, setError] = useState(null);
   const [isAllowed, setIsAllowed] = useState(false)
   const [isAction, setIsAction] = useState("")
+  
+
+  const redirect = useRouter()
   console.log(JSON.stringify({ id: parseInt(id) }))
+  const [popover, setPopover] = useState(false)
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/group', {
+        const response = await FetchApi('/api/group', redirect, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
           body: JSON.stringify({ id: parseInt(id) }),
         });
         JSON.stringify({ id })
@@ -40,7 +49,7 @@ export default function ShowGroup({ params }) {
         
         if (data.action==="accepted"){
           setIsAllowed(true)
-        }else {
+        } else {
           setIsAllowed(false)
         }
       } catch (error) {
@@ -68,23 +77,39 @@ export default function ShowGroup({ params }) {
 
             <h1 className={styles.title}>{groupData.group_info.title}</h1>
             <span className={styles.nickname}>{groupData.group_info.description}</span><br />
-            <span className={styles.followText}>{new Date(groupData.group_info.created_at * 1000).toLocaleDateString()}</span><br />
+            <span className={styles.followText}>{new Date(groupData.group_info.created_at).toLocaleDateString()}</span><br />
           </div>
           <div className={`${styles.g1} ${styles.btnSection}`}>
-        {isAllowed 
-        ? <button className={styles.editProfileBtn} 
-        onClick={()=>{
-          leaveGroup(id)
-        }}
-        >Leave Group</button>
+            {isAllowed
+            
+              ?<div> 
+              <button className={styles.editProfileBtn}
+                onClick={() => {
+                  setPopover((prev)=>!prev)
+                }}
+              >send Invite
 
+              </button>
+              {popover && 
+              <Popover/>
+              //  <div className={"customize-theme"} onClick={(e)=>{
+              //   if (e.target.classList.contains('customize-theme')) {
+              //     setPopover(false)
+              //   }
+              //  }}>
 
-        :<button className={styles.editProfileBtn} 
-        onClick={()=>{
-         joinGroup(id,groupData.group_info.creator,setIsAction,isAction)
-       }}
-       >{isAction}</button>
-        } 
+              //    <div className='card'></div>
+              //  </div>
+              }
+             
+              </div>
+
+              : <button className={styles.editProfileBtn}
+                onClick={() => {
+                  joinGroup(id, groupData.group_info.creator, setIsAction, isAction)
+                }}
+              >{isAction}</button>
+            }
 
           </div>
         </div>

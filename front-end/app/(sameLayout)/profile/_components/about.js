@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { Cake, Email, Info, PrivacyTip } from '@mui/icons-material'
 import styles from "./about.module.css"
+import { useRouter } from 'next/navigation'
+import { FetchApi } from '@/app/helpers'
 const About = ({ user_id, action }) => {
     const [profileInfo, setProfileInfo] = useState({})
     const [privacy, setPrivacy] = useState("")
+
+
+    const redirect = useRouter()
     const fetchProfileInfo = async (signal) => {
         try {
-            const response = await fetch("http://localhost:8080/api/profile/about", {
+            const response = await FetchApi("/api/profile/about", redirect, {
                 method: "POST",
-                credentials: "include",
                 body: JSON.stringify({ id: user_id }),
                 signal
             })
@@ -31,18 +35,17 @@ const About = ({ user_id, action }) => {
     // /api/profile/update
     const changePrivacy = async (privacy) => {
         try {
-            const response = await fetch("http://localhost:8080/api/profile/update", {
+            const response = await FetchApi("/api/profile/update",redirect, {
                 method: "POST",
-                credentials: "include",
                 body: JSON.stringify({ privacy }),
             })
 
             console.log("status:", response.status)
             if (response.ok) {
                 const profileData = await response.json()
-                    console.log(profileData, "response")   
-                    
-                    setPrivacy(privacy) 
+                console.log(profileData, "response")
+
+                setPrivacy(privacy)
             }
 
         } catch (error) {
@@ -65,9 +68,9 @@ const About = ({ user_id, action }) => {
 
                         <span>
                             <select value={privacy} disabled={action == "edit" ? false : true}
-                            onChange={(e)=>{
-                                changePrivacy(e.target.value)
-                            }}
+                                onChange={(e) => {
+                                    changePrivacy(e.target.value)
+                                }}
                             >
                                 <option value={"public"}>Public</option>
                                 <option value={"private"}>Private</option>
@@ -86,7 +89,7 @@ const About = ({ user_id, action }) => {
                         <Email />
                     </div>
                     <div className={styles.infoItem}>
-                        <span> {new Date(profileInfo.date_birth*1000).toLocaleDateString()}</span>
+                        <span> {new Date(profileInfo.date_birth).toLocaleDateString()}</span>
                         <Cake />
                     </div>
 

@@ -1,12 +1,14 @@
 import React from 'react'
 import styles from "./profileHeader.module.css"
+import { useRouter } from 'next/navigation'
+import { FetchApi } from '@/app/helpers'
 
 const UnfollowBtn = ({user_id, setAction, setFollowers}) => {
+    const redirect = useRouter()
     const unfollowUser = async()=>{
         try {
-            const response = await fetch("http://localhost:8080/api/follow", {
+            const response = await FetchApi("/api/follow", redirect,{
                 method: "POST",
-                credentials: "include",
                 body: JSON.stringify({ user_id })
             })
             console.log(JSON.stringify({ user_id }))
