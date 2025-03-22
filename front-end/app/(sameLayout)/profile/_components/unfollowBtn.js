@@ -7,7 +7,7 @@ const UnfollowBtn = ({user_id, setAction, setFollowers}) => {
     const redirect = useRouter()
     const unfollowUser = async()=>{
         try {
-            const response = await FetchApi("http://localhost:8080/api/follow", redirect,{
+            const response = await FetchApi("/api/follow", redirect,{
                 method: "POST",
                 body: JSON.stringify({ user_id })
             })

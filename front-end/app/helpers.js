@@ -67,7 +67,7 @@ export const timeAgo = (unixTimestamp) => {
 
 export const likeArticle = async (like, article_id, setLikes, setDislikes, likeState, setLikeState, redirect) => {
   try {
-    const response = await FetchApi("http://localhost:8080/api/reactions/store", redirect, {
+    const response = await FetchApi("/api/reactions/store", redirect, {
       method: "POST",
       body: JSON.stringify({ like, article_id }),
     })
@@ -105,18 +105,17 @@ export const likeArticle = async (like, article_id, setLikes, setDislikes, likeS
 
 }
 
-export const addArticle = async (e, setAtricle, { parent, group }) => {
+export const addArticle = async (e, setAtricle, { parent, group },redirect) => {
   e.preventDefault()
   try {
     const formData = new FormData(e.target)
     formData.append("group_id", group || 0)
     formData.append("parent", parent || 0)
-    console.log(formData)
+    console.log(formData.get("image"))
 
-    const response = await FetchApi("http://localhost:8080/api/articles/store", redirect, {
+    const response = await FetchApi("/api/articles/store", redirect, {
       method: "POST",
       body: formData,
-
     })
 
     console.log("status:", response.status)
@@ -193,7 +192,7 @@ export const useOnVisible = (ref, callback, once = true, threshold = 0.1) => {
 export const joinGroup = async (groupID, setIsAllowed, redirect) => {
   try {
 
-    const response = await FetchApi("http://localhost:8080/api/articles/store", redirect, {
+    const response = await FetchApi("/api/articles/store", redirect, {
       method: "POST",
       body: formData,
     })
@@ -221,10 +220,10 @@ export const joinGroup = async (groupID, setIsAllowed, redirect) => {
 }
 
 
-export const FetchApi = async (url, redirect, { method, body, signal, headers }) => {
+export const FetchApi = async (path, redirect, { method, body, signal, headers }) => {
 
   try {
-    const response = await fetch(url, {
+    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
       method,
       credentials: "include",
       signal,

@@ -124,7 +124,7 @@ export function WorkerProvider({ children }) {
 
 
         port.addEventListener("message", messageHandler);
-        port.postMessage({ kind: "connect" });
+        port.postMessage({ kind: "connect", payload: process.env.NEXT_PUBLIC_API_URL });
 
         return () => {
             port.removeEventListener("message", messageHandler);

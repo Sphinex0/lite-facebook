@@ -9,7 +9,7 @@ async function JoinGroup(id,creator,setIsAction,isAction,redirect) {
 
 
     try {
-        const response = await FetchApi('http://localhost:8080/api/invite/store',redirect, {
+        const response = await FetchApi('/api/invite/store',redirect, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

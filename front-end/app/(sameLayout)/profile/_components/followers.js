@@ -13,7 +13,7 @@ const Followers = ({ user_id, setIsAllowed }) => {
 
     const fetchFollowers = async (signal) => {
         try {
-            const response = await FetchApi("http://localhost:8080/api/followers", redirect, {
+            const response = await FetchApi("/api/followers", redirect, {
                 method: "POST",
                 body: JSON.stringify({ before: before.current, user_id }),
                 signal

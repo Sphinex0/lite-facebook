@@ -15,7 +15,7 @@ const Users = () => {
   const fetchPosts = async () => {
     try {
       const before = data.length > 0 ? data[data.length-1].article.created_at : Math.floor(Date.now())
-      const response = await FetchApi("http://localhost:8080/api/posts",redirect,{
+      const response = await FetchApi("/api/posts",redirect,{
         method:"POST",
         body: JSON.stringify({before})
       })
@@ -37,7 +37,7 @@ const Users = () => {
 
   const fetchComments = async() => {
     try {
-      const response = await FetchApi("http://localhost:8080/api/comments",redirect,{
+      const response = await FetchApi("/api/comments",redirect,{
         method:"POST",
         body:JSON.stringify({"parent":1})
       })
@@ -55,7 +55,7 @@ const Users = () => {
 
   const fetchFollowers = async() => {
     try {
-      const response = await FetchApi("http://localhost:8080/api/followers",redirect,{
+      const response = await FetchApi("/api/followers",redirect,{
         method:"POST",
         credentials: "include",
         body:"{}"
@@ -74,7 +74,7 @@ const Users = () => {
 
   const fetchFollowings = async() => {
     try {
-      const response = await FetchApi("http://localhost:8080/api/followings",redirect,{
+      const response = await FetchApi("/api/followings",redirect,{
         method:"POST",
         body:"{}"
       })
@@ -91,7 +91,7 @@ const Users = () => {
   }
   const fetchFollowRequests = async() => {
     try {
-      const response = await FetchApi("http://localhost:8080/api/follow/requests",redirect,{
+      const response = await FetchApi("/api/follow/requests",redirect,{
         method:"POST",
         body:"{}"
       })
@@ -109,7 +109,7 @@ const Users = () => {
 
   const login = async () => {
     try {
-      const response = await FetchApi("http://localhost:8080/api/login",redirect,{
+      const response = await FetchApi("/api/login",redirect,{
         credentials: "include"
       })
       console.log("status:", response.status)

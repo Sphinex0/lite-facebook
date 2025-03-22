@@ -15,7 +15,7 @@ const Members = ({ groupID }) => {
 
     const fetchGroupMembers = async (signal) => {
         try {
-            const response = await FetchApi("http://localhost:8080/api/invites/members", redirect, {
+            const response = await FetchApi("/api/invites/members", redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'

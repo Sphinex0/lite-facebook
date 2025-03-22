@@ -17,7 +17,7 @@ export default function Login () {
     e.preventDefault()
 
     try {
-      const response = await FetchApi('http://localhost:8080/api/login', router,{
+      const response = await FetchApi('/api/login', router,{
         method: 'POST',
         body: JSON.stringify({ email, password })
       })

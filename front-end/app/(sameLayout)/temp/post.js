@@ -11,7 +11,7 @@ export default function Post({ postInfo }) {
 
     const likePost = async (like, article_id) => {
         try {
-            const response = await FetchApi("http://localhost:8080/api/reactions/store",redirect, {
+            const response = await FetchApi("/api/reactions/store",redirect, {
                 method: "POST",
                 body: JSON.stringify({ like, article_id })
             })

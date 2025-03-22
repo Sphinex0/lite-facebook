@@ -17,7 +17,7 @@ const Notifications = ({ notifications = [], Err }) => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const res = await FetchApi(`http://localhost:8080/api/GetNotification/?page=${page}`, redirect, {
+        const res = await FetchApi(`/api/GetNotification/?page=${page}`, redirect, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -62,7 +62,7 @@ const Notifications = ({ notifications = [], Err }) => {
   }, [loading]);
 
   const Handlefollow = async (id, follower, status) => {
-    const res = await fetch('http://localhost:8080/api/follow/decision', {
+    const res = await fetch('/api/follow/decision', {
       method: 'POST',
       body: JSON.stringify({ follower, status }),
       credentials: "include"
@@ -70,7 +70,7 @@ const Notifications = ({ notifications = [], Err }) => {
 
     if (res.ok) {
       /* if the request did get accepted or declined succesfuly then we delet it from the database*/
-      const response = await fetch('http://localhost:8080/api/deletenotification', {
+      const response = await fetch('/api/deletenotification', {
         method: 'POST',
         body: JSON.stringify({ id }),
         credentials: "include"

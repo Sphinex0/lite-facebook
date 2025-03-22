@@ -9,8 +9,9 @@ import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { GroupsOutlined } from '@mui/icons-material'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useWorker } from '@/app/_Context/WorkerContext'
+import { FetchApi } from '@/app/helpers'
 /*
 export default function Navbar () {
   const [bool, setbool] = useState(false)
@@ -41,6 +42,7 @@ export default function Navbar () {
 export default function Navbar () {
   const [bool, setbool] = useState(false)
   const [profile, setprofile] = useState(false)
+  const redirect = useRouter()
   function handleclick () {
     setbool(!bool)
   }
@@ -62,12 +64,11 @@ export default function Navbar () {
  
     const fetchNotifications = async () => {
       try {
-        const response = await fetch("http://localhost:8080/api/GetNotification/?page=1",{
+        const response = await FetchApi("/api/GetNotification/?page=1",redirect,{
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include', 
         });
 
         if (response.status == 200) {

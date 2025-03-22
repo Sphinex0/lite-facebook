@@ -3,7 +3,7 @@ import { red } from "@mui/material/colors"
 
 export const fetchProfile = async(setProfileInfo, id,redirect)=>{
     try {
-        const response = await FetchApi("http://localhost:8080/api/profile",redirect, {
+        const response = await FetchApi("/api/profile",redirect, {
             method: "POST",
             body: JSON.stringify({ id })
         })

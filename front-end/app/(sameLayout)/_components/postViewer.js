@@ -23,7 +23,7 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
 
   const fetchComments = async (signal) => {
     try {
-      const response = await FetchApi("http://localhost:8080/api/comments",redirect, {
+      const response = await FetchApi("/api/comments", redirect, {
         method: "POST",
         body: JSON.stringify({ before: before.current, parent: postInfo.article.id }),
         signal
@@ -36,8 +36,8 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
         if (commentsData) {
 
 
-            setComments((prv) => [...prv, ...commentsData])
-          
+          setComments((prv) => [...prv, ...commentsData])
+
 
           before.current = commentsData[commentsData.length - 1].article.created_at
           console.log("last created at", commentsData[commentsData.length - 1].article.created_at)
@@ -52,7 +52,7 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
   useEffect(() => {
     const controller = new AbortController()
     fetchComments(controller.signal)
-    return ()=>controller.abort()
+    return () => controller.abort()
   }, [])
   useOnVisible(lastElementRef, fetchComments)
 
@@ -62,13 +62,13 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
       <div className="card">
         <h2>Post</h2>
         <div className="feed">
-        {postInfo.group_name ?<div> <strong> Group </strong>: {<Link href={`/groups/${postInfo.article.group_id}`}>{postInfo.group_name}</Link>}</div> : ""}
+          {postInfo.group_name ? <div> <strong> Group </strong>: {<Link href={`/groups/${postInfo.article.group_id}`}>{postInfo.group_name}</Link>}</div> : ""}
           <div className="head">
-            <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article}/>
+            <UserInfo userInfo={postInfo.user_info} articleInfo={postInfo.article} />
           </div>
           <div className={`${styles.content} ${styles.PreviewContent}`}>{postInfo.article.content}</div>
 
-          {postInfo.article.image &&<div className={styles.imageHolder}><img src={`/posts/${postInfo.article.image}`} /> <a href={`/posts/${postInfo.article.image}`} target="_blank" className={styles.OpenInNew}><OpenInNew/></a> </div>}
+          {postInfo.article.image && <div className={styles.imageHolder}><img src={`/posts/${postInfo.article.image}`} /> <a href={`/posts/${postInfo.article.image}`} target="_blank" className={styles.OpenInNew}><OpenInNew /></a> </div>}
 
           <div className="action-button">
             <div className="action-buttons">
@@ -91,7 +91,7 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
         <CreateComment setComments={setComments} setCommentCount={setCommentCount} parent={postInfo.article.id} />
         <div className="comments">
           {comments.length === 0 ? <h5> no comments yet</h5> : comments.map((comment) => {
-            return <Comment key={comment.article.id} commentInfo={comment} reference={lastElementRef}/>
+            return <Comment key={comment.article.id} commentInfo={comment} reference={lastElementRef} />
           }
 
           )}

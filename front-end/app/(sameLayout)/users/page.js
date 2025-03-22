@@ -13,7 +13,7 @@ const Page = () => {
     const fetchData = async (signal) => {
         try {
             console.log(before, users)
-            const response = await FetchApi("http://localhost:8080/api/users",redirect, {
+            const response = await FetchApi("/api/users",redirect, {
                 method: "POST",
                 body: JSON.stringify({ before: before.current }),
                 signal

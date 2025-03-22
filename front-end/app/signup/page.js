@@ -39,7 +39,7 @@ export default function SignupPage() {
     }
 
     try {
-      const response = await FetchApi('http://localhost:8080/api/signup',redirect, {
+      const response = await FetchApi('/api/signup',redirect, {
         method: 'POST',
         body: data,
       })

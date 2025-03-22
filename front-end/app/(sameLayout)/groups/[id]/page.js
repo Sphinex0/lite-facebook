@@ -25,7 +25,7 @@ export default function ShowGroup({ params }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await FetchApi('http://localhost:8080/api/group', redirect, {
+        const response = await FetchApi('/api/group', redirect, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

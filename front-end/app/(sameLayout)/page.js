@@ -20,7 +20,7 @@ export default function Posts() {
     const fetchData = async (signal) => {
         try {
             console.log("9bl")
-            const response = await FetchApi("http://localhost:8080/api/posts",redirect, {
+            const response = await FetchApi("/api/posts",redirect, {
                 method: "POST",
                 credentials: "include",
                 body: JSON.stringify({ before: before.current }),

@@ -35,7 +35,7 @@ const Groups = () => {
 
 
     try {
-      const response = await FetchApi(`http://localhost:8080/api/groups/store`, redirect , {
+      const response = await FetchApi(`/api/groups/store`, redirect , {
         method: 'POST',
         body: formDataToSend
       });
@@ -82,7 +82,7 @@ const Groups = () => {
     type = content
     setLoading(true); // Show loading spinner or text
     try {
-      const response = await FetchApi(`http://localhost:8080/api/` + content,redirect ,{
+      const response = await FetchApi(`/api/` + content,redirect ,{
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',

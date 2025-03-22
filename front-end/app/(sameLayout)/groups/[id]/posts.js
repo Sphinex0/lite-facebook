@@ -16,7 +16,7 @@ const Posts = ({ groupID, setIsAllowed }) => {
 
     const fetchGroupPosts = async (signal) => {
         try {
-            const response = await FetchApi("http://localhost:8080/api/group/posts",redirect, {
+            const response = await FetchApi("/api/group/posts",redirect, {
                 method: "POST",
                 body: JSON.stringify({ before: before.current, group_id: +groupID }),
                 signal

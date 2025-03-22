@@ -45,7 +45,7 @@ export default function Chat() {
 
     const fetchMessages = async (signal) => {
         if (!selectedConversation) return;
-        const res = await FetchApi(`${process.env.NEXT_PUBLIC_API_URL}/api/messageshistories`,redirect, {
+        const res = await FetchApi(`/api/messageshistories`,redirect, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

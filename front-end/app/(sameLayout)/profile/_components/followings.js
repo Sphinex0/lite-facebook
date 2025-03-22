@@ -12,7 +12,7 @@ const Followings = ({ user_id }) => {
 
     const fetchFollowings = async (signal) => {
         try {
-            const response = await FetchApi("http://localhost:8080/api/followings", redirect, {
+            const response = await FetchApi("/api/followings", redirect, {
                 method: "POST",
                 body: JSON.stringify({ before: before.current, user_id }),
                 signal

@@ -30,7 +30,7 @@ const Events = ({ groupID }) => {
         setDescription("");
 
         try {
-            const response = await FetchApi("http://localhost:8080/api/Event/store",redirect, {
+            const response = await FetchApi("/api/Event/store",redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -52,7 +52,7 @@ const Events = ({ groupID }) => {
 
     const fetchEvents = async () => {
         try {
-            const response = await FetchApi("http://localhost:8080/api/Events",redirect, {
+            const response = await FetchApi("/api/Events",redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'

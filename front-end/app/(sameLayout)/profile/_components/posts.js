@@ -13,7 +13,7 @@ const Posts = ({user_id, setIsAllowed}) => {
 
         const fetchProfilePosts = async (signal) => {
             try {
-                const response = await FetchApi("http://localhost:8080/api/profile/posts",redirect, {
+                const response = await FetchApi("/api/profile/posts",redirect, {
                     method: "POST",
                     body: JSON.stringify({ before: before.current, user_id }),
                     signal

@@ -11,7 +11,7 @@ const About = ({ user_id, action }) => {
     const redirect = useRouter()
     const fetchProfileInfo = async (signal) => {
         try {
-            const response = await FetchApi("http://localhost:8080/api/profile/about", redirect, {
+            const response = await FetchApi("/api/profile/about", redirect, {
                 method: "POST",
                 body: JSON.stringify({ id: user_id }),
                 signal
@@ -35,7 +35,7 @@ const About = ({ user_id, action }) => {
     // /api/profile/update
     const changePrivacy = async (privacy) => {
         try {
-            const response = await FetchApi("http://localhost:8080/api/profile/update",redirect, {
+            const response = await FetchApi("/api/profile/update",redirect, {
                 method: "POST",
                 body: JSON.stringify({ privacy }),
             })
