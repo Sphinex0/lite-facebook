@@ -26,13 +26,34 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 	Group.Creator = user.ID
 	Group.Title = strings.TrimSpace(r.FormValue("Title"))
 	Group.Description = strings.TrimSpace(r.FormValue("Description"))
+<<<<<<< HEAD
+	err := r.ParseMultipartForm(10 << 20)
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "file too big")
+		return
+	}
+
+	// Extract profile picture (optional)
+	file, handler, err := r.FormFile("image")
+	if err == nil {
+		defer file.Close()
+		Group.Image, err = utils.StoreThePic("../front-end/public/pics", file, handler)
+		if err != nil {
+			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
+		}
+	}
+
+	Group.CreatedAt = int(time.Now().Unix())
+=======
 	Group.CreatedAt = int(time.Now().UnixMilli())
 	fmt.Println(Group.Title)
 	fmt.Println(Group.Description)
+>>>>>>> 0acfa975dd9832608db6324ad6be2153af3a3e33
 	if Group.Title == "" || len(Group.Title) > 50 || Group.Description == "" || len(Group.Description) > 250 {
 		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusInternalServerError))
 		return
 	}
+	fmt.Println(Group)
 	if err := Handler.Service.GreatedGroup(&Group); err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return

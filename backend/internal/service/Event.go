@@ -95,10 +95,21 @@ func (S *Service) GetEventsOption(OptionEvent models.EventOption) ([]models.Even
 	return events, nil
 }
 
-func (S *Service) GetEventgoing(OptionEvent models.EventOption) (int, error) {
-	rows, err := S.Database.ChoiseEvent(OptionEvent.EventID, OptionEvent.Going)
+func (S *Service) GetEventgoing(OptionEvent models.EventOption,user_id int) (int,string, error) {
+	rows, user,err := S.Database.ChoiseEvent(OptionEvent.EventID, OptionEvent.Going)
 	if err != nil {
-		return 0, err
+		if err == sql.ErrNoRows {
+			fmt.Println("rows", rows)
+			fmt.Println("user", user)
+			fmt.Println("err",nil)
+			return 0,"not", nil
+		}else {
+			return 0,"", err
+		}
 	}
-	return rows, nil
+	if user == user_id {
+		fmt.Println("user",user)
+		return rows, "action", nil
+	}
+	return rows,"not", nil
 }

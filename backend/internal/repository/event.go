@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -73,12 +74,27 @@ func (data *Database) CheckEvent(EventId,UserId int) (bool, error) {
 }
 
 
-func (data *Database) ChoiseEvent(id int,choise bool) (int, error) {
+func (data *Database) ChoiseEvent(id int, choise bool) (int, int, error) {
+    var count int
+    var user_id int 
+    res := data.Db.QueryRow(`SELECT  user_id FROM event_options WHERE event_id = ? AND going = ?`, id, choise).Scan(&count)
+    
 
-	var count int
-	res := data.Db.QueryRow(`SELECT Count(*) FROM event_options WHERE event_id = ? AND going=?`, id,choise).Scan(&count)
-	
-	return count ,res
+	if res != nil && count == 0 {
+		log.Println("error: res", res)
+        return count, 0, res
+    }
+    
+
+	res1 := data.Db.QueryRow(`SELECT Count(*) FROM event_options WHERE event_id = ? AND going = ?`, id, choise).Scan(&user_id)
+    if res1 != nil && user_id == 0 {
+		log.Println("error: res1", res1)
+        return count, 0, res
+    }
+
+
+    
+    return count, user_id, res
 }
 
 
