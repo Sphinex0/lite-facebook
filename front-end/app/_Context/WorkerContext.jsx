@@ -1,7 +1,11 @@
 "use client";
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 
-const WorkerContext = createContext();
+const WorkerContext = createContext(
+    {
+        portRef: { current: null }
+    }
+);
 
 export function WorkerProvider({ children }) {
     const workerRef = useRef(null);
@@ -141,8 +145,9 @@ export function WorkerProvider({ children }) {
     }, [conversations])
 
     const value = {
+        portRef,
         userRef,
-        portRef, clientWorker,
+        clientWorker,
         conversations,
         setConversations,
         selectedConversationRef,
