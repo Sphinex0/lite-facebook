@@ -76,7 +76,7 @@ func (Handler *Handler) HandleGetProfileAbout(w http.ResponseWriter, r *http.Req
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see" {
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
+			utils.WriteJson(w, http.StatusBadRequest, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -114,7 +114,7 @@ func (Handler *Handler) HandleUpdateProfile(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see" {
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
+			utils.WriteJson(w, http.StatusBadRequest, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -137,7 +137,7 @@ func (Handler *Handler) HandleGetProfilePosts(w http.ResponseWriter, r *http.Req
 	if err.Err != nil {
 		log.Println(err)
 		if err.Err.Error() == "profile is private, follow to see" {
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
+			utils.WriteJson(w, http.StatusBadRequest, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
