@@ -73,6 +73,13 @@ const Notifications = ({ notifications = [], Err }) => {
         {Err && <div className="notif-err">Error loading notifications. Please try again.</div>}
         {items && items.map((notification, index) => {
           switch (notification.type) {
+            case 'follow':
+              return (
+                <div key={index} className="notification-div">
+                  <h1>A Follow</h1>
+                  <p>You did Get a follow From a user Named {notification.invoker}</p>
+                  </div>
+              )
             case 'follow-request':
               return (
                 <div key={index} className="notification-div">

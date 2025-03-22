@@ -54,7 +54,7 @@ func (S *Service) GetUserNotifications(usrId string, page int) ([]models.Notific
 
 func (s *Service) AddNotification(notification models.Notification) error {
 	switch notification.Type {
-	case "follow-request":
+	case "follow-request", "follow":
 		if !repository.CheckIfUserExistsById(notification.InvokerID, s.Database.Db) || !repository.CheckIfUserExistsById(notification.UserID, s.Database.Db) {
 			return errors.New("invalid users")
 		}

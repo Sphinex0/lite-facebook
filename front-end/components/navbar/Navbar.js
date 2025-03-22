@@ -7,6 +7,8 @@ import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
 import MailOutlinedIcon from '@mui/icons-material/MailOutlined'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+
 /*[
     {
       type: 'follow-request',
@@ -77,7 +79,9 @@ export default function Navbar () {
     <nav>
       {/* Search Bar (Right) */}
       <div className='logo'>
+        <Link href={'/'}>
         <span>Lite-Facebook</span>
+        </Link>
       </div>
 
       {/* Logo and Icons (Center) */}
@@ -85,12 +89,14 @@ export default function Navbar () {
         <div className='icons'>
           <HomeOutlinedIcon />
           <GroupOutlinedIcon />
+          
           <div className='notification'>
             <div onClick={handleclick}>
               <NotificationsNoneOutlinedIcon />
             </div>
             {notificationCount != 0 && <span className="count">{notificationCount}</span>}
             <div className='pop-out'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
+          
           </div>
           <MailOutlinedIcon />
         </div>
