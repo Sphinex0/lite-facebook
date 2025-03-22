@@ -69,7 +69,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		// }
 		_, err := Handler.Service.CheckMember(GroupID, user.ID)
 		if err != nil {
-			utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
+			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 			return
 		}
 		article.GroupID = &GroupID
@@ -105,7 +105,7 @@ func (Handler *Handler) HandelGetPostsByGroup(w http.ResponseWriter, r *http.Req
 	}
 	err = Handler.Service.VerifyGroup(data.GroupID, user.ID)
 	if err.Err != nil {
-		utils.WriteJson(w, http.StatusForbidden, http.StatusText(http.StatusForbidden))
+		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 		return
 	}
 	article_views, err := Handler.Service.FetchPostsByGroup(user.ID, data.GroupID, data.Before)
