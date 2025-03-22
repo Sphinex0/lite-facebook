@@ -1,4 +1,11 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
 
-export default nextConfig;
+const nextConfig = {
+    experimental: {
+        authInterrupts: true,
+    },
+};
+
+// module.exports = nextConfig;
+
+export default nextConfig

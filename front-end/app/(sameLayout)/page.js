@@ -6,7 +6,7 @@ import CreatePost from "./_components/createPost"
 import CreatePostModal from "./_components/createPostModal"
 import { FetchApi, useOnVisible } from "../helpers"
 import PostList from "./_components/postList"
-import { redirect } from "next/navigation"
+import { forbidden, notFound, redirect } from "next/navigation"
 import { useRouter } from "next/navigation"
 
 export default function Posts() {
@@ -14,6 +14,8 @@ export default function Posts() {
     const [modalDisplay, setModalDisplay] = useState(false)
     
     const redirect = useRouter()
+    // forbidden()
+    // notFound()
 
     const lastPostElementRef = useRef(null)
     const before = useRef(Math.floor(Date.now()))
