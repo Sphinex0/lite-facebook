@@ -6,41 +6,36 @@ import (
 	"social-network/internal/models"
 )
 
-func (database *Database) GetUserNotifications(userID string) ([]models.Notification, error) {
+func (database *Database) GetUserNotifications(userID string, start int) ([]models.Notification, error) {
 	rows, err := database.Db.Query(`
-SELECT 
-    n.id AS notification_id,
-    n.type,
-    u.first_name AS invoker_name,
-    g.title AS group_name,
-    n.event_id,
-    e.title AS event_name
-FROM 
-    notifications n
-LEFT JOIN 
-    users u ON n.invoker_id = u.id
-LEFT JOIN 
-    groups g ON n.group_id = g.id
-LEFT JOIN 
-    events e ON n.event_id = e.id
-WHERE 
-    n.user_id = ?;
-`, userID);if err != nil {
-		return []models.Notification{}, err
-	}
+	SELECT notification_id, notification_type, invoker_name, group_name, group_id, event_name 
+	FROM user_notifications
+	WHERE notified_user_id = ?
+	LIMIT ? OFFSET ?
+`, userID, 10, start);if err != nil{
+	return []models.Notification{}, err
+} 
 
 	var notifications []models.Notification
 	for rows.Next() {
 		var notification models.Notification
-		err := rows.Scan(&notification.ID, &notification.Type, &notification.InvokerName, &notification.GroupTitle, &notification.EventID, &notification.EventName)
+		err := rows.Scan(
+			&notification.ID,
+			&notification.Type,
+			&notification.InvokerName,
+			&notification.GroupTitle,
+			&notification.EventID,
+			&notification.EventName,
+		)
+		
 		if err != nil {
-			fmt.Println("err",err)
 			return []models.Notification{}, err
 		}
 		notifications = append(notifications, notification)
 	}
 
 	if err := rows.Err(); err != nil {
+		fmt.Println("err rows",err)
 		return nil, err
 	}
 	rows.Close()
@@ -71,6 +66,12 @@ func (database *Database) CountUnSeenNotifications(userID string) (int, error) {
 	return num, err
 }
 
+func (database *Database) Countallusernotif(userID string) (int, error) {
+	var num int
+	err := database.Db.QueryRow("SELECT COUNT(*) FROM notifications WHERE user_id = ?", userID).Scan(&num)
+	return num, err
+}
+
 func (database *Database) CheckNotifValidation(ntfId int) bool {
 	var exists bool
 	query := `SELECT EXISTS(SELECT 1 FROM notifications WHERE id = ?)`
@@ -84,5 +85,16 @@ func (database *Database) CheckNotifValidation(ntfId int) bool {
 
 func (database *Database) MarkAsseen(ntfId, userID int) error {
 	_, err := database.Db.Exec(`UPDATE notifications SET seen = 1 WHERE id = ? AND user_id = ?`, ntfId, userID)
+	return err
+}
+
+func (database *Database) CheckifUsrMatchNtfc(ntfId, userID int) bool {
+	var user int
+	err := database.Db.QueryRow(`SELECT invoker_id FROM notifications WHERE id = ? AND user_id = ?`, ntfId, userID).Scan(&user)
+	return err == nil && user != 0
+}
+
+func (database *Database) DeleteNotification(ntfId, userID int) error {
+	_, err := database.Db.Exec(`DELETE FROM notifications WHERE id = ? AND user_id = ?`, ntfId, userID)
 	return err
 }
