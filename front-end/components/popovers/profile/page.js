@@ -39,7 +39,10 @@ function Profilepop() {
                 <>
                     <div className='profile-div'>
                         <Link href={`/profile/${user.id}`}>
-                            <h3>{user.first_name} {user.last_name}</h3>
+                        <div className='profile'>
+                            <img className='left-profile' src={user.image || "/default-profile.png"} alt='Profile' />
+                            <h3 className='right-profile'>{user.first_name} {user.last_name}</h3>
+                        </div>
                         </Link>
                     </div>
 

@@ -31,9 +31,18 @@
     align-items: center;
 }
 
-.logout {
+.profile {
     display: flex;
-    margin-right: 36px;
-    justify-content: center;
     align-items: center;
+}
+
+.left-profile {
+    width: 43px;
+    margin-right: 15px;
+}
+
+.right-profile {
+    margin: 0;
+    font-size: 1.2em;
+    width: 145px;
 }
