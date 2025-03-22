@@ -95,11 +95,15 @@ func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 	var OptionEvent models.EventOption
 
 	OptionEvent.UserID = user.ID
+
+
+
 	err := utils.ParseBody(r, &OptionEvent)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
+	
 	err = Handler.Service.PostEventsOption(OptionEvent)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
@@ -107,7 +111,7 @@ func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 }
 
 func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
+	if r.Method != http.MethodPost {
 		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
 		return
 	}
@@ -123,4 +127,31 @@ func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(EventOptions)
+}
+
+
+func (Handler *Handler) GetEventchoise(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("GetEventchoise")
+	if r.Method != http.MethodPost {
+		utils.WriteJson(w, http.StatusMethodNotAllowed, "method not allowed")
+		return
+	}
+
+
+
+
+	var EventOption models.EventOption
+	err := utils.ParseBody(r, &EventOption)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
+	fmt.Println("EventOption",EventOption)
+	Event, err := Handler.Service.GetEventgoing(EventOption)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		return
+	
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(Event)
 }
