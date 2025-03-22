@@ -1,19 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styles from "./selectFollower.module.css"
 import UserInfo from './userInfo'
-import { useOnVisible } from '@/app/helpers'
+import { FetchApi, useOnVisible } from '@/app/helpers'
+import { useRouter } from 'next/navigation'
+import { red } from '@mui/material/colors'
 
 
 const SelectFollower = () => {
     const [followers, setFollowers] = useState([])
     const before = useRef(Math.floor(Date.now()))
     const lastElementRef = useRef(null)
+    const redirect = useRouter()
 
     const fetchFollowers = async (signal) => {
         try {
-            const response = await fetch("http://localhost:8080/api/followers", {
+            const response = await FetchApi("http://localhost:8080/api/followers",redirect, {
                 method: "POST",
-                credentials: "include",
                 body: JSON.stringify({ before: before.current }),
                 signal
             })

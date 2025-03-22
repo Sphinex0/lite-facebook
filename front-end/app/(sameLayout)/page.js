@@ -23,7 +23,7 @@ export default function Posts() {
             const response = await FetchApi("http://localhost:8080/api/posts",redirect, {
                 method: "POST",
                 credentials: "include",
-                body: { before: before.current },
+                body: JSON.stringify({ before: before.current }),
                 signal
                 
             })

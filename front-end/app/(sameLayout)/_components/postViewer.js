@@ -1,16 +1,18 @@
 import { ThumbUp, ThumbDown, OpenInNew } from "@mui/icons-material";
 import styles from './post.module.css';
-import { timeAgo, useOnVisible } from "@/app/helpers";
+import { FetchApi, timeAgo, useOnVisible } from "@/app/helpers";
 import CreateComment from "./createComment";
 import { useEffect, useRef, useState } from "react";
 import Comment from "./comment";
 import UserInfo from "./userInfo";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function PostViewer({ postInfo, likes, disLikes, likeState, likePost, commentsCount, setCommentCount, setPostViewDisplay }) {
   const [comments, setComments] = useState([])
   const lastElementRef = useRef(null)
   const before = useRef(Math.floor(Date.now()))
+  const redirect = useRouter()
 
   const hide = (e) => {
     if (e.target.classList.contains('customize-theme')) {
@@ -21,9 +23,8 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
 
   const fetchComments = async (signal) => {
     try {
-      const response = await fetch("http://localhost:8080/api/comments", {
+      const response = await FetchApi("http://localhost:8080/api/comments",redirect, {
         method: "POST",
-        credentials: "include",
         body: JSON.stringify({ before: before.current, parent: postInfo.article.id }),
         signal
       })

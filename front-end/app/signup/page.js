@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import styles from "./signup.module.css"
+import { FetchApi } from '../helpers'
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -15,6 +16,7 @@ export default function SignupPage() {
     nickname: '',
     aboutMe: ''
   })
+  const redirect = useRouter()
 
   const [error, seterror] = useState("")
 
@@ -36,10 +38,9 @@ export default function SignupPage() {
     }
 
     try {
-      const response = await fetch('http://localhost:8080/api/signup', {
+      const response = await FetchApi('http://localhost:8080/api/signup',redirect, {
         method: 'POST',
-        body: data,// Send form data as a JSON string
-        credentials: "include"
+        body: data,
       })
 
       if (response.status == 200) {

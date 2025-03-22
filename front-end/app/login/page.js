@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import styles from "./login.module.css"
+import { FetchApi } from '../helpers'
 
 export default function Login () {
   const [email, setEmail] = useState('')
@@ -15,10 +16,9 @@ export default function Login () {
     e.preventDefault()
 
     try {
-      const response = await fetch('http://localhost:8080/api/login', {
+      const response = await FetchApi('http://localhost:8080/api/login', router,{
         method: 'POST',
-        body: JSON.stringify({ email, password }),
-        credentials:"include"
+        body: JSON.stringify({ email, password })
       })
 
       if (response.status == 200) {

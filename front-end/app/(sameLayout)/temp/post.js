@@ -1,3 +1,5 @@
+import { FetchApi } from "@/app/helpers"
+import { useRouter } from "next/navigation"
 import { use, useState } from "react"
 //import styles from './posts.module.css'
 
@@ -5,12 +7,12 @@ export default function Post({ postInfo }) {
     const [likes, setLikes] = useState(postInfo.likes)
     const [disLikes, setDislikes] = useState(postInfo.disLikes)
     const [likeState, setLikeState] = useState(postInfo.like) //0 1 -1
+    const redirect = useRouter()
 
     const likePost = async (like, article_id) => {
         try {
-            const response = await fetch("http://localhost:8080/api/reactions/store", {
+            const response = await FetchApi("http://localhost:8080/api/reactions/store",redirect, {
                 method: "POST",
-                credentials: "include",
                 body: JSON.stringify({ like, article_id })
             })
 

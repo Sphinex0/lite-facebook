@@ -1,19 +1,20 @@
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
 import UserInfo from '../_components/userInfo'
-import { useOnVisible } from '@/app/helpers'
+import { FetchApi, useOnVisible } from '@/app/helpers'
+import { useRouter } from 'next/navigation'
 
 const Page = () => {
     const [users, setUsers] = useState([])
+    const redirect = useRouter()
 
     const lastElementRef = useRef(null)
     const before = useRef(null)
     const fetchData = async (signal) => {
         try {
             console.log(before, users)
-            const response = await fetch("http://localhost:8080/api/users", {
+            const response = await FetchApi("http://localhost:8080/api/users",redirect, {
                 method: "POST",
-                credentials: "include",
                 body: JSON.stringify({ before: before.current }),
                 signal
                 

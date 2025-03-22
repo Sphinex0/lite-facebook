@@ -18,9 +18,9 @@ const pluralize = (number, unit) => {
   }
 }
 export const timeAgo = (unixTimestamp) => {
-    // Convert Unix timestamp (in seconds) to a Date object (requires milliseconds)
-    const pastDate = new Date(unixTimestamp);
-    const currentDate = new Date();
+  // Convert Unix timestamp (in seconds) to a Date object (requires milliseconds)
+  const pastDate = new Date(unixTimestamp);
+  const currentDate = new Date();
 
   // Calculate the difference in milliseconds
   const diffMs = currentDate - pastDate;
@@ -65,13 +65,13 @@ export const timeAgo = (unixTimestamp) => {
 }
 
 
-export const likeArticle = async (like, article_id, setLikes, setDislikes, likeState, setLikeState) => {
+export const likeArticle = async (like, article_id, setLikes, setDislikes, likeState, setLikeState, redirect) => {
   try {
-    const response = await fetch("http://localhost:8080/api/reactions/store", {
+    const response = await FetchApi("http://localhost:8080/api/reactions/store", redirect, {
       method: "POST",
-      credentials: "include",
-      body: JSON.stringify({ like, article_id })
+      body: JSON.stringify({ like, article_id }),
     })
+
 
     console.log("status:", response.status)
     if (response.ok) {
@@ -112,10 +112,11 @@ export const addArticle = async (e, setAtricle, { parent, group }) => {
     formData.append("group_id", group || 0)
     formData.append("parent", parent || 0)
     console.log(formData)
-    const response = await fetch("http://localhost:8080/api/articles/store", {
+
+    const response = await FetchApi("http://localhost:8080/api/articles/store", redirect, {
       method: "POST",
-      credentials: "include",
-      body: formData
+      body: formData,
+
     })
 
     console.log("status:", response.status)
@@ -189,13 +190,12 @@ export const useOnVisible = (ref, callback, once = true, threshold = 0.1) => {
 };
 
 
-export const joinGroup = async (groupID, setIsAllowed) => {
+export const joinGroup = async (groupID, setIsAllowed, redirect) => {
   try {
 
-    const response = await fetch("http://localhost:8080/api/articles/store", {
+    const response = await FetchApi("http://localhost:8080/api/articles/store", redirect, {
       method: "POST",
-      credentials: "include",
-      body: formData
+      body: formData,
     })
 
     console.log("status:", response.status)
@@ -221,24 +221,32 @@ export const joinGroup = async (groupID, setIsAllowed) => {
 }
 
 
-export const FetchApi = async (url, redirect, { method, body, signal }) => {
-  
+export const FetchApi = async (url, redirect, { method, body, signal, headers }) => {
+
   try {
     const response = await fetch(url, {
       method,
       credentials: "include",
       signal,
-      body: JSON.stringify(body)
+      body,
+      headers
     })
     if (response.status == 401) {
       redirect.push("/login")
       return false
     } else if (response.status == 403) {
-      console.log("status", response.status)
       redirect.push("/")
       return false
+    } else if (response.status == 404) {
+      redirect.push("/404")
+      return false
+    } else if (response.status == 500) {
+      redirect.push("/500")
+      return false
+    } else if (response.status == 400) {
+      redirect.push("/400")
+      return false
     }
-    console.log("status: dsfdf", response.status)
     return response
   } catch (error) {
     return false

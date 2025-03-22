@@ -6,6 +6,9 @@ import Posts from './posts';
 import Members from './members';
 import joinGroup from "./function";
 import Events from "./Events";
+import { useRouter } from 'next/navigation';
+import { red } from '@mui/material/colors';
+import { FetchApi } from '@/app/helpers';
 export default function ShowGroup({ params }) {
   const id = use(params).id;
 
@@ -15,16 +18,18 @@ export default function ShowGroup({ params }) {
   const [error, setError] = useState(null);
   const [isAllowed, setIsAllowed] = useState(false)
   const [isAction, setIsAction] = useState("")
+  
+
+  const redirect = useRouter()
   console.log(JSON.stringify({ id: parseInt(id) }))
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('http://localhost:8080/api/group', {
+        const response = await FetchApi('http://localhost:8080/api/group', redirect, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          credentials: 'include',
           body: JSON.stringify({ id: parseInt(id) }),
         });
         JSON.stringify({ id })
@@ -36,9 +41,9 @@ export default function ShowGroup({ params }) {
         console.log(data);
         setIsAction(data.action)
         setGroupData(data);
-        if (data.action==="accepted"){
+        if (data.action === "accepted") {
           setIsAllowed(true)
-        }else {
+        } else {
           setIsAllowed(false)
         }
       } catch (error) {
@@ -68,20 +73,20 @@ export default function ShowGroup({ params }) {
             <span className={styles.followText}>{new Date(groupData.group_info.created_at).toLocaleDateString()}</span><br />
           </div>
           <div className={`${styles.g1} ${styles.btnSection}`}>
-        {isAllowed 
-        ? <button className={styles.editProfileBtn} 
-        onClick={()=>{
-          leaveGroup(id)
-        }}
-        >send Invite</button>
+            {isAllowed
+              ? <button className={styles.editProfileBtn}
+                onClick={() => {
+                  leaveGroup(id)
+                }}
+              >send Invite</button>
 
 
-        :<button className={styles.editProfileBtn} 
-        onClick={()=>{
-         joinGroup(id,groupData.group_info.creator,setIsAction,isAction)
-       }}
-       >{isAction}</button>
-        } 
+              : <button className={styles.editProfileBtn}
+                onClick={() => {
+                  joinGroup(id, groupData.group_info.creator, setIsAction, isAction, redirect)
+                }}
+              >{isAction}</button>
+            }
 
           </div>
         </div>

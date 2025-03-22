@@ -26,7 +26,31 @@
     padding: 1.5rem;
     border-bottom: 1px solid #e0e0e0;
     background-color: #f8f9fa;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
 }
+
+.Hide {
+    display: none;
+}
+
+.ConversationsBtn {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #e7e7e7;
+    border: none;
+    border-radius: 5px;
+    padding: 0.5rem;
+    color: rgb(162, 73, 252);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Hide is ckecked */
+
 
 .chatHeader h4 {
     margin: 0;
@@ -428,28 +452,31 @@
 @media (max-width: 1000px) {
     .container {
         grid-template-columns: 1fr;
-        height: 100vh;
+        /* height: 100vh; */
         position: relative;
-        /* Add container padding to create spacing */
         padding: 8px;
+    }
+
+    .Hide:checked ~ .conversationsList {
+        /* width: 0; */
+
+        width: 80%;
+        padding: 0;
     }
 
     .conversationsList {
         position: absolute;
         /* Use viewport units to account for padding */
-        width: calc(100% - 16px);
+        width: calc(100% - 100px);
         /* 100% width minus total horizontal padding */
-        height: calc(100% - 16px);
+        height: calc(100% - 120px);
         /* 100% height minus total vertical padding */
         margin: 0;
         /* Remove original margin */
-        left: 8px;
+        right: 8px;
         top: 8px;
-    }
-
-    /* Keep existing mobile styles */
-    .chatContainer {
-        flex: 1;
-        height: 100%;
+        width: 0;
+        padding: 0;
+        transition: all 1s ease;
     }
 }

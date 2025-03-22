@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import './notification.css';
+import { FetchApi } from '@/app/helpers';
+import { useRouter } from 'next/navigation';
 
 const Notifications = ({ notifications = [], Err }) => {
   
@@ -8,15 +10,15 @@ const Notifications = ({ notifications = [], Err }) => {
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef();
+  const redirect = useRouter()
   console.log(items);
 
   useEffect(() => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8080/api/GetNotification`,{
+        const res = await FetchApi(`http://localhost:8080/api/GetNotification`,redirect,{
           method:"POST",
-          credentials:"include"
         });
 
         const newItems = await res.json();

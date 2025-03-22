@@ -1,13 +1,13 @@
 "use client";
-import { useEffect, useState, useRef, useContext } from "react";
+import { useEffect, useState, useRef, use } from "react";
 import styles from "./styles.module.css";
 import Message from "@/app/(sameLayout)/chat/_components/message";
-import { AddPhotoAlternate, Cancel, CheckBox, EmojiEmotions, Send } from "@mui/icons-material";
+import { AddPhotoAlternate, Cancel, EmojiEmotions, PeopleAlt, Send } from "@mui/icons-material";
 import { emojis } from "./_components/emojis";
 import UserInfo from "../_components/userInfo";
-import { Context } from "../layout";
-import { opThrottle, useOnVisible } from "@/app/helpers";
+import { FetchApi, opThrottle } from "@/app/helpers";
 import { useWorker } from "@/app/_Context/WorkerContext";
+import { useRouter } from "next/navigation";
 
 export default function Chat() {
 
@@ -22,9 +22,10 @@ export default function Chat() {
     const combinadeRef = useRef(null);
     const [replyingTo, setReplyingTo] = useState(null);
     const inputRef = useRef(null);
-    const chatBodyRef = useRef(null); // Ref for the chat body
-    const oldScrollHeightRef = useRef(null); // Store scroll height before loading more
-    const justLoadedMoreRef = useRef(false); // Flag for pagination
+    const chatBodyRef = useRef(null);
+    const oldScrollHeightRef = useRef(null); 
+    const justLoadedMoreRef = useRef(false); 
+    const redirect = useRouter()
 
 
     useEffect(() => {
@@ -44,15 +45,17 @@ export default function Chat() {
 
     const fetchMessages = async (signal) => {
         if (!selectedConversation) return;
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/messageshistories`, {
+        const res = await FetchApi(`${process.env.NEXT_PUBLIC_API_URL}/api/messageshistories`,redirect, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify({ conversation_id: selectedConversation.id, before: beforeRef.current }),
-            credentials: "include",
             signal
         });
+
+
+
         if (res.ok) {
             const data = await res.json() || [];
             if (data && data.length > 0) {
@@ -79,7 +82,6 @@ export default function Chat() {
     };
 
 
-    // Fetch messages when selectedConversation changes
     useEffect(() => {
         selectedConversationRef.current = selectedConversation;
         const controller = new AbortController();
@@ -238,8 +240,14 @@ export default function Chat() {
         <div className={styles.container}>
             <div className={styles.chatContainer}>
                 <div className={styles.chatHeader}>
+                    <div>
+                        <label htmlFor="Hide" className={styles.ConversationsBtn}>
+                            <PeopleAlt />
+                        </label>
+                    </div>
                     <h4>{displayTitle}</h4>
                 </div>
+
 
                 <div className={styles.chatBody} onScroll={handleScroll} ref={chatBodyRef}>
                     {selectedConversation ? (
@@ -346,12 +354,9 @@ export default function Chat() {
                 </div>
             </div>
 
+            <input type="checkbox" id="Hide" className={styles.Hide} />
             <div className={styles.conversationsList}>
-                <div>
-                    {/* label and checkboks for conv */}
-                    <label htmlFor="Hide" className={styles.Hide}>Conversations</label>
-                    <CheckBox id="Hide" className={styles.Hide} />
-                </div>
+                
                 {conversations?.map((conversationInfo) => {
                     const { conversation, user_info, group, last_message, seen } = conversationInfo;
                     const onlineDiv = true
