@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+
 	"social-network/internal/models"
 	utils "social-network/pkg"
 )
@@ -19,26 +20,30 @@ func (database *Database) UpdateUserPrivacy(profile *models.User) (err error) {
 	return
 }
 
-func (data *Database) GetAllUsers( before int) (users []models.UserInfo, err error) {
+func (data *Database) GetAllUsers(before int, currentUser int) (users []models.UserInfo, err error) {
 	var rows *sql.Rows
-	if before != 0{
+	if before != 0 {
 		rows, err = data.Db.Query(`
         SELECT id, nickname, first_name, last_name, image
 		FROM users 
-		WHERE id < ?
+		WHERE id != ?
+		AND id < ?
 		ORDER BY id DESC
 		LIMIT 10
     `,
-		before)
-	}else{
+			currentUser,
+			before)
+	} else {
 		rows, err = data.Db.Query(`
         SELECT id, nickname, first_name, last_name, image
 		FROM users u
+		WHERE id != ?
 		ORDER BY id DESC
 		LIMIT 10
-    `)
+    `,
+	currentUser)
 	}
-	
+
 	if err != nil {
 		return
 	}

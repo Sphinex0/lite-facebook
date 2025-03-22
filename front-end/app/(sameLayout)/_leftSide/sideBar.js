@@ -7,7 +7,13 @@ import React, { useEffect, useState } from 'react'
 
 const SideBar = () => {
     const router = usePathname();
-    const { notfications } = useWorker()
+    
+
+    const { notfications , selectedConversationRef } = useWorker()
+
+    useEffect(() => {
+        selectedConversationRef.current = null
+    },[router])
     // const [path, setPath]= useState(router)
     useEffect(()=>{
         const count = document.querySelector("#msgCount")

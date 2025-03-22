@@ -2,7 +2,7 @@
 import { useEffect, useState, useRef, useContext } from "react";
 import styles from "./styles.module.css";
 import Message from "@/app/(sameLayout)/chat/_components/message";
-import { AddPhotoAlternate, Cancel, EmojiEmotions, Send } from "@mui/icons-material";
+import { AddPhotoAlternate, Cancel, CheckBox, EmojiEmotions, Send } from "@mui/icons-material";
 import { emojis } from "./_components/emojis";
 import UserInfo from "../_components/userInfo";
 import { Context } from "../layout";
@@ -11,7 +11,7 @@ import { useWorker } from "@/app/_Context/WorkerContext";
 
 export default function Chat() {
 
-    const { portRef, clientWorker, conversations, setConversations , selectedConversationRef , messages , setMessages } = useWorker();
+    const { portRef, clientWorker, conversations, setConversations, selectedConversationRef, messages, setMessages } = useWorker();
     const conversationsRef = useRef(conversations);
     const [message, setMessage] = useState({ content: "", reply: null });
     const [selectedConversation, setSelectedConversation] = useState(null);
@@ -30,6 +30,17 @@ export default function Chat() {
     useEffect(() => {
         conversationsRef.current = conversations;
     }, [conversations]);
+
+    useEffect(() => {
+        const port = portRef.current;
+        if (!port) return;
+        port.postMessage({
+            kind: "send",
+            payload: {
+                type: "conversations"
+            }
+        });
+    }, [])
 
     const fetchMessages = async (signal) => {
         if (!selectedConversation) return;
@@ -137,6 +148,8 @@ export default function Chat() {
         setReplyingTo(null);
         setEmoji(false);
     };
+
+
 
     const SendFile = () => {
         const port = portRef.current;
@@ -334,6 +347,11 @@ export default function Chat() {
             </div>
 
             <div className={styles.conversationsList}>
+                <div>
+                    {/* label and checkboks for conv */}
+                    <label htmlFor="Hide" className={styles.Hide}>Conversations</label>
+                    <CheckBox id="Hide" className={styles.Hide} />
+                </div>
                 {conversations?.map((conversationInfo) => {
                     const { conversation, user_info, group, last_message, seen } = conversationInfo;
                     const onlineDiv = true

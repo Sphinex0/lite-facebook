@@ -60,3 +60,31 @@ func (data *Database) OptionEvent(id int) (*sql.Rows, error) {
 	}
 	return res, nil
 }
+
+
+func (data *Database) CheckEvent(EventId,UserId int) (bool, error) {
+	fmt.Println("EventId",EventId)
+	fmt.Println("UserId",UserId)
+	var going bool
+
+	err := data.Db.QueryRow(`SELECT going FROM event_options WHERE event_id = ? AND user_id`, EventId,UserId).Scan(&going)
+	
+	return going, err
+}
+
+
+func (data *Database) ChoiseEvent(id int,choise bool) (int, error) {
+
+	var count int
+	res := data.Db.QueryRow(`SELECT Count(*) FROM event_options WHERE event_id = ? AND going=?`, id,choise).Scan(&count)
+	
+	return count ,res
+}
+
+
+func (data *Database) UpdateOptionEvent(EventOption models.EventOption) error {
+
+
+	_ ,err := data.Db.Exec(`UPDATE event_options SET going = ? WHERE event_id = ? AND user_id = ?`, EventOption.Going,EventOption.EventID,EventOption.UserID)
+	return err
+}

@@ -58,6 +58,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 
 	mux.HandleFunc("/api/Event/options/store", handler.OptionEvent)
 	mux.HandleFunc("/api/Event/options", handler.GetEventOption)
+	mux.HandleFunc("/api/Event/options/choise", handler.GetEventchoise)
 
 	// followers
 	mux.HandleFunc("/api/followers", handler.HandleGetFollowers)            // get
@@ -79,7 +80,9 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/messageshistories", handler.HandelMessagesHestories)
 
 	// notification
-	mux.HandleFunc("/api/GetNotification", handler.HandleGetNotification) // get
+	mux.HandleFunc("/api/GetNotification/", handler.HandleGetNotification)
+	mux.HandleFunc("/api/deletenotification", handler.HandleDeleteNotification)
+	mux.HandleFunc("/api/MarkNotificationAsSeen", handler.MarkNotificationAsSeen)
 
 	go func() {
 		for {

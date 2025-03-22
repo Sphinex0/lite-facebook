@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"slices"
 
 	"social-network/internal/models"
 )
@@ -13,6 +14,9 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		err = fmt.Errorf("can't follow yourself sadly")
 		return
 	}
+
+
+	var notification models.Notification
 
 	err = S.Database.GetFollow(follow)
 
@@ -34,8 +38,10 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 		}
 		if status == "public" {
 			follow.Status = "accepted"
+			notification.Type = "follow"
 		} else {
 			follow.Status = "pending"
+			notification.Type = "follow-request"
 		}
 
 		err = S.Database.SaveFollow(follow)
@@ -43,19 +49,41 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 			log.Println("error saving the follow")
 		} else {
 			if follow.Status == "accepted" {
-				conv := models.Conversation{
-					Entitie_one:      follow.Follower,
-					Entitie_two_user: &follow.UserID,
-					Type:             "private",
+				// chaeck if there is a conversation between the two
+				conv, err1 := S.Database.GetConversationByUsers(follow.Follower, follow.UserID)
+				if err1 != nil && err1 != sql.ErrNoRows {
+					log.Println("error getting the conversation")
+					err = err1
+					return
 				}
+				if err1 == sql.ErrNoRows {
+					conv = models.Conversation{
+						Entitie_one:      follow.Follower,
+						Entitie_two_user: &follow.UserID,
+						Type:             "private",
+					}
+					S.Database.CreateConversation(&conv)
 
-				S.Database.CreateConversation(&conv)
+					ConvSubMu.Lock()
+					defer ConvSubMu.Unlock()
+
+					UserConnMu.RLock()
+					defer UserConnMu.RUnlock()
+
+					for _, userID := range []int{follow.Follower, follow.UserID} {
+						if _, ok := UserConnections[userID]; ok {
+							if !slices.Contains(ConvSubscribers[conv.ID], userID) {
+								ConvSubscribers[conv.ID] = append(ConvSubscribers[conv.ID], userID)
+							}
+						}
+					}
+				}
 			}
 		}
-		var notification models.Notification
 		notification.InvokerID = follow.Follower
 		notification.UserID = follow.UserID
-		notification.Type = "follow-request"
+		
+		fmt.Println("rrrr")
 		S.AddNotification(notification)
 
 	}
@@ -113,6 +141,7 @@ func (S *Service) GetFollowers(user *models.UserInfo, before int, currentUser in
 	followers, err = S.Database.GetFollowers(user, before)
 	return
 }
+
 func (S *Service) GetFollowings(user *models.UserInfo, before int, currentUser int) (followings []models.FollowWithUser, err error) {
 	status, _ := S.Database.GetUserPrivacyByID(user.ID)
 	if user.ID != currentUser && status == "private" && !S.Database.IsFollow(user.ID, currentUser) {

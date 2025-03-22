@@ -166,8 +166,13 @@
   box-sizing: content-box;
 }
 
-.InputTitle,
-.InputDescriptopn,
-.InputButton {
+.InputTitle, .InputDescriptopn ,.InputButton{
+ border: 1px solid black;
+}
+
+
+.user{
+  display: flex;
+  justify-content: space-evenly;
   border: 1px solid black;
 }

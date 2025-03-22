@@ -28,6 +28,8 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 		resA := service.Database.IsFollow(Invites.Sender, Invites.Receiver)
 		resB := service.Database.IsFollow(Invites.Receiver, Invites.Sender)
 		if resA && resB {
+			err= service.Database.SaveInvite(&Invites)
+			return
 		} else {
 			return fmt.Errorf("not follow")
 		}

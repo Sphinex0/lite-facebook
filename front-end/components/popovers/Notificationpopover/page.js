@@ -3,20 +3,22 @@ import { useEffect, useState, useRef } from 'react';
 import './notification.css';
 
 const Notifications = ({ notifications = [], Err }) => {
-  
+
   const [items, setItems] = useState(notifications);
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef();
-  console.log(items);
 
   useEffect(() => {
     const fetchItems = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`http://localhost:8080/api/GetNotification`,{
-          method:"POST",
-          credentials:"include"
+        const res = await fetch(`http://localhost:8080/api/GetNotification/?page=${page}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
         });
 
         const newItems = await res.json();
@@ -56,19 +58,45 @@ const Notifications = ({ notifications = [], Err }) => {
     };
   }, [loading]);
 
+  const Handlefollow = async (id, follower, status) => {
+    const res = await fetch('http://localhost:8080/api/follow/decision', {
+      method: 'POST',
+      body: JSON.stringify({ follower, status }),
+      credentials: "include"
+    })
+
+    if (res.ok) {
+      /* if the request did get accepted or declined succesfuly then we delet it from the database*/
+      const response = await fetch('http://localhost:8080/api/deletenotification', {
+        method: 'POST',
+        body: JSON.stringify({id}),
+        credentials:"include"
+      })
+    }
+
+
+  }
+
   return (
     <div className="notification-wrapper" ref={containerRef}>
       <div className="notification-container">
         {Err && <div className="notif-err">Error loading notifications. Please try again.</div>}
-        {items.map((notification, index) => {
+        {items && items.map((notification, index) => {
           switch (notification.type) {
+            case 'follow':
+              return (
+                <div key={index} className="notification-div">
+                  <h1>A Follow</h1>
+                  <p>You did Get a follow From a user Named {notification.invoker_name}</p>
+                </div>
+              )
             case 'follow-request':
               return (
                 <div key={index} className="notification-div">
                   <h1>Follow Request</h1>
                   <p>{notification.invoker} sent you a follow request</p>
-                  <button className="accepte">Accept</button>
-                  <button className="refuse">Reject</button>
+                  <button className="accepte" onClick={() => Handlefollow(notification.id, notification.invoker_id, "accepted")}>Accept</button>
+                  <button className="refuse" onClick={() => Handlefollow(notification.id, notification.invoker_id, "rejected")}>Reject</button>
                 </div>
               );
             case 'invitation-request':
@@ -103,9 +131,7 @@ const Notifications = ({ notifications = [], Err }) => {
           }
         })}
       </div>
-      {loading && <p>Loading...</p>}
     </div>
   );
-};
-
+}
 export default Notifications;
