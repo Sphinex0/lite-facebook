@@ -62,18 +62,16 @@ const Notifications = ({ notifications = [], Err }) => {
   }, [loading]);
 
   const Handlefollow = async (id, follower, status) => {
-    const res = await fetch('/api/follow/decision', {
+    const res = await FetchApi('/api/follow/decision',redirect, {
       method: 'POST',
       body: JSON.stringify({ follower, status }),
-      credentials: "include"
     })
 
     if (res.ok) {
       /* if the request did get accepted or declined succesfuly then we delet it from the database*/
-      const response = await fetch('/api/deletenotification', {
+      const response = await FetchApi('/api/deletenotification', redirect ,{
         method: 'POST',
         body: JSON.stringify({ id }),
-        credentials: "include"
       })
     }
 

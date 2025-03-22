@@ -26,12 +26,12 @@ export default function Login () {
         const data = await response.json()
         localStorage.setItem('user', JSON.stringify(data))
         router.push('/')
-      } else {
-        const data = await response.json()
+      } else {  
+        const data = await response.json()      
         seterror(data)
       }
     } catch (error) {
-      seterror(error)
+      seterror('Network error accured')
     }
   }
 

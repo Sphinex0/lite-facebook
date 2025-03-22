@@ -47,31 +47,24 @@ export default function SignupPage() {
       if (response.status == 200) {
         // If the response is ok, navigate to the homepage
         const data = await response.json()
-        console.log(data, 'daaaata signup')
         localStorage.setItem('user', JSON.stringify(data))
         router.push('/')
       } else {
-        const data = await response.json()
-        console.log(data, 'eroooooor signup')
-
-        console.log(data);
-
+        const data = await response.json()        
         seterror(data)
       }
     } catch (error) {
-      console.log(data)
-
-      seterror(data)
+      seterror("network accured error!")
     }
   }
-
+/*
   useEffect(() => {
     if (error) {
       const timer = setTimeout(() => seterror(''), 3000)
       return () => clearTimeout(timer)
     }
   }, [error])
-
+*/
   return (
     <form onSubmit={handleSignup}>
       <div className={styles.container}>
@@ -80,8 +73,9 @@ export default function SignupPage() {
 
           {/* Error Popup */}
           {error && <div className={styles.errorPopup}>{error}</div>}
-
-          {['email', 'password', 'firstName', 'lastName', 'dob'].map(field => (
+          {error && console.log(error)}
+          {
+          ['email', 'password', 'firstName', 'lastName', 'dob'].map(field => (
             <div key={field} className={styles.inputGroup}>
               <input
                 type={

@@ -25,6 +25,15 @@ func (data *Database) CreateConversation(conv *models.Conversation) (err error) 
 	return
 }
 
+func (data *Database) DeleteConversation(id1, id2 int) (err error) {
+	query := `
+		DELETE FROM conversations
+		WHERE (entitie_one = ? AND entitie_two_user = ?) OR (entitie_one = ? AND entitie_two_user = ?)
+	`
+	_, err = data.Db.Exec(query, id1, id2, id2, id1)
+	return
+}
+
 func (data *Database) VerifyConversation(id1, id2 int, type_obj string) (err error) {
 	param := `WHERE entitie_two_group = ?`
 	if type_obj == "private" {

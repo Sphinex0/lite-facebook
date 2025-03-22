@@ -21,6 +21,7 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	Uuid, err := H.Service.LoginUser(&user)
 	if err != nil {
+		fmt.Println("err",err)
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}

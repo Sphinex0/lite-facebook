@@ -42,6 +42,12 @@ self.onconnect = (event) => {
             } else {
                 console.error('WebSocket is not open');
             }
+        } else if (kind == "close") {
+            if (socket && socket.readyState == WebSocket.OPEN) {
+                socket.close()
+            } else {
+                console.error('WebSocket is not open');
+            }
         }
     }
 }
