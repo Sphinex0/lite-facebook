@@ -3,12 +3,17 @@ import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import './profile.css';
+<<<<<<< HEAD
 import { FetchApi } from '@/app/helpers';
+=======
+import { useWorker } from '@/app/_Context/WorkerContext';
+>>>>>>> houtaib
 
 function Profilepop() {
     const [err, setErr] = useState('');
     const [user, setUser] = useState({});
     const router = useRouter();
+    const {portRef} = useWorker()
 
     useEffect(() => {
             const storedUser = JSON.parse(localStorage.getItem('user')) || {};
@@ -23,6 +28,9 @@ function Profilepop() {
 
             if (response.status === 200) {                
                 localStorage.removeItem('user');
+                portRef?.current?.postMessage({
+                    kind: "close"
+                })
                 router.push('/login')
             } else {
                 setErr("Error while logging out.");
