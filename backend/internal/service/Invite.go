@@ -57,12 +57,17 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 		}
 		// for create member
 		mb := Invites.Sender
-		var idIv int
-		idIv, err = service.Database.CheckMember(mb, Invites.GroupID)
-		if err != nil && err != sql.ErrNoRows {
+		// var idIv int
+		// idIv, err = service.Database.CheckMember(mb, Invites.GroupID)
+		// if err != nil && err != sql.ErrNoRows {
+		// 	return
+		// }
+		errErr := service.VerifyGroup(Invites.GroupID, mb)
+		if errErr.Err != nil {
+			err = errErr.Err
 			return
 		}
-		if idIv == 0 {
+		if errErr.Err != sql.ErrNoRows {
 			mb = Invites.Receiver
 		}
 		// get Conv by group id
