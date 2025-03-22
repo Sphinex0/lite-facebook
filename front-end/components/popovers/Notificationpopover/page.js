@@ -110,7 +110,7 @@ const Notifications = ({ notifications = [], Err }) => {
                   <button className="refuse">Reject</button>
                 </div>
               );
-            case 'joine':
+            case 'join':
               return (
                 <div key={index} className="notification-div">
                   <h1>Group Joining Request</h1>
