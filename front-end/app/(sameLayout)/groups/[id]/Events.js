@@ -2,6 +2,7 @@
 import { FetchApi } from "@/app/helpers";
 import style from "./group.module.css";
 import { Add, DisabledByDefault } from "@mui/icons-material";
+import EventsOptions from "./EventsOptions";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
@@ -114,10 +115,14 @@ const Events = ({ groupID }) => {
                     <ul>
                         {eventsData.map((event, index) => (
                             <div className='feed' key={index}>
-                                <div className="user">
+                                <div className={style.user}>
                                     <div className="info">
                                         <h3>{event.title}</h3>
                                         <small>{event.description}</small>
+                                    </div>
+                                    <div>
+                                        <EventsOptions event_id={event.id}/>
+                                        {/*  */}
                                     </div>
                                 </div>
                             </div>
