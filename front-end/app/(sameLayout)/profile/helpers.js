@@ -1,5 +1,4 @@
 import { FetchApi } from "@/app/helpers"
-import { red } from "@mui/material/colors"
 
 export const fetchProfile = async(setProfileInfo, id,redirect)=>{
     try {

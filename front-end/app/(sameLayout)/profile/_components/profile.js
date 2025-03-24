@@ -6,7 +6,6 @@ import About from './about';
 import ProfileHeader from './profileHeader';
 import { fetchProfile } from '../helpers';
 import Posts from './posts';
-import { red } from '@mui/material/colors';
 import { useRouter } from 'next/navigation';
 const Profile = ({ userID }) => {
   const [profileInfo, setProfileInfo] = useState({})

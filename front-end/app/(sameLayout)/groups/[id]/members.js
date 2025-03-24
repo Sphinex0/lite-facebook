@@ -3,7 +3,6 @@ import PostList from '../../_components/postList'
 import { FetchApi, useOnVisible } from '@/app/helpers'
 import MemberInfo from '../_components/member'
 import { useRouter } from 'next/navigation'
-import { red } from '@mui/material/colors'
 
 const Members = ({ groupID }) => {
     const [members, setMembers] = useState([])

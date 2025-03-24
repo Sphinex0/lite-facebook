@@ -7,7 +7,6 @@ import Members from './members';
 import joinGroup from "./function";
 import Events from "./Events";
 import { useRouter } from 'next/navigation';
-import { red } from '@mui/material/colors';
 import { FetchApi } from '@/app/helpers';
 import Popover from '../_components/popover';
 

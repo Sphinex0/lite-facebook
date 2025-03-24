@@ -3,7 +3,6 @@ import styles from "./selectFollower.module.css"
 import UserInfo from './userInfo'
 import { FetchApi, useOnVisible } from '@/app/helpers'
 import { useRouter } from 'next/navigation'
-import { red } from '@mui/material/colors'
 
 
 const SelectFollower = () => {

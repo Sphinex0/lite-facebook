@@ -4,7 +4,6 @@ import { useState } from "react"
 import Posts from "./posts"
 import { useRouter } from "next/navigation"
 import { FetchApi } from "@/app/helpers"
-import { red } from "@mui/material/colors"
 
 const Users = () => {
   const [data , setData] = useState([])
