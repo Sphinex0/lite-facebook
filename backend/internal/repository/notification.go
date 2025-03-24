@@ -8,7 +8,7 @@ import (
 
 func (database *Database) GetUserNotifications(userID string, start int) ([]models.Notification, error) {
 	rows, err := database.Db.Query(`
-	SELECT notification_id, notified_user_id, notification_type, invoker_name, invoker_id, group_name, group_id, event_name 
+	SELECT notification_id, notified_user_id, notification_type, invoker_name, invoker_id, group_name, group_id, event_id, event_name 
 	FROM user_notifications
 	WHERE notified_user_id = ?
 	LIMIT ? OFFSET ?
@@ -26,6 +26,7 @@ func (database *Database) GetUserNotifications(userID string, start int) ([]mode
 			&notification.InvokerName,
 			&notification.InvokerID,
 			&notification.GroupTitle,
+			&notification.GroupID,
 			&notification.EventID,
 			&notification.EventName,
 		)
