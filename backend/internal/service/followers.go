@@ -87,7 +87,7 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 				}
 			}
 		}
-		notification.InvokerID = follow.Follower
+		
 		notification.UserID = follow.UserID
 
 		fmt.Println("rrrr")

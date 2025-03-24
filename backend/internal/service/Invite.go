@@ -10,6 +10,9 @@ import (
 )
 
 func (service *Service) CreateInvite(Invites models.Invite) (err error) {
+	var notification models.Notification
+	notification.GroupID = Invites.GroupID
+
 	boolean := service.Database.IsCreatore(Invites.Receiver, Invites.GroupID)
 	if boolean {
 		Invites.Status = "pending"
@@ -23,6 +26,14 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 				return fmt.Errorf("bad request")
 			}
 			err = service.Database.SaveInvite(&Invites)
+			if err == nil {
+
+				notification.UserID = Invites.Receiver
+				notification.InvokerID = Invites.Sender
+				
+				notification.Type = "join"
+				service.AddNotification(notification)
+			}
 		}
 	} else {
 		resA := service.Database.IsFollow(Invites.Sender, Invites.Receiver)
@@ -39,6 +50,12 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 					return fmt.Errorf("bad request")
 				}
 				err = service.Database.SaveInvite(&Invites)
+				if err == nil {
+					notification.UserID = Invites.Receiver
+					notification.InvokerID = Invites.Sender
+					notification.Type = "invitation-request"
+					service.AddNotification(notification)
+				}
 			}
 		} else {
 			return fmt.Errorf("not follow")
@@ -57,11 +74,7 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 		}
 		// for create member
 		mb := Invites.Sender
-		// var idIv int
-		// idIv, err = service.Database.CheckMember(mb, Invites.GroupID)
-		// if err != nil && err != sql.ErrNoRows {
-		// 	return
-		// }
+
 		errErr := service.VerifyGroup(Invites.GroupID, mb)
 		if errErr.Err != nil {
 			err = errErr.Err
