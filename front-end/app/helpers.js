@@ -220,6 +220,8 @@ export const joinGroup = async (groupID, setIsAllowed, redirect) => {
 
 export const FetchApi = async (path, redirect, { method, body, signal, headers }) => {
 
+  
+
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
       method,

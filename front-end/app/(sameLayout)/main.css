@@ -294,7 +294,7 @@ main .container .left .profile {
 
 .left .notifications-popup>div {
     display: flex;
-    align-items: start;
+    align-items: flex-start;
     gap: 1rem;
     margin-bottom: 1rem;
 }
@@ -327,7 +327,7 @@ main .container .left .profile {
 
 .middle .create-post #create-post {
     width: 100%;
-    justify-self: start;
+    justify-self: flex-start;
     padding-left: 1rem;
     background: transparent;
     color: var(--color-dark);
@@ -522,7 +522,7 @@ main .container .right {
     display: flex;
     gap: 1rem;
     margin-bottom: 1rem;
-    align-items: start;
+    align-items: flex-start;
 }
 
 .right .message .profile-photo {

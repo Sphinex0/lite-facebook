@@ -18,7 +18,8 @@ export default async function middleware(request) {
   }
 
   // Check authentication status 
-  const authCheck = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/checkuser`, {
+  const api_url = process.env.API_URL || "http://localhost:8080"
+  const authCheck = await fetch(`${api_url}/api/checkuser`, {
     headers: {
       Cookie: request.headers.get('Cookie') || '',
     },

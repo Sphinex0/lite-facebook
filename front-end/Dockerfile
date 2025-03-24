@@ -13,6 +13,9 @@ RUN npm install
 # Copy the entire frontend directory
 COPY . .
 
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Build the application (specific to Next.js; adjust if using another framework)
 RUN npm run build
 
