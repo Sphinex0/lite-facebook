@@ -9,9 +9,9 @@ function Profilepop() {
     const [err, setErr] = useState('');
     const [user, setUser] = useState({});
     const router = useRouter();
-    const worker = new SharedWorker("/sharedworker.js");
-    worker.port.start()
-    const port = worker.port
+    // const worker = new SharedWorker("/sharedworker.js");
+    // worker.port.start()
+    // const port = worker.port
 
     useEffect(() => {
             const storedUser = JSON.parse(localStorage.getItem('user')) || {};
@@ -26,9 +26,9 @@ function Profilepop() {
 
             if (response.status === 200) {                
                 localStorage.removeItem('user');
-                port?.postMessage({
-                    kind: "close"
-                })
+                // port?.postMessage({
+                //     kind: "close"
+                // })
                 router.push('/login')
             } else {
                 setErr("Error while logging out.");
