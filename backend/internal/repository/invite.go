@@ -26,13 +26,18 @@ func (data *Database) SaveInvite(Invite *models.Invite) (err error) {
 }
 
 func (data *Database) AcceptInviteRequest(Invite *models.Invite) error {
+	fmt.Println(Invite)
 	res, err := data.Db.Exec(`
         UPDATE Invites
 		SET status = "accepted"
-		WHERE id = ?
+		WHERE sender = ?
+		AND receiver = ?
+		AND group_id = ?
 		AND status = "pending"
     `,
-		Invite.ID)
+		Invite.Sender,
+		Invite.Receiver,
+		Invite.GroupID)
 	if err != nil {
 		return err
 	}
@@ -49,9 +54,13 @@ func (data *Database) DeleteInvites(Invite *models.Invite) (err error) {
 	_, err = data.Db.Exec(`
         DELETE 
 		FROM Invites
-		WHERE id = ?
+		WHERE sender = ?
+		AND receiver = ?
+		AND group_id = ?
     `,
-		Invite.ID)
+	Invite.Sender,
+	Invite.Receiver,
+	Invite.GroupID)
 
 	return
 }
@@ -80,7 +89,7 @@ func (data *Database) IsCreatore(resever int , group_Id int) bool{
 	if err != nil {
 		return false
 	}
-	if resever==Create {
+	if resever == Create {
 		return true
 	}
 	return false

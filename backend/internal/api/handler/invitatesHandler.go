@@ -52,7 +52,7 @@ func (Handler *Handler) HandleInviteRequest(w http.ResponseWriter, r *http.Reque
 	var Invite models.Invite
 	var err error
 
-	Invite.Sender = user.ID
+	Invite.Receiver = user.ID
 	err = utils.ParseBody(r, &Invite)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -61,7 +61,7 @@ func (Handler *Handler) HandleInviteRequest(w http.ResponseWriter, r *http.Reque
 
 	err = Handler.Service.InviderDecision(&Invite)
 	if err != nil {
-		log.Println("ttttttt", err)
+		log.Println("tttttttqq", err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}

@@ -63,20 +63,34 @@ const Notifications = ({ notifications = [], Err }) => {
   }, [loading]);
 
   const Handlefollow = async (id, follower, status) => {
-    const res = await FetchApi('/api/follow/decision',redirect, {
+    const res = await FetchApi('/api/follow/decision', redirect, {
       method: 'POST',
       body: JSON.stringify({ follower, status }),
     })
 
     if (res.ok) {
       /* if the request did get accepted or declined succesfuly then we delet it from the database*/
-      const response = await FetchApi('/api/deletenotification', redirect ,{
+      const response = await FetchApi('/api/deletenotification', redirect, {
         method: 'POST',
         body: JSON.stringify({ id }),
       })
     }
+  }
 
-
+  const HandleInvite = async ( id, invoker_id, group_id, status , notif) => {
+    
+    console.log("######",notif)
+    const res = await FetchApi('/api/invite/decision', redirect, {
+      method: 'POST',
+      body: JSON.stringify({ sender:invoker_id, group_id, status }),
+    })
+    if (res.ok) {
+      /* if the request did get accepted or declined succesfuly then we delet it from the database */
+      const response = await FetchApi('/api/deletenotification', redirect, {
+        method: 'POST',
+        body: JSON.stringify({ id }),
+      })
+    }
   }
 
   return (
@@ -105,18 +119,18 @@ const Notifications = ({ notifications = [], Err }) => {
               return (
                 <div key={index} className="notification-div">
                   <h1>Invitation Request</h1>
-                  <p>{notification.invoker} invited you to join the group {notification.group}</p>
-                  <button className="accepte">Accept</button>
-                  <button className="refuse">Reject</button>
+                  <p>{notification.invoker} invited you to join the group {notification.group_name}</p>
+                  <button className="accepte" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "accepted")}>Accept</button>
+                  <button className="refuse" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id,"rejected")}>Reject</button>
                 </div>
               );
             case 'join':
               return (
                 <div key={index} className="notification-div">
                   <h1>Group Joining Request</h1>
-                  <p>{notification.invoker} sent you a join request to {notification.group}</p>
-                  <button className="accepte">Accept</button>
-                  <button className="refuse">Reject</button>
+                  <p>{notification.invoker} sent you a join request to {notification.group_name}</p>
+                  <button className="accepte" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "accepted", notification)}>Accept</button>
+                  <button className="refuse" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "accepted")}>Reject</button>
                 </div>
               );
             case 'event-created':

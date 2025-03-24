@@ -72,6 +72,7 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 		if err != nil {
 			return
 		}
+		
 		// for create member
 		mb := Invites.Sender
 
@@ -134,7 +135,7 @@ func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	for rows.Next() {
 		var Invite models.Invite
 		if err := rows.Scan(utils.GetScanFields(&Invite)...); err != nil {
-			fmt.Println("ttttttt", err)
+			fmt.Println("tttttttee", err)
 			return nil, err
 		}
 		Invites = append(Invites, Invite)

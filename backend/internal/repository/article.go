@@ -97,7 +97,7 @@ func (data *Database) GetReaction(user_id, article_id int) (id, like int, err mo
 
 func (data *Database) GetPosts(id, before int) (article_views []models.ArticleView, err models.Error) {
 	query := `
-		SELECT
+		SELECT DISTINCT
 			A.*,
 			COALESCE((SELECT like FROM likes L WHERE L.user_id = ? AND L.article_id = A.id), 0) as like
 		FROM
@@ -162,7 +162,7 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 
 func (data *Database) GetPostsByUserId(id, user_id, before int) (article_views []models.ArticleView, err models.Error) {
 	query := `
-		SELECT
+		SELECT DISTINCT
 			A.*,
 			COALESCE((SELECT like FROM likes L WHERE L.user_id = ? AND L.article_id = A.id), 0) as like
 		FROM
@@ -229,7 +229,7 @@ func (data *Database) GetPostsByUserId(id, user_id, before int) (article_views [
 
 func (data *Database) GetComments(id, before, parent int) (article_views []models.ArticleView, err models.Error) {
 	query := `
-		SELECT
+		SELECT DISTINCT
 			A.*,
 			COALESCE((SELECT like FROM likes L WHERE L.user_id = ? AND L.article_id = A.id),0) as like
 		FROM
@@ -284,7 +284,7 @@ func (data *Database) VerifyGroupByID(group_id, id int) (err models.Error) {
 
 func (data *Database) GetPostsByGroup(id, group_id, before int) (article_views []models.ArticleView, err models.Error) {
 	query := `
-		SELECT
+		SELECT DISTINCT
 			A.*,
 			COALESCE((SELECT like FROM likes L WHERE L.user_id = ? AND L.article_id = A.id),0) as like
 		FROM
