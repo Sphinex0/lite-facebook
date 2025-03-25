@@ -78,7 +78,7 @@ const Notifications = ({ notifications = [], Err }) => {
   }
 
   const HandleInvite = async ( id, invoker_id, group_id, status , notif) => {
-    
+
     console.log("######",notif)
     const res = await FetchApi('/api/invite/decision', redirect, {
       method: 'POST',
