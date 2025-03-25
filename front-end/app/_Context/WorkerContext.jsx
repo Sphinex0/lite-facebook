@@ -285,7 +285,7 @@ export function WorkerProvider({ children }) {
                                     conversation: { id: msg.conversation_id },
                                     user_info: { ...data.user_info, online: true },
                                     last_message: data?.message?.content,
-                                    seen: userRef?.current?.id != msg.sender_id ? conversation.seen + 1 : 0,
+                                    seen: userRef?.current?.id != msg.sender_id ? 1 : 0,
                                     // senn : 1
                                 },
                                 ...prev,
