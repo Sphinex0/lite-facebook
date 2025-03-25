@@ -50,14 +50,28 @@ func (Handler *Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
+
+
 	var Event models.Event
 	err := utils.ParseBody(r, &Event)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
+
 	Event.UserID=user.ID
 	fmt.Println(Event)
 	Events, err := Handler.Service.AllEvents(Event)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
+
+	groupErr := Handler.Service.VerifyGroup(Event.GroupID, user.ID)
+	err = groupErr.Err
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		return
+	}
+	
 	fmt.Println("eeeeeee", Events)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(Events)
@@ -70,6 +84,10 @@ func (Handler *Handler) GetEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	var Events models.Event
 	err := utils.ParseBody(r, &Events)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
+	
 	Event, err := Handler.Service.GetEventsById(&Events)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))

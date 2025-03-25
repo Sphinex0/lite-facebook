@@ -5,12 +5,15 @@ import styles from './createPostModal.module.css'
 import SelectFollower from './selectFollower'
 import { addArticle } from '@/app/helpers'
 import { useRouter } from 'next/navigation'
+import { useWorker } from '@/app/_Context/WorkerContext'
 
 const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
   const [content, setContent] = useState("")
   const [imagePreview, setImagePreview] = useState("")
   const [privacy, setPrivacy] = useState("")
   const redirect = useRouter()
+
+  const {userRef} = useWorker()
 
   const hide = (e) => {
     if (e.target.classList.contains('customize-theme')) {
@@ -19,7 +22,7 @@ const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
   }
 
   const addPost = async (e) => {
-    const added = await addArticle(e, setPosts, {group},redirect)
+    const added = await addArticle(e, setPosts, {group},redirect, userRef.current)
     if (added) {
       setModalDisplay(false)
       setContent("")

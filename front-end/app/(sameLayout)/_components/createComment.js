@@ -4,12 +4,13 @@ import styles from "./comment.module.css"
 import { AddPhotoAlternate } from '@mui/icons-material'
 import { addArticle } from '@/app/helpers'
 import { useRouter } from 'next/navigation'
+import { useWorker } from '@/app/_Context/WorkerContext'
 
 const CreateComment = ({ setComments, setCommentCount, parent }) => {
     const [imagePreview, setImagePreview] = useState("")
     const [commentContent, setCommentContent] = useState("")
     const redirect = useRouter()
-
+    const {userRef} = useWorker()
     const fileInput = useRef(null)
 
     return (
@@ -17,7 +18,7 @@ const CreateComment = ({ setComments, setCommentCount, parent }) => {
             <form
                 className={styles.form}
                 onSubmit={async (e) => {
-                    const added = await addArticle(e, setComments, { parent }, redirect)
+                    const added = await addArticle(e, setComments, { parent }, redirect, userRef.current)
                     if (added) {
                         setCommentContent("")
                         setImagePreview("")

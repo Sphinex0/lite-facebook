@@ -7,6 +7,7 @@ import ProfileHeader from './profileHeader';
 import { fetchProfile } from '../helpers';
 import Posts from './posts';
 import { useRouter } from 'next/navigation';
+import NotAllowed from '../../_components/notAllowed';
 const Profile = ({ userID }) => {
   const [profileInfo, setProfileInfo] = useState({})
   const [profileNav, setProfileNav] = useState("posts")
@@ -40,7 +41,7 @@ const Profile = ({ userID }) => {
       {profileNav == "followings" ? <Followings user_id={userID} /> : ""}
       {profileNav == "about" ? <About user_id={userID} action={profileInfo.action} /> : ""}
 
-      {!isAllowed && <div>join / follow to see</div>}
+      {!isAllowed && <NotAllowed/>}
     </div>
   )
 }

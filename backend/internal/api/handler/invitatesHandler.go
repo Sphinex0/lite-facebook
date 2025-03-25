@@ -61,7 +61,7 @@ func (Handler *Handler) HandleInviteRequest(w http.ResponseWriter, r *http.Reque
 
 	err = Handler.Service.InviderDecision(&Invite)
 	if err != nil {
-		log.Println("tttttttqq", err)
+		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
@@ -99,11 +99,27 @@ func (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
+
+	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
+	if !ok {
+		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	groupErr := Handler.Service.VerifyGroup(Invite.GroupID, user.ID)
+	err = groupErr.Err
+	if err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		return
+	}
 	Invites, err := Handler.Service.AllMembers(Invite.GroupID)
 	if err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 	}
 	fmt.Println(Invites)
 	valid, err := Handler.Service.Members(Invites)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+	}
 	utils.WriteJson(w, http.StatusOK, valid)
 }

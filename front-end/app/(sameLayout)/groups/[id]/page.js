@@ -9,6 +9,7 @@ import Events from "./Events";
 import { useRouter } from 'next/navigation';
 import { FetchApi } from '@/app/helpers';
 import Popover from '../_components/popover';
+import NotAllowed from '../../_components/notAllowed';
 
 export default function ShowGroup({ params }) {
   const id = use(params).id;
@@ -135,11 +136,11 @@ export default function ShowGroup({ params }) {
           </ul>
 
         </div>
-        {groupNav == "posts" && <Posts groupID={id} setIsAllowed={setIsAllowed} />}
+        {groupNav == "posts" && <Posts groupID={id} setIsAllowed={setIsAllowed} isAllowed={isAllowed}/>}
         {groupNav == "members" && <Members groupID={id} />}
         {groupNav == "events" && <Events groupID={id} />}
 
-        {isAllowed ? "" : "join group first"}
+        {isAllowed ? "" : <NotAllowed/>}
 
 
       </div>

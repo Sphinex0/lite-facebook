@@ -1,5 +1,6 @@
 
 import { useEffect, useRef } from "react";
+import { useWorker } from "./_Context/WorkerContext";
 
 async function Checkuservalidity() {
   try {
@@ -104,7 +105,7 @@ export const likeArticle = async (like, article_id, setLikes, setDislikes, likeS
 
 }
 
-export const addArticle = async (e, setAtricle, { parent, group },redirect) => {
+export const addArticle = async (e, setAtricle, { parent, group },redirect, userInfo = {}) => {
   e.preventDefault()
   try {
     const formData = new FormData(e.target)
@@ -122,7 +123,7 @@ export const addArticle = async (e, setAtricle, { parent, group },redirect) => {
       const article = await response.json()
       const newArticle = {
         article, // The article data from the server
-        user_info: {}, // Empty user_info as before
+        user_info: userInfo, // Empty user_info as before
         likes: 0, // Explicitly set initial likes
         disLikes: 0, // Explicitly set initial dislikes
         comments_count: 0, // Explicitly set initial comments count

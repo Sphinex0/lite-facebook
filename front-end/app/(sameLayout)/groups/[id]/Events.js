@@ -67,7 +67,8 @@ const Events = ({ groupID }) => {
                 setEventsData(data);
                 setLoading(false);
             } else {
-                setError("Failed to fetch events");
+                // setError("Failed to fetch events");
+                setError(".");
                 setLoading(false);
             }
         } catch (error) {

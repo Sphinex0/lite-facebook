@@ -5,7 +5,7 @@ import CreatePost from '../../_components/createPost'
 import CreatePostModal from '../../_components/createPostModal'
 import { useRouter } from 'next/navigation'
 
-const Posts = ({ groupID, setIsAllowed }) => {
+const Posts = ({ groupID, setIsAllowed, isAllowed }) => {
     const [posts, setPosts] = useState([])
     const [modalDisplay, setModalDisplay] = useState(false)
 
@@ -16,7 +16,7 @@ const Posts = ({ groupID, setIsAllowed }) => {
 
     const fetchGroupPosts = async (signal) => {
         try {
-            const response = await FetchApi("/api/group/posts",redirect, {
+            const response = await FetchApi("/api/group/posts", redirect, {
                 method: "POST",
                 body: JSON.stringify({ before: before.current, group_id: +groupID }),
                 signal
@@ -52,9 +52,13 @@ const Posts = ({ groupID, setIsAllowed }) => {
 
     useOnVisible(lastPostElementRef, fetchGroupPosts)
     return (<>
-        <CreatePost setModalDisplay={setModalDisplay} />
-        {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} group={groupID} /> : ""}
-        <PostList posts={posts} reference={lastPostElementRef} />
+        {isAllowed && <>
+            <CreatePost setModalDisplay={setModalDisplay} />
+            {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} group={groupID} /> : ""}
+            <PostList posts={posts} reference={lastPostElementRef} />
+        </>
+        }
+
     </>
     )
 }
