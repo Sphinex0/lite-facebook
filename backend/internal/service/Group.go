@@ -3,6 +3,7 @@ package service
 import (
 	"fmt"
 	"log"
+	"slices"
 	"time"
 
 	"social-network/internal/models"
@@ -30,6 +31,17 @@ func (S *Service) GreatedGroup(Group *models.Group) (err error) {
 	member := models.Member{
 		Member:         Group.Creator,
 		ConversationId: conv.ID,
+	}
+	ConvSubMu.Lock()
+	defer ConvSubMu.Unlock()
+
+	UserConnMu.RLock()
+	defer UserConnMu.RUnlock()
+
+	if _, ok := UserConnections[Group.Creator]; ok {
+		if !slices.Contains(ConvSubscribers[conv.ID], Group.Creator) {
+			ConvSubscribers[conv.ID] = append(ConvSubscribers[conv.ID], Group.Creator)
+		}
 	}
 	err = S.CreateMember(member)
 	return
