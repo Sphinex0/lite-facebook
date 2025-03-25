@@ -3,7 +3,6 @@ package service
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
