@@ -9,7 +9,6 @@ const EventsOptions = ({ event_id }) => {
     const [going, setGoing] = useState({});
     const [notgoing, setNotGoing] = useState({});
     const handelcount = async (going) => {
-      
         try {
             const response = await FetchApi("/api/Event/options/store",redirect, {
                 method: "POST",
