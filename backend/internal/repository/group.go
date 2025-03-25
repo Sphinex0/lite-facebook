@@ -55,7 +55,7 @@ func (data *Database) GetGroupById(id int) *sql.Row {
 }
 
 func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
-	res := data.Db.QueryRow(`SELECT creator FROM groups Where id =?`, group_ID)
+	res := data.Db.QueryRow(`SELECT creator FROM groups Where id = ? `, group_ID)
 	var id int
 
 	err := res.Scan(&id)

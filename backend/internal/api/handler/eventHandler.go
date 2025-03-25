@@ -21,14 +21,13 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 	var Event models.Event
 	err := utils.ParseBody(r, &Event)
-	fmt.Println(Event)
 	Event.UserID = user.ID
-	if err != nil || Event.UserID == 0 || Event.GroupID == 0 {
+	if err != nil || Event.GroupID == 0  {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	if Event.Title == "" || Event.Description == "" {
+	if Event.Title == "" || Event.Description == "" || Event.Day == "" {
 		utils.WriteJson(w, http.StatusBadRequest, "Bad Request")
 		return
 	}

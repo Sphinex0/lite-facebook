@@ -157,7 +157,7 @@ const Groups = () => {
         <div onClick={() => { SeeClick() }}>
           <DisabledByDefault />
         </div>
-        <form method='POST' onSubmit={handleSubmit}>
+        <form method='POST' onSubmit={handleSubmit} className='formAddGroup'>
           <label htmlFor='title' >title</label>
           <input type='text' className='title' id='title'   value={title} onChange={(e) => setTitle(e.target.value)} />
           <label htmlFor='descriptopn'>descriptopn</label>

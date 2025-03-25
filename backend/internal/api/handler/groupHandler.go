@@ -34,6 +34,7 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 
 	// Extract profile picture (optional)
 	file, handler, err := r.FormFile("image")
+	Group.Image = "default-group.png"
 	if err == nil {
 		defer file.Close()
 		Group.Image, err = utils.StoreThePic("../front-end/public/pics", file, handler)
@@ -92,6 +93,15 @@ func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
 	var group_info models.GroupInfo
 	group_info.Group = *group
 	group_info.Action = types
+
+	//
+	creator_info, err := Handler.Service.GetUserByID(group.Creator)
+	if err != nil {
+		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server")
+		return
+	}
+	group_info.CreatorName = fmt.Sprintf("%v %v", creator_info.First_Name, creator_info.Last_Name)
+	//
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(group_info)
 }

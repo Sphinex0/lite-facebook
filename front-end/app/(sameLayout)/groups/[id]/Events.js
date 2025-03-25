@@ -12,6 +12,7 @@ const Events = ({ groupID }) => {
     const [error, setError] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [day, setDay] = useState('');
     const redirect = useRouter()
 
     const CreateGroup = () => {
@@ -36,7 +37,7 @@ const Events = ({ groupID }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ group_id: parseInt(groupID), Title: title, Description: description })
+                body: JSON.stringify({ group_id: parseInt(groupID), Title: title, Description: description , day })
             });
 
             if (!response.ok) {
@@ -101,11 +102,12 @@ const Events = ({ groupID }) => {
                 <div onClick={SeeClick}>
                     <DisabledByDefault />
                 </div>
-                <form method='POST' aria-multiselectable onSubmit={handleSubmit}>
+                <form method='POST' className={style.formAddGroup} aria-multiselectable onSubmit={handleSubmit}>
                     <label htmlFor='title'>Title</label>
                     <input type='text' className={style.InputTitle} id='title' value={title} onChange={(e) => setTitle(e.target.value)} />
                     <label htmlFor='description'>Description</label>
                     <input type='text' className={style.InputDescriptopn} id='description' value={description} onChange={(e) => setDescription(e.target.value)} />
+                    <input type='datetime-local' className={style.InputDescriptopn} id='day' value={day} onChange={(e) => setDay(e.target.value)} />
                     <button className={style.InputButton} type='submit'>Submit</button>
                 </form>
             </div>

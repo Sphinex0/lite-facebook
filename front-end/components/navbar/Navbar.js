@@ -129,7 +129,7 @@ export default function Navbar () {
       </div>
       <div className='notification'>
       <div onClick={handleProfileclick}>
-      <img src={user.image || "/default-profile.png"} alt='Profile' />
+      <img src={`/pics/${user.image || "default-profile.png"}`} alt='Profile' />
       </div>
       <div className='pop-out'>{profile && <Profilepop/>}</div>
       </div>
