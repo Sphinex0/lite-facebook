@@ -30,7 +30,7 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 
 				notification.UserID = Invites.Receiver
 				notification.InvokerID = Invites.Sender
-				
+
 				notification.Type = "join"
 				service.AddNotification(notification)
 			}
@@ -67,23 +67,22 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 
 func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 	if Invites.Status == "accepted" {
-		err = service.Database.AcceptInviteRequest(Invites)
-		fmt.Println(err)
-		if err != nil {
-			return
-		}
-		
 		// for create member
 		mb := Invites.Sender
 
 		errErr := service.VerifyGroup(Invites.GroupID, mb)
-		if errErr.Err != nil {
+		if errErr.Err != nil && errErr.Err != sql.ErrNoRows {
 			err = errErr.Err
 			return
 		}
-		if errErr.Err != sql.ErrNoRows {
+		if errErr.Err == nil {
 			mb = Invites.Receiver
 		}
+		err = service.Database.AcceptInviteRequest(Invites)
+		if err != nil {
+			return
+		}
+
 		// get Conv by group id
 		var conv models.Conversation
 		conv, err = service.Database.GetConvByGroupID(Invites.GroupID)
@@ -96,6 +95,21 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 			ConversationId: conv.ID,
 		}
 		err = service.CreateMember(member)
+		if err != nil {
+			return
+		}
+		
+		ConvSubMu.Lock()
+		defer ConvSubMu.Unlock()
+
+		UserConnMu.RLock()
+		defer UserConnMu.RUnlock()
+
+		if _, ok := UserConnections[mb]; ok {
+			if !slices.Contains(ConvSubscribers[conv.ID], mb) {
+				ConvSubscribers[conv.ID] = append(ConvSubscribers[conv.ID], mb)
+			}
+		}
 	} else if Invites.Status == "rejected" {
 		err = service.Database.DeleteInvites(Invites)
 	} else {

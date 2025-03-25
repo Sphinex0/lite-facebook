@@ -7,7 +7,7 @@ CREATE TABLE users (
     last_name TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE,
     password TEXT NOT NULL,
-    image TEXT DEFAULT "",
+    image TEXT DEFAULT "default-profile.png",
     about TEXT DEFAULT "",
     privacy TEXT DEFAULT "public",
     created_at INTEGER NOT NULL

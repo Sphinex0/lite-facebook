@@ -172,9 +172,26 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 		subscribers, ok := service.ConvSubscribers[msg.Message.ConversationID]
 		service.ConvSubMu.RUnlock()
 
-		
+		if !ok {
+			conversations, err := h.Service.FetchConversations(msg.Message.SenderID)
+			if err != nil {
+				sendError(msg.Message.SenderID, "Not authorized for this conversation")
+				return
+			}
 
-		if !ok || !slices.Contains(subscribers, msg.Message.SenderID) {
+			addUserToConversations(msg.Message.SenderID, conversations)
+			service.ConvSubMu.RLock()
+			subscribers2, ok2 := service.ConvSubscribers[msg.Message.ConversationID]
+			service.ConvSubMu.RUnlock()
+			if !ok2 || !slices.Contains(subscribers2, msg.Message.SenderID) {
+				sendError(msg.Message.SenderID, "Not authorized for this conversation")
+				return
+			}
+			subscribers = subscribers2
+		}
+
+		// if conv not found
+		if !slices.Contains(subscribers, msg.Message.SenderID) {
 			sendError(msg.Message.SenderID, "Not authorized for this conversation")
 			return
 		}

@@ -48,6 +48,7 @@ func (service *Service) VerifyParent(parent int) (err models.Error) {
 }
 
 func (service *Service) VerifyGroup(group_id, id int) (err models.Error) {
+	fmt.Println("d5l")
 	err = service.Database.VerifyGroupByID(group_id, id)
 	return
 }

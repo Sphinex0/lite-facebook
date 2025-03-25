@@ -15,9 +15,9 @@ func main() {
 	if err != nil {
 		return
 	}
-
+	
 	// Set flags to include file name and line number
-	log.SetFlags(log.LstdFlags | log.Llongfile)
+	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
 	if err := repository.ApplyMigrations(db); err != nil {
 		log.Fatalf("Migration failed: %v", err)
