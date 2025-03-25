@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -58,13 +59,15 @@ func (S *Service) PostEventsOption(OptionEvent models.EventOption) (err error) {
 	fmt.Println("OptionEvent",OptionEvent)
 	booll, err := S.Database.CheckEvent(OptionEvent.EventID, OptionEvent.UserID)
 	fmt.Println("booll",booll)
+	
+	log.Println("hhhhhhh",booll, err)
 	if err != nil {
 		if err ==  sql.ErrNoRows{
 			err = S.Database.SaveOptionEvent(&OptionEvent)
 			return
 		}
 	}
-	if booll==OptionEvent.Going {
+	if booll == OptionEvent.Going {
 		return
 	}else if booll!=OptionEvent.Going {
 		err = S.Database.UpdateOptionEvent(OptionEvent)
