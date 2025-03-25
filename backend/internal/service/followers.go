@@ -87,10 +87,10 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 				}
 			}
 		}
-		
+
 		notification.UserID = follow.UserID
 		notification.InvokerID = follow.Follower
-		
+
 		fmt.Println("rrrr")
 		S.AddNotification(notification)
 
@@ -108,13 +108,36 @@ func (S *Service) FollowDecision(follow *models.Follower) (err error) {
 	if follow.Status == "accepted" {
 		err = S.Database.AcceptFollowRequest(follow)
 		if err == nil {
-			conv := models.Conversation{
-				Entitie_one:      follow.Follower,
-				Entitie_two_user: &follow.UserID,
-				Type:             "private",
+			// chaeck if there is a conversation between the two
+			conv, err1 := S.Database.GetConversationByUsers(follow.Follower, follow.UserID)
+			fmt.Println("err1", err1)
+			if err1 != nil && err1 != sql.ErrNoRows {
+				log.Println("error getting the conversation")
+				err = err1
+				return
 			}
+			if err1 == sql.ErrNoRows {
+				conv = models.Conversation{
+					Entitie_one:      follow.Follower,
+					Entitie_two_user: &follow.UserID,
+					Type:             "private",
+				}
+				S.Database.CreateConversation(&conv)
 
-			S.Database.CreateConversation(&conv)
+				ConvSubMu.Lock()
+				defer ConvSubMu.Unlock()
+
+				UserConnMu.RLock()
+				defer UserConnMu.RUnlock()
+
+				for _, userID := range []int{follow.Follower, follow.UserID} {
+					if _, ok := UserConnections[userID]; ok {
+						if !slices.Contains(ConvSubscribers[conv.ID], userID) {
+							ConvSubscribers[conv.ID] = append(ConvSubscribers[conv.ID], userID)
+						}
+					}
+				}
+			}
 		}
 	} else if follow.Status == "rejected" {
 		err = S.Database.DeleteFollow(follow)
