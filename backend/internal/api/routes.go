@@ -24,24 +24,23 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/profile", handler.HandleGetProfile)            // post {"id":1} default to user connected
 	mux.HandleFunc("/api/profile/about", handler.HandleGetProfileAbout) // post {"id":1} default to user connected
 	mux.HandleFunc("/api/profile/update", handler.HandleUpdateProfile)
-	mux.HandleFunc("/api/profile/posts", handler.HandleGetProfilePosts)  
+	mux.HandleFunc("/api/profile/posts", handler.HandleGetProfilePosts)
 	mux.HandleFunc("/api/users", handler.HandleGetUsers)
 
 	// articls
 	mux.HandleFunc("/api/posts", handler.HandelGetPosts)       // post {"before":184525547}
 	mux.HandleFunc("/api/comments", handler.HandelGetComments) // post {"before":184525547, "parent":4}
-	// Createarticle := ratelimiter.CreateArticleLimiter.RateMiddleware(http.HandlerFunc(handler.HandelCreateArticle), 10, 2*time.Second, db)
-	// mux.Handle("/api/articles/store", Createarticle)                 // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
+	Createarticle := ratelimiter.CreateArticleLimiter.RateMiddleware(http.HandlerFunc(handler.HandelCreateArticle), 1, 2*time.Second)
+	mux.Handle("/api/articles/store", Createarticle)                     // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
 	mux.HandleFunc("/api/reactions/store", handler.HandelCreateReaction) // post {"like":1|-1, "article_id":4}
 	mux.HandleFunc("/api/group/posts", handler.HandelGetPostsByGroup)    // post {"before":184525547,"group_id":1}
-	mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle)    // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
+	// mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle)    // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
 
 	// group
 	mux.HandleFunc("/api/groups/store", handler.AddGroup)
 	mux.HandleFunc("/api/groups", handler.GetGroups)
 	mux.HandleFunc("/api/group", handler.GetGroup)
 	mux.HandleFunc("/api/members", handler.GetMember)
-
 
 	// Invites
 	mux.HandleFunc("/api/invite/store", handler.AddInvite)
@@ -67,10 +66,10 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/follow", handler.HandleFollow)                     // post {"user_id":2}
 	mux.HandleFunc("/api/follow/decision", handler.HandleFollowRequest)     // post {"follower":2,"status":"accepted"}
 	mux.HandleFunc("/api/group/invitelist", handler.HandleGetGroupInvitable)
-	
+
 	// check auth
 	mux.HandleFunc("/api/checkuser", handler.CheckAuth)
-	
+
 	// websocket
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },

@@ -2,17 +2,14 @@ import Link from 'next/link';
 import { useEffect, useState, useRef } from 'react';
 import { FetchApi } from '@/app/helpers';
 import { useRouter } from 'next/navigation';
-
-import "./notification.css"
+import "./notification.css";
 
 const Notifications = ({ notifications = [], Err }) => {
-
-  const [items, setItems] = useState(notifications);
+  const [items, setItems] = useState(notifications); // Use array instead of Set
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef();
-  const redirect = useRouter()
-  console.log(items);
+  const redirect = useRouter();
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -26,13 +23,20 @@ const Notifications = ({ notifications = [], Err }) => {
         });
 
         const newItems = await res.json();
-        if (res.status == 200) {
+        if (res.status === 200) {
           console.log(newItems.notifications, "new items");
-          if (newItems.notification != null) {
-            setItems((prev) => [...newItems.notifications, ...prev]);
+          if (newItems.notifications != null) {
+            // Filter out duplicates by checking `id`
+            setItems((prev) => {
+              const existingIds = new Set(prev.map(item => item.id)); // Set of existing IDs
+              const uniqueNewItems = newItems.notifications.filter(
+                (item) => !existingIds.has(item.id)
+              );
+              return [...prev, ...uniqueNewItems]; // Combine without duplicates
+            });
           }
         } else {
-          Err = newItems.Notifications
+          Err = newItems.Notifications;
         }
       } catch (error) {
         console.error('Error fetching notifications:', error);
@@ -45,8 +49,12 @@ const Notifications = ({ notifications = [], Err }) => {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (containerRef.current.scrollTop === 0 && !loading) {
-        setPage((prev) => prev + 1);
+      const container = containerRef.current;
+      if (container && !loading) {
+        const { scrollTop, scrollHeight, clientHeight } = container;
+        if (scrollTop + clientHeight >= scrollHeight - 50) {
+          setPage((prev) => prev + 1);
+        }
       }
     };
 
@@ -66,80 +74,82 @@ const Notifications = ({ notifications = [], Err }) => {
     const res = await FetchApi('/api/follow/decision', redirect, {
       method: 'POST',
       body: JSON.stringify({ follower, status }),
-    })
+    });
 
     if (res.ok) {
-      /* if the request did get accepted or declined succesfuly then we delet it from the database*/
       const response = await FetchApi('/api/deletenotification', redirect, {
         method: 'POST',
         body: JSON.stringify({ id }),
-      })
+      });
+      if (response.ok) {
+        setItems((prev) => prev.filter((item) => item.id !== id));
+      }
     }
-  }
+  };
 
-  const HandleInvite = async ( id, invoker_id, group_id, status , notif) => {
-
-    console.log("######",notif)
+  const HandleInvite = async (id, invoker_id, group_id, status) => {
     const res = await FetchApi('/api/invite/decision', redirect, {
       method: 'POST',
-      body: JSON.stringify({ sender:invoker_id, group_id, status }),
-    })
+      body: JSON.stringify({ sender: invoker_id, group_id, status }),
+    });
     if (res.ok) {
-      /* if the request did get accepted or declined succesfuly then we delet it from the database */
       const response = await FetchApi('/api/deletenotification', redirect, {
         method: 'POST',
         body: JSON.stringify({ id }),
-      })
+      });
+      if (response.ok) {
+        setItems((prev) => prev.filter((item) => item.id !== id));
+      }
     }
-  }
+  };
 
   return (
-    <div className="notification-wrapper" ref={containerRef}>
-      <div className="notification-container">
+    <div className="notification-wrapper">
+      <div className="notification-container" ref={containerRef}>
         {Err && <div className="notif-err">Error loading notifications. Please try again.</div>}
         {items && items.map((notification, index) => {
           switch (notification.type) {
             case 'follow':
               return (
-                <div key={index} className="notification-div">
+                <div key={`notif${notification.id}`} className="notification-div">
                   <h1>A Follow</h1>
                   <p>You did Get a follow From a user Named {notification.invoker_name}</p>
                 </div>
-              )
+              );
             case 'follow-request':
               return (
-                <div key={index} className="notification-div">
+                <div key={`notif${notification.id}`} className="notification-div">
                   <h1>Follow Request</h1>
-                  <p>{notification.invoker} sent you a follow request</p>
+                  <p><strong>{notification.invoker_name}</strong> sent you a follow request</p>
                   <button className="accepte" onClick={() => Handlefollow(notification.id, notification.invoker_id, "accepted")}>Accept</button>
                   <button className="refuse" onClick={() => Handlefollow(notification.id, notification.invoker_id, "rejected")}>Reject</button>
                 </div>
               );
             case 'invitation-request':
               return (
-                <div key={index} className="notification-div">
+                <div key={`notif${notification.id}`} className="notification-div">
                   <h1>Invitation Request</h1>
-                  <p>{notification.invoker} invited you to join the group {notification.group_name}</p>
+                  <p><strong>{notification.invoker_name}</strong> invited you to join the group <strong>{notification.group_title}</strong></p>
                   <button className="accepte" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "accepted")}>Accept</button>
-                  <button className="refuse" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id,"rejected")}>Reject</button>
+                  <button className="refuse" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "rejected")}>Reject</button>
                 </div>
               );
             case 'join':
               return (
-                <div key={index} className="notification-div">
+                <div key={`notif${notification.id}`} className="notification-div">
                   <h1>Group Joining Request</h1>
-                  <p>{notification.invoker} sent you a join request to {notification.group_name}</p>
-                  <button className="accepte" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "accepted", notification)}>Accept</button>
-                  <button className="refuse" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "accepted")}>Reject</button>
+                  <p><strong>{notification.invoker_name}</strong> sent you a join request to <strong>{notification.group_title}</strong></p>
+                  <button className="accepte" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "accepted")}>Accept</button>
+                  <button className="refuse" onClick={() => HandleInvite(notification.id, notification.invoker_id, notification.group_id, "rejected")}>Reject</button>
                 </div>
               );
             case 'event-created':
               return (
-                <div key={index} className="notification-div">
+                <div key={`notif${notification.id}`} className="notification-div">
                   <Link href={`/event/${notification.eventID}`}>
                     <h1>New Event</h1>
                   </Link>
-                  <p>{notification.invoker} created an event in {notification.group}</p>
+                  <p><strong>{notification.invoker_name}</strong> created an event in <strong>{notification.group_title}</strong></p>
                 </div>
               );
             default:
@@ -149,5 +159,6 @@ const Notifications = ({ notifications = [], Err }) => {
       </div>
     </div>
   );
-}
+};
+
 export default Notifications;

@@ -113,7 +113,7 @@ export default function Navbar () {
             <div onClick={handleclick}>
               <NotificationsNoneOutlinedIcon />
             </div>
-            {notificationCount != 0 && <span className="count">{notificationCount}</span>}
+            {notificationCount != 0 && <span className="count">{notificationCount >9 ? "9+":notificationCount}</span>}
             <div className='pop-out'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
           
           </div>

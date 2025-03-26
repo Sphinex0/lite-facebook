@@ -11,6 +11,7 @@ func (database *Database) GetUserNotifications(userID string, start int) ([]mode
 	SELECT notification_id, notified_user_id, notification_type, invoker_name, invoker_id, group_name, group_id, event_id, event_name 
 	FROM user_notifications
 	WHERE notified_user_id = ?
+	ORDER BY notification_id DESC
 	LIMIT ? OFFSET ?
 `, userID, 10, start);if err != nil{
 	return []models.Notification{}, err
