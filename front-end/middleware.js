@@ -43,6 +43,7 @@ export default async function middleware(request) {
 
     return NextResponse.next();
   } catch (error) {
+    console.log(error)
     const errorUrl = new URL('/page500', request.url);
     return NextResponse.rewrite(errorUrl);
   }
