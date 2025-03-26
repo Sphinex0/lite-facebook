@@ -59,12 +59,9 @@ func NewRateLimiter() *RateLimiter {
 	}
 }
 
-type ContextKey string
-
-const UserIDKey ContextKey = "user"
 
 func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
-	user, ok := ctx.Value(UserIDKey).(models.UserInfo)
+	user, ok := ctx.Value(utils.UserIDKey).(models.UserInfo)
 	return user, ok
 }
 

@@ -17,6 +17,15 @@ func (service *Service) CreateEvent(Events models.Event) (err error) {
 		return
 	}
 	err = service.Database.SaveEvent(&Events)
+	if err != nil {
+		return
+	}
+	var notification models.Notification
+	notification.UserID = follow.UserID
+	notification.InvokerID = follow.Follower
+
+	fmt.Println("rrrr")
+	S.AddNotification(notification)
 	return
 }
 

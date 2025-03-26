@@ -13,7 +13,7 @@ const UserInfo = ({redirect, userInfo, articleInfo, group, onlineDiv, lastMessag
     }
 
     useEffect(() => {
-        setImageSrc(`/pics/${userInfo ? userInfo.image : (group && group.image)}`)
+        setImageSrc(`/pics/${userInfo?.first_name ? userInfo.image : (group && group.image)}`)
     },[userInfo])
 
 
@@ -33,7 +33,7 @@ const UserInfo = ({redirect, userInfo, articleInfo, group, onlineDiv, lastMessag
                         src={`/pics/${userInfo ? userInfo.image : (group && group.image)}`}
                         alt="Profile Photo" /> */}
                     </div>
-                    {onlineDiv && <div className={`status ${userInfo && (userInfo.online ? "online" : "offline")}`}></div>}
+                    {onlineDiv && <div className={userInfo.first_name && `status ${userInfo && (userInfo.online ? "online" : "offline")}`}></div>}
                 </div>
                 <div className="ingo">
                     <h3>

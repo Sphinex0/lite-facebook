@@ -7,30 +7,30 @@ import React, { useEffect, useState } from 'react'
 
 const SideBar = () => {
     const router = usePathname();
-    
 
-    const { notfications , selectedConversationRef } = useWorker()
+
+    const { notifications, selectedConversationRef } = useWorker()
 
     useEffect(() => {
         selectedConversationRef.current = null
-    },[router])
+    }, [router])
     // const [path, setPath]= useState(router)
-    useEffect(()=>{
+    useEffect(() => {
         const count = document.querySelector("#msgCount")
-        count.textContent = notfications>0 ? notfications:""
-        if (notfications>0 && count){
-          count.style.opacity = 1  
-        }else{
+        count.textContent = notifications > 0 ? (notifications > 9 ? "9+" : notifications) : ""
+        if (notifications > 0 && count) {
+            count.style.opacity = 1
+        } else {
             count.style.opacity = 0
 
         }
-    },[notfications])
+    }, [notifications])
     return (
         <div className="sidebar">
             <Link href={"/"} className={`menu-item ${router == "/" && "active"}`}>
                 <span><Home /></span>
                 <h3>Home</h3>
-            </Link>            
+            </Link>
             <Link href={"/users"} className={`menu-item ${router == "/users" && "active"}`}>
                 <span><Group /></span>
                 <h3>Users</h3>
@@ -45,7 +45,7 @@ const SideBar = () => {
                 <span className='i'>
                     <Mail />
                     {
-                        notfications > 0 && <small className="notification-count">{notfications}</small>
+                        notifications > 0 && <small className="notification-count">{notifications}</small>
                     }
                 </span>
                 <h3>Messages</h3>

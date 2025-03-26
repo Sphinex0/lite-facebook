@@ -123,9 +123,11 @@ const Events = ({ groupID }) => {
                                     <div className={style.info}>
                                         <h3>{event.title}</h3>
                                         <small>{event.description}</small>
+
                                         <div>
                                             <EventsOptions event_id={event.id} />
                                         </div>
+                                        <h6>{event.day}</h6>
                                     </div>
                                 </div>
                             </div>

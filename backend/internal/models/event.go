@@ -5,7 +5,7 @@ type Event struct {
 	ID          int    `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
-	Day         string `json:"Day"`
+	Day         string `json:"day"`
 	GroupID     int    `json:"group_id"`
 	UserID      int    `json:"user_id"`
 }

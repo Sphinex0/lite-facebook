@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import styles from "./popover.module.css"
 import UserInfo from '../../_components/userInfo'
-import { Add } from '@mui/icons-material'
+import { Add, Done } from '@mui/icons-material'
 import JoinGroup from '../[id]/function'
 import { FetchApi, useOnVisible } from '@/app/helpers'
 import { useRouter } from 'next/navigation'
@@ -13,6 +13,7 @@ const Popover = ({group_id}) => {
     const before = useRef(0)
     const lastElementRef = useRef(null)
     const redirect = useRouter()
+    const [clicked, setClicked] = useState(false)
 
     const fetchFollowers = async (signal) => {
         try {
@@ -53,10 +54,11 @@ const Popover = ({group_id}) => {
                         <label htmlFor={`user${userInfo.id}`}>
                             <UserInfo redirect={false} userInfo={userInfo} key={userInfo.id} />
                             </label>                     
-                            <button className={styles.addMember} onClick={()=>{
+                            <button className={styles.addMember} onClick={(e)=>{
                         JoinGroup(group_id, userInfo.id)
-      
-                      }}><Add/></button>
+                        setClicked(true)
+                           
+                      }}>{clicked ?<Done/>:<Add/>}</button>
                       </div>
                 }
                 return <div className={styles.fullUser} key={`user${userInfo.id}`}>

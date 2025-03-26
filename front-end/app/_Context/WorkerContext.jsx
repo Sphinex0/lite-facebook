@@ -276,7 +276,7 @@ export function WorkerProvider({ children }) {
                             return [{
                                 ...conversation,
                                 last_message: data?.message?.content,
-                                seen: userRef?.current?.id != msg.sender_id ? conversation.seen + 1 : 0,
+                                seen: userRef?.current?.id != msg.sender_id ? (selectedConversationRef.current?.id === conversationId ? conversation.seen : conversation.seen + 1) : 0,
                                 // seen: conversation.conversation.id === selectedConversationRef.current?.id ? 0 : conversation.seen + 1,
                             }, ...prev.filter((c) => c.conversation.id !== conversationId)];
                         } else {
