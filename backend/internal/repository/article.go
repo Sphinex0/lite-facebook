@@ -279,7 +279,7 @@ func (data *Database) VerifyGroupByID(group_id, id int) (err models.Error) {
 	`
 	var result int
 	err.Err = data.Db.QueryRow(query, group_id, id, id).Scan(&result)
-	fmt.Println("result =>",result)
+	fmt.Println("result =>", result)
 	return
 }
 
@@ -320,5 +320,14 @@ func (data *Database) GetPostsByGroup(id, group_id, before int) (article_views [
 		}
 		article_views = append(article_views, article_view)
 	}
+	return
+}
+
+func (data *Database) GetArticle(id int) (article models.Article, err models.Error) {
+	err.Err = data.Db.QueryRow(`
+		SELECT * 
+		FROM articles 
+		WHERE id = ?
+	`, id).Scan(utils.GetScanFields(&article)...)
 	return
 }

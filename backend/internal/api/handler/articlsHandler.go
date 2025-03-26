@@ -18,7 +18,6 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	
 	user, ok := r.Context().Value(utils.UserIDKey).(models.UserInfo)
 	if !ok {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
@@ -122,6 +121,20 @@ func (Handler *Handler) HandelGetComments(w http.ResponseWriter, r *http.Request
 	user, data, err := Handler.AfterGet(w, r)
 	if err.Err != nil {
 		return
+	}
+
+	article, err := Handler.Service.FetchArticle(data.Parent)
+	if err.Err != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "Invalid request body")
+		return
+	}
+
+	if article.GroupID != nil {
+		err = Handler.Service.VerifyGroup(*article.GroupID, user.ID)
+		if err.Err != nil {
+			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+			return
+		}
 	}
 	article_views, err := Handler.Service.FetchComments(user.ID, data.Before, data.Parent)
 	if err.Err != nil {

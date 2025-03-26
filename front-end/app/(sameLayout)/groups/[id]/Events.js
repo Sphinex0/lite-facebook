@@ -32,12 +32,12 @@ const Events = ({ groupID }) => {
         setDescription("");
 
         try {
-            const response = await FetchApi("/api/Event/store",redirect, {
+            const response = await FetchApi("/api/Event/store", redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ group_id: parseInt(groupID), Title: title, Description: description , day })
+                body: JSON.stringify({ group_id: parseInt(groupID), Title: title, Description: description, day })
             });
 
             if (!response.ok) {
@@ -54,7 +54,7 @@ const Events = ({ groupID }) => {
 
     const fetchEvents = async () => {
         try {
-            const response = await FetchApi("/api/Events",redirect, {
+            const response = await FetchApi("/api/Events", redirect, {
                 method: "POST",
                 headers: {
                     'Content-Type': 'application/json'
@@ -116,21 +116,21 @@ const Events = ({ groupID }) => {
                 {eventsData === null ? (
                     <div>No events found.</div>
                 ) : (
-                    <ul>
+                    <div className={style.events}>
                         {eventsData.map((event, index) => (
-                            <div className='feed' key={index}>
+                            <div className={style.event} key={index}>
                                 <div className={style.user}>
-                                    <div className="info">
+                                    <div className={style.info}>
                                         <h3>{event.title}</h3>
                                         <small>{event.description}</small>
-                                    </div>
-                                    <div>
-                                        <EventsOptions event_id={event.id}/>
+                                        <div>
+                                            <EventsOptions event_id={event.id} />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         ))}
-                    </ul>
+                    </div>
                 )}
             </div>
         </div>

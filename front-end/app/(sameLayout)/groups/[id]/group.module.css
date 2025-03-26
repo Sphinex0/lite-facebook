@@ -231,3 +231,53 @@
   padding: 5px;
   border-radius: 5px;
 }
+
+.events {
+  /* background-color: rgba(0, 0, 0, 0.021); */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin: 10px;
+  padding: 5px;
+}
+
+.event {
+  background-color: rgba(0, 0, 0, 0.021);
+  box-shadow: 0 0 4px #0065d152;
+  border: 1px solid rgba(0, 0, 0, 0.301);
+  border-radius: 5px;
+  width: 70%;
+  margin: 5px;
+  padding: 5px;
+}
+
+.info {
+  width: 100%;
+}
+
+.info * {
+  margin: 5px;
+}
+
+.info h3 {
+  background-color: #0065d125;
+  padding: 10px;
+}
+
+.options {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.options div {
+  display: flex;
+  align-items: center;
+}
+
+.options label {
+  display: flex;
+  align-items: center;
+}

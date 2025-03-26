@@ -87,3 +87,8 @@ func (service *Service) FetchComments(id, before, parent int) (article_views []m
 	article_views, err = service.Database.GetComments(id, before, parent)
 	return
 }
+
+func (service *Service) FetchArticle(id int) (article models.Article, err models.Error) {
+	article, err = service.Database.GetArticle(id)
+	return
+}
