@@ -95,21 +95,42 @@ func (S *Service) GetEventsOption(OptionEvent models.EventOption) ([]models.Even
 	return events, nil
 }
 
-func (S *Service) GetEventgoing(OptionEvent models.EventOption, user_id int) (int, string, error) {
-	rows, user, err := S.Database.ChoiseEvent(OptionEvent.EventID, OptionEvent.Going)
+// func (S *Service) GetEventgoing(OptionEvent models.EventOption, user_id int) (int, string, error) {
+// 	rows, user, err := S.Database.ChoiseEvent(OptionEvent.EventID, OptionEvent.Going)
+// 	if err != nil {
+// 		if err == sql.ErrNoRows {
+// 			fmt.Println("rows", rows)
+// 			fmt.Println("user", user)
+// 			fmt.Println("err", nil)
+// 			return 0, "not", nil
+// 		} else {
+// 			return 0, "", err
+// 		}
+// 	}
+// 	if user == user_id {
+// 		fmt.Println("user", user)
+// 		return rows, "action", nil
+// 	}
+// 	return rows, "not", nil
+// }
+
+// GetEventGoingInfo processes event attendance data
+func (s *Service) GetEventGoingInfo(eventID int, userID int) (int, int, string, error) {
+	goingCount, notGoingCount, userGoing, err := s.Database.GetEventCountsAndUserChoice(eventID, userID)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			fmt.Println("rows", rows)
-			fmt.Println("user", user)
-			fmt.Println("err", nil)
-			return 0, "not", nil
+		return 0, 0, "", err
+	}
+
+	var action string
+	if userGoing.Valid {
+		if userGoing.Bool {
+			action = "going"
 		} else {
-			return 0, "", err
+			action = "not going"
 		}
+	} else {
+		action = "undecided"
 	}
-	if user == user_id {
-		fmt.Println("user", user)
-		return rows, "action", nil
-	}
-	return rows, "not", nil
+
+	return goingCount, notGoingCount, action, nil
 }
