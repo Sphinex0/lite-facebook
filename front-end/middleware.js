@@ -19,26 +19,32 @@ export default async function middleware(request) {
 
   // Check authentication status 
   const api_url = process.env.API_URL || "http://localhost:8080"
-  const authCheck = await fetch(`${api_url}/api/checkuser`, {
-    headers: {
-      Cookie: request.headers.get('Cookie') || '',
-    },
-  });
-  
-  const isAuthenticated = authCheck.status === 200;
+  try {
+    const authCheck = await fetch(`${api_url}/api/checkuser`, {
+      headers: {
+        Cookie: request.headers.get('Cookie') || '',
+      },
+    });
 
-  // Handle public routes
-  if (publicRoutes.includes(pathname)) {
-    if (isAuthenticated) {
-      return NextResponse.redirect(new URL("/", request.url));
+    const isAuthenticated = authCheck.status === 200;
+
+    // Handle public routes
+    if (publicRoutes.includes(pathname)) {
+      if (isAuthenticated) {
+        return NextResponse.redirect(new URL("/", request.url));
+      }
+      return NextResponse.next();
     }
+
+    // Protect private routes
+    if (!isAuthenticated) {
+      return NextResponse.redirect(new URL("/login", request.url));
+    }
+
     return NextResponse.next();
+  } catch (error) {
+    const errorUrl = new URL('/page500', request.url);
+    return NextResponse.rewrite(errorUrl);
   }
 
-  // Protect private routes
-  if (!isAuthenticated) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  return NextResponse.next();
 }
