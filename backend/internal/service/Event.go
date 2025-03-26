@@ -30,11 +30,13 @@ func (service *Service) CreateEvent(Events models.Event) (err error) {
 	notification.InvokerID = Events.UserID
 	notification.EventID = Events.ID
 	for _,id := range ids{
-		notification.UserID = id
-		err = service.AddNotification(notification)
-		if err != nil {
-			fmt.Println(err)
-			return
+		if id != Events.UserID {
+		    notification.UserID = id
+		    err = service.AddNotification(notification)
+		    if err != nil {
+			    fmt.Println(err)
+			    return
+		    }
 		}
 	}
 	return
