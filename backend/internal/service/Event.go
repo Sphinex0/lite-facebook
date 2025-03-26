@@ -20,12 +20,23 @@ func (service *Service) CreateEvent(Events models.Event) (err error) {
 	if err != nil {
 		return
 	}
+    var ids []int
+	ids , err = service.Database.GetGroupMembers(Events.GroupID)
+    if err != nil {
+		return
+	}
 	var notification models.Notification
-	notification.UserID = follow.UserID
-	notification.InvokerID = follow.Follower
-
-	fmt.Println("rrrr")
-	S.AddNotification(notification)
+	notification.Type = "event-created"
+	notification.InvokerID = Events.UserID
+	notification.EventID = Events.ID
+	for _,id := range ids{
+		notification.UserID = id
+		err = service.AddNotification(notification)
+		if err != nil {
+			fmt.Println(err)
+			return
+		}
+	}
 	return
 }
 

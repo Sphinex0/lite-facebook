@@ -125,3 +125,35 @@ func (data *Database) GetUsers(Id int) (models.User, error) {
 	
 	return user, nil
 }
+
+
+
+func (data *Database) GetGroupMembers(groupID int) (ids []int, err error) {
+	var rows *sql.Rows
+	rows, err = data.Db.Query(`
+	    SELECT DISTINCT user_id FROM (
+	    SELECT sender AS user_id FROM invites WHERE group_id = ? AND status = 'accepted'
+		UNION
+		SELECT receiver AS user_id FROM invites WHERE group_id = ? AND status = 'accepted'
+	 ) `, groupID, groupID)
+
+    if err != nil {
+	   return nil, err
+	}
+	defer rows.Close()
+
+    for rows.Next() {			
+		var id int																	        
+	    if err = rows.Scan(&id); err != nil {																					           
+	        return
+	    }																													        
+        ids = append(ids, id)																																					    
+    }
+																																								    
+	if err = rows.Err(); err != nil {																																					        
+		return 																																						    
+	}
+																																											    
+	return																																						
+}
+
