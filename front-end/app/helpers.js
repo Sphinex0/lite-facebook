@@ -241,7 +241,10 @@ export const FetchApi = async (path, redirect, { method, body, signal, headers }
       redirect.push("/404")
       return false
     } else if (response.status == 500) {
-      redirect.push("/500")
+      redirect.push("/page500")
+      return false
+    } else if (response.status == 405) {
+      redirect.push("/page405")
       return false
     }
     return response

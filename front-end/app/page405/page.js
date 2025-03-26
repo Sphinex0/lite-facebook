@@ -4,8 +4,8 @@ import "../global.css"
 export default function NotFound() {
     return (
         <div className="error-page">
-            <h1>500</h1>
-            <p>Status Internal Server Error</p>
+            <h1>405</h1>
+            <p>Status Method Not Allowed</p>
             <Link href="/">Go back to Homepage</Link>
         </div>
     );
