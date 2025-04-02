@@ -2,9 +2,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import FakePort from "./FakePort";
 
-const WorkerContext = createContext({
-    portRef: { current: null }
-});
+export const WorkerContext = createContext();
 
 export function WorkerProvider({ children }) {
     const workerRef = useRef(null);
@@ -13,7 +11,7 @@ export function WorkerProvider({ children }) {
     const [conversations, setConversations] = useState([]);
     const selectedConversationRef = useRef(null);
     const [messages, setMessages] = useState([]);
-    const userRef = useRef(null);
+    const userRef = useRef({});
     const [notifications, setNotifications] = useState(0);
     const [error,setError] = useState("")
 
@@ -21,7 +19,7 @@ export function WorkerProvider({ children }) {
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         console.log("storedUser", storedUser);
-        userRef.current = storedUser ? JSON.parse(storedUser) : null;
+        userRef.current = storedUser ? JSON.parse(storedUser) : {};
         console.log("userRef", userRef.current);
     }, []);
 
@@ -147,6 +145,7 @@ export function WorkerProvider({ children }) {
                 port.close();
             }
             portRef.current = null;
+            useRef.current = null;
             workerRef.current = null;
         };
     }, []);

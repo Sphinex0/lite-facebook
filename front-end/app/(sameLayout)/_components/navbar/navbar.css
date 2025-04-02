@@ -97,6 +97,7 @@ nav img {
 
 .notification {
     position: relative;
+    cursor: pointer;
 }
 
 .notification .pop-out {
