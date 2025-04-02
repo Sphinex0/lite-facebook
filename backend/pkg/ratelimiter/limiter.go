@@ -4,7 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
-	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -67,20 +67,15 @@ func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
 
 func (rl *RateLimiter) RateMiddleware(next http.Handler, maxTokens int, duration time.Duration) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, ok := GetUserFromContext(r.Context())
-		if !ok {
-			utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
-			return
-		}
-
+		user := strings.Split(r.RemoteAddr, ":")[0] + r.URL.Path
 		rl.Mu.Lock()
-		defer rl.Mu.Unlock()
-		id := strconv.Itoa(user.ID)
-		if _, ok := rl.Users[id]; !ok {
-			rl.Users[id] = NewBucketToken(maxTokens, duration)
+		if _, ok := rl.Users[user]; !ok {
+			rl.Users[user] = NewBucketToken(maxTokens, duration)
 		}
+		bucket := rl.Users[user]
+		rl.Mu.Unlock()
 
-		if !rl.Users[id].Allow() {
+		if !bucket.Allow() {
 			http.Error(w, "Too many request", http.StatusTooManyRequests)
 			return
 		}

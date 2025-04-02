@@ -26,6 +26,11 @@ export default async function middleware(request) {
       },
     });
 
+    if (authCheck.status == 429) {
+      console.log("hhhhhhhhh")
+      return NextResponse.next();
+    }
+
     const isAuthenticated = authCheck.status === 200;
 
     // Handle public routes
