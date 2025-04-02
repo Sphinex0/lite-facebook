@@ -91,3 +91,4 @@ func Routes(db *sql.DB) *http.ServeMux {
 	}()
 	return mux
 }
+
