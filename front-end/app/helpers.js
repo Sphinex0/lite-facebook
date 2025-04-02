@@ -105,7 +105,7 @@ export const likeArticle = async (like, article_id, setLikes, setDislikes, likeS
 
 }
 
-export const addArticle = async (e, setAtricle, { parent, group },redirect, userInfo = {}) => {
+export const addArticle = async (e, setAtricle, { parent, group }, redirect, userInfo = {}) => {
   e.preventDefault()
   try {
     const formData = new FormData(e.target)
@@ -221,7 +221,7 @@ export const joinGroup = async (groupID, setIsAllowed, redirect) => {
 
 export const FetchApi = async (path, redirect, { method, body, signal, headers }) => {
 
-  
+
 
   try {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}${path}`, {
@@ -246,6 +246,10 @@ export const FetchApi = async (path, redirect, { method, body, signal, headers }
     } else if (response.status == 405) {
       redirect.push("/page405")
       return false
+    } else if (response.status == 400) {
+      // document.getElementsByClassName("error")
+    } else if (response.status == 429) {
+
     }
     return response
   } catch (error) {
