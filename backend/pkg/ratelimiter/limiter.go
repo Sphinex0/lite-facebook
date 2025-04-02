@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
-	"social-network/internal/models"
-	utils "social-network/pkg"
 	"strconv"
 	"sync"
 	"time"
+
+	"social-network/internal/models"
+	utils "social-network/pkg"
 )
 
 type BucketToken struct {
@@ -59,7 +60,6 @@ func NewRateLimiter() *RateLimiter {
 	}
 }
 
-
 func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
 	user, ok := ctx.Value(utils.UserIDKey).(models.UserInfo)
 	return user, ok
@@ -67,7 +67,8 @@ func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
 
 func (rl *RateLimiter) RateMiddleware(next http.Handler, maxTokens int, duration time.Duration) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, ok := GetUserFromContext(r.Context()); if !ok {
+		user, ok := GetUserFromContext(r.Context())
+		if !ok {
 			utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
 			return
 		}
@@ -109,6 +110,4 @@ func (rl *RateLimiter) GetUserID(userUID string, db *sql.DB) (int, error) {
 	return userID, nil
 }
 
-var (
-	CreateArticleLimiter = NewRateLimiter()
-)
+var CreateArticleLimiter = NewRateLimiter()

@@ -4,10 +4,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"social-network/internal/api"
 	"social-network/internal/repository"
 	"social-network/pkg/middlewares"
+	"social-network/pkg/ratelimiter"
 )
 
 func main() {
@@ -15,7 +17,7 @@ func main() {
 	if err != nil {
 		return
 	}
-	
+
 	// Set flags to include file name and line number
 	log.SetFlags(log.LstdFlags | log.Lshortfile)
 
@@ -23,9 +25,14 @@ func main() {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
-	server := http.Server{
+	baseHandler := api.Routes(db)
+	rateLimitedHandler := ratelimiter.CreateArticleLimiter.RateMiddleware(baseHandler, 20, 2*time.Second)
+	authHandler := middlewares.AuthMiddleware(rateLimitedHandler, db)
+	finalHandler := middlewares.CORS(authHandler)
+
+	server := &http.Server{
 		Addr:    ":8080",
-		Handler: middlewares.CORS(middlewares.AuthMiddleware(api.Routes(db), db)),
+		Handler: finalHandler,
 	}
 
 	fmt.Println("http://localhost:8080/")

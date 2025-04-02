@@ -28,10 +28,11 @@ func Routes(db *sql.DB) *http.ServeMux {
 	mux.HandleFunc("/api/users", handler.HandleGetUsers)
 
 	// articls
+	// posts := ratelimiter.CreateArticleLimiter.RateMiddleware(http.HandlerFunc(handler.HandelGetPosts), 20, 2*time.Second)
 	mux.HandleFunc("/api/posts", handler.HandelGetPosts)       // post {"before":184525547}
 	mux.HandleFunc("/api/comments", handler.HandelGetComments) // post {"before":184525547, "parent":4}
-	Createarticle := ratelimiter.CreateArticleLimiter.RateMiddleware(http.HandlerFunc(handler.HandelCreateArticle), 1, 10*time.Second)
-	mux.Handle("/api/articles/store", Createarticle)                     // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
+	// Createarticle := ratelimiter.CreateArticleLimiter.RateMiddleware(http.HandlerFunc(handler.HandelCreateArticle), 1, 10*time.Second)
+	mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle)   // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
 	mux.HandleFunc("/api/reactions/store", handler.HandelCreateReaction) // post {"like":1|-1, "article_id":4}
 	mux.HandleFunc("/api/group/posts", handler.HandelGetPostsByGroup)    // post {"before":184525547,"group_id":1}
 	// mux.HandleFunc("/api/articles/store", handler.HandelCreateArticle)    // post form {"content":"Hello world","privacy":"public" ,"image":file} // or the same but add {"group_id":5} // or the same but add {"parent":5}
@@ -91,4 +92,3 @@ func Routes(db *sql.DB) *http.ServeMux {
 	}()
 	return mux
 }
-
