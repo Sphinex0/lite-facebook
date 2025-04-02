@@ -10,7 +10,11 @@ function Profilepop() {
     const [err, setErr] = useState('');
     const [user, setUser] = useState({});
     const router = useRouter();
-    const {portRef} = useWorker()
+    const {portRef, userRef} = useWorker()
+    const [profileImage, setProfileImage] = useState({})
+    useEffect(()=>{
+        setProfileImage(userRef)
+    },[userRef])
 
     useEffect(() => {
             const storedUser = JSON.parse(localStorage.getItem('user')) || {};
@@ -25,6 +29,7 @@ function Profilepop() {
 
             if (response.status === 200) {                
                 localStorage.removeItem('user');
+                userRef.current = {}
                 portRef?.current?.postMessage({
                     kind: "close"
                 })

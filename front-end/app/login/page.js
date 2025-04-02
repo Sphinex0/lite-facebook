@@ -15,7 +15,6 @@ export default function Login () {
 
   const handleSubmit = async e => {
     e.preventDefault()
-
     try {
       const response = await FetchApi('/api/login', router,{
         method: 'POST',

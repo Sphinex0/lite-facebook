@@ -1,7 +1,7 @@
 'use client'
 import './navbar.css'
-import NotificationPop from '@/components/popovers/Notificationpopover/page'
-import Profilepop from  '@/components/popovers/profile/page'
+import NotificationPop from '@/app/components/popovers/Notificationpopover/page'
+import Profilepop from '@/app/components/popovers/profile/page'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
@@ -39,32 +39,32 @@ export default function Navbar () {
       invoker: 'mustafa'
     },
   ]*/
-export default function Navbar () {
+export default function Navbar() {
   const [bool, setbool] = useState(false)
   const [profile, setprofile] = useState(false)
   const redirect = useRouter()
-  function handleclick () {
+  function handleclick() {
     setbool(!bool)
   }
-  function handleProfileclick () {
+  function handleProfileclick() {
     setprofile(!profile)
   }
   const [notifications, setNotifications] = useState();
   const [notificationCount, setNotificationCount] = useState(0);
   const [Err, setError] = useState("")
-   const [user, setUser] = useState({});
-   
+  const [user, setUser] = useState({});
+
   const router = usePathname();
 
-     useEffect(() => {
-           
-    
-      const storedUser = JSON.parse(localStorage.getItem('user')) || {};
-             setUser(storedUser);
- 
+  useEffect(() => {
+
+
+    const storedUser = JSON.parse(localStorage.getItem('user')) || {};
+    setUser(storedUser);
+
     const fetchNotifications = async () => {
       try {
-        const response = await FetchApi("/api/GetNotification/?page=1",redirect,{
+        const response = await FetchApi("/api/GetNotification/?page=1", redirect, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -72,10 +72,10 @@ export default function Navbar () {
         });
 
         if (response.status == 200) {
-          const data = await response.json();          
+          const data = await response.json();
           setNotifications(data.notifications);
-          setNotificationCount(data.unseen); 
-          
+          setNotificationCount(data.unseen);
+
         } else {
           setError("error while fetching notifications");
         }
@@ -93,46 +93,49 @@ export default function Navbar () {
       {/* Search Bar (Right) */}
       <div className='logo'>
         <Link href={'/'}>
-        <span>Lite-Facebook</span>
+          <span>Lite-Facebook</span>
         </Link>
       </div>
 
       {/* Logo and Icons (Center) */}
       <div className='nav-center '>
         <div className='icons'>
-        <Link href={"/"} className={`menu-item ${router == "/" && "active"}`}>
-                <span><HomeOutlinedIcon /></span>
-        </Link> 
-        <Link href={"/users"} className={`menu-item ${router == "/users" && "active"}`}>
-                <span><GroupOutlinedIcon /></span>
-            </Link>
-            <Link href={"/groups"} className={`menu-item ${router == "/groups" && "active"}`}>
-                <span><GroupsOutlined /></span>
-            </Link>
+          <Link href={"/"} className={`menu-item ${router == "/" && "active"}`}>
+            <span><HomeOutlinedIcon /></span>
+          </Link>
+          <Link href={"/users"} className={`menu-item ${router == "/users" && "active"}`}>
+            <span><GroupOutlinedIcon /></span>
+          </Link>
+          <Link href={"/groups"} className={`menu-item ${router == "/groups" && "active"}`}>
+            <span><GroupsOutlined /></span>
+          </Link>
           <div className='notification'>
             <div onClick={handleclick}>
               <NotificationsNoneOutlinedIcon />
             </div>
-            {notificationCount != 0 && <span className="count">{notificationCount >9 ? "9+":notificationCount}</span>}
+            {notificationCount != 0 && <span className="count">{notificationCount > 9 ? "9+" : notificationCount}</span>}
             <div className='pop-out'>{bool && <NotificationPop notifications={notifications} Err={Err} />}</div>
-          
+
           </div>
 
           <Link href={"/chat"} className={`menu-item ${router == "/chat" && "active"}`} id="messages-notifications">
-                <span className='i notification'>
-                <MailOutlinedIcon />
-                    <span className="notification-count count" id='msgCount'></span>
-                </span>
-            </Link>
-          
+            <span className='i notification'>
+              <MailOutlinedIcon />
+              <span className="notification-count count" id='msgCount'></span>
+            </span>
+          </Link>
+
         </div>
       </div>
-      <div className='notification'>
-      <div onClick={handleProfileclick}>
-      <img src={`/pics/${user.image || "default-profile.png"}`} alt='Profile' />
-      </div>
-      <div className='pop-out'>{profile && <Profilepop/>}</div>
-      </div>
+      {console.log("user : => => => ",user)}
+      {user.image &&
+        <div className='notification'>
+          <div onClick={handleProfileclick}>
+            <img src={`/pics/${user.image || "default-profile.png"}`} alt='Profile' />
+          </div>
+                    <div className='pop-out'>{profile && <Profilepop />}</div>
+        </div>
+      }
     </nav>
   )
 }
