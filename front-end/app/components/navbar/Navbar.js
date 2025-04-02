@@ -1,7 +1,7 @@
 'use client'
 import './navbar.css'
-import NotificationPop from '@/components/popovers/Notificationpopover/page'
-import Profilepop from '@/components/popovers/profile/page'
+import NotificationPop from '@/app/components/popovers/Notificationpopover/page'
+import Profilepop from '@/app/components/popovers/profile/page'
 import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'
 import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined'
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined'
@@ -55,11 +55,6 @@ export default function Navbar() {
   const [user, setUser] = useState({});
 
   const router = usePathname();
-
-  useEffect(()=>{
-    console.log(userRef)
-    setUser(userRef);
-  },[userRef])
 
   useEffect(() => {
 
