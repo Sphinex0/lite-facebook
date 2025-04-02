@@ -307,6 +307,9 @@ export function WorkerProvider({ children }) {
                         }
                     }
                     break;
+                case "error" :
+                    console.log(data)
+                    break
 
                 default:
                     console.warn("Unhandled message type:", data.type);
