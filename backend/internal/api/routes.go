@@ -76,7 +76,7 @@ func Routes(db *sql.DB) *http.ServeMux {
 		CheckOrigin: func(r *http.Request) bool { return true },
 	}
 
-	mux.HandleFunc("/ws", handler.MessagesHandler(upgrader))
+	mux.HandleFunc("/api/ws", handler.MessagesHandler(upgrader))
 	mux.HandleFunc("/api/messageshistories", handler.HandelMessagesHestories)
 
 	// notification

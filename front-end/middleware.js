@@ -27,7 +27,6 @@ export default async function middleware(request) {
     });
 
     if (authCheck.status == 429) {
-      console.log("hhhhhhhhh")
       return NextResponse.next();
     }
 
