@@ -11,7 +11,7 @@ import { useRouter } from "next/navigation";
 
 export default function Chat() {
 
-    const { portRef, clientWorker, conversations, setConversations, selectedConversationRef, messages, setMessages } = useWorker();
+    const { portRef, clientWorker, conversations, setConversations, selectedConversationRef, messages, setMessages, error, setError } = useWorker();
     const conversationsRef = useRef(conversations);
     const [message, setMessage] = useState({ content: "", reply: null });
     const [selectedConversation, setSelectedConversation] = useState(null);
@@ -23,9 +23,10 @@ export default function Chat() {
     const [replyingTo, setReplyingTo] = useState(null);
     const inputRef = useRef(null);
     const chatBodyRef = useRef(null);
-    const oldScrollHeightRef = useRef(null); 
-    const justLoadedMoreRef = useRef(false); 
+    const oldScrollHeightRef = useRef(null);
+    const justLoadedMoreRef = useRef(false);
     const redirect = useRouter()
+
 
 
     useEffect(() => {
@@ -45,7 +46,7 @@ export default function Chat() {
 
     const fetchMessages = async (signal) => {
         if (!selectedConversation) return;
-        const res = await FetchApi(`/api/messageshistories`,redirect, {
+        const res = await FetchApi(`/api/messageshistories`, redirect, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -235,9 +236,14 @@ export default function Chat() {
         ? selectedConversationInfo.group?.title ||
         `${selectedConversationInfo.user_info?.first_name} ${selectedConversationInfo.user_info?.last_name}`
         : "Select a conversation";
-
+    if (error) {
+        setTimeout(() => {
+            setError("")
+        }, 2000)
+    }
     return (
         <div className={styles.container}>
+            {error && <div className={styles.errorPopup}>{error}</div>}
             <div className={styles.chatContainer}>
                 <div className={styles.chatHeader}>
                     <div>
@@ -356,7 +362,7 @@ export default function Chat() {
 
             <input type="checkbox" id="Hide" className={styles.Hide} />
             <div className={styles.conversationsList}>
-                
+
                 {conversations?.map((conversationInfo) => {
                     const { conversation, user_info, group, last_message, seen } = conversationInfo;
                     const onlineDiv = true
