@@ -4,11 +4,12 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
-	"social-network/internal/models"
-	utils "social-network/pkg"
-	"strconv"
+	"strings"
 	"sync"
 	"time"
+
+	"social-network/internal/models"
+	utils "social-network/pkg"
 )
 
 type BucketToken struct {
@@ -59,7 +60,6 @@ func NewRateLimiter() *RateLimiter {
 	}
 }
 
-
 func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
 	user, ok := ctx.Value(utils.UserIDKey).(models.UserInfo)
 	return user, ok
@@ -67,19 +67,15 @@ func GetUserFromContext(ctx context.Context) (models.UserInfo, bool) {
 
 func (rl *RateLimiter) RateMiddleware(next http.Handler, maxTokens int, duration time.Duration) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		user, ok := GetUserFromContext(r.Context()); if !ok {
-			utils.WriteJson(w, http.StatusUnauthorized, "User not Found")
-			return
-		}
-
+		user := strings.Split(r.RemoteAddr, ":")[0] + r.URL.Path
 		rl.Mu.Lock()
-		defer rl.Mu.Unlock()
-		id := strconv.Itoa(user.ID)
-		if _, ok := rl.Users[id]; !ok {
-			rl.Users[id] = NewBucketToken(maxTokens, duration)
+		if _, ok := rl.Users[user]; !ok {
+			rl.Users[user] = NewBucketToken(maxTokens, duration)
 		}
+		bucket := rl.Users[user]
+		rl.Mu.Unlock()
 
-		if !rl.Users[id].Allow() {
+		if !bucket.Allow() {
 			http.Error(w, "Too many request", http.StatusTooManyRequests)
 			return
 		}
@@ -109,6 +105,4 @@ func (rl *RateLimiter) GetUserID(userUID string, db *sql.DB) (int, error) {
 	return userID, nil
 }
 
-var (
-	CreateArticleLimiter = NewRateLimiter()
-)
+var CreateArticleLimiter = NewRateLimiter()
