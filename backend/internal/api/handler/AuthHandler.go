@@ -53,7 +53,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
 		}
 	} else {
-		user.Image = "blank-profile-picture-973460_960_720.png"
+		user.Image = "default-profile.png"
 	}
 
 	fmt.Println("user", user)
