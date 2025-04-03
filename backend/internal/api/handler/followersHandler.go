@@ -91,7 +91,7 @@ func (Handler *Handler) HandleGetFollowRequests(w http.ResponseWriter, r *http.R
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusBadRequest, "information locked")
+			utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -114,7 +114,7 @@ func (Handler *Handler) HandleGetFollowers(w http.ResponseWriter, r *http.Reques
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusBadRequest, "information locked")
+			utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
@@ -138,7 +138,7 @@ func (Handler *Handler) HandleGetFollowings(w http.ResponseWriter, r *http.Reque
 	if err != nil {
 		log.Println(err)
 		if err.Error() == "profile is private, follow to see"{
-			utils.WriteJson(w, http.StatusBadRequest, "information locked")
+			utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 			return
 		}
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")

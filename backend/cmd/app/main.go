@@ -25,28 +25,14 @@ func main() {
 		log.Fatalf("Migration failed: %v", err)
 	}
 
-	// Handler: middlewares.CORS(ratelimiter.CreateArticleLimiter.RateMiddleware(middlewares.AuthMiddleware(api.Routes(db), db), 20, 2*time.Second)),
-	// auth := middlewares.AuthMiddleware(api.Routes(db), db)
-	// handel := ratelimiter.CreateArticleLimiter.RateMiddleware(auth, 20, 2*time.Second)
-	// server := http.Server{
-	// 	Addr:    ":8080",
-	// 	Handler: middlewares.CORS(handel),
-	// }
-
-	// Create the base handler
 	baseHandler := api.Routes(db)
 
-	// Apply middlewares in the correct order
-	// 1. Rate Limiter
 	rateLimitedHandler := ratelimiter.CreateArticleLimiter.RateMiddleware(baseHandler, 20, 100*time.Millisecond)
 
-	// 2. Authentication (after rate limiting)
 	authHandler := middlewares.AuthMiddleware(rateLimitedHandler, db)
 
-	// 3. CORS (wraps everything last)
 	finalHandler := middlewares.CORS(authHandler)
-
-	// Set up and start the server
+	
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: finalHandler,

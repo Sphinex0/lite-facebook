@@ -35,7 +35,7 @@ const About = ({ user_id, action }) => {
     // /api/profile/update
     const changePrivacy = async (privacy) => {
         try {
-            const response = await FetchApi("/api/profile/update",redirect, {
+            const response = await FetchApi("/api/profile/update", redirect, {
                 method: "POST",
                 body: JSON.stringify({ privacy }),
             })
@@ -67,9 +67,14 @@ const About = ({ user_id, action }) => {
                         {console.log(action)}
 
                         <span>
-                            <select value={privacy} disabled={action == "edit" ? false : true}
+                            <select
+                                value={privacy}
+                                disabled={action === "edit" ? false : true}
                                 onChange={(e) => {
-                                    changePrivacy(e.target.value)
+                                    const newValue = e.target.value;
+                                    if (confirm(`Are you sure you want to change privacy to ${newValue}?`)) {
+                                        changePrivacy(newValue);
+                                    }
                                 }}
                             >
                                 <option value={"public"}>Public</option>
