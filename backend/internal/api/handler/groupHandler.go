@@ -84,7 +84,15 @@ func (Handler *Handler) GetGroup(w http.ResponseWriter, r *http.Request) {
 
 	var Groups models.Group
 	err := utils.ParseBody(r, &Groups)
+	if err != nil {
+		utils.WriteJson(w, http.StatusNotAcceptable, "Not Acceptable")
+		return
+	}
 	group, err := Handler.Service.GetGroupsById(&Groups)
+	if err != nil {
+		utils.WriteJson(w, http.StatusNotAcceptable, "Not Acceptable")
+		return
+	}
 	types, err := Handler.Service.TypeInvate(user.ID, group.ID)
 	if err != nil {
 		utils.WriteJson(w, http.StatusNotAcceptable, "Not Acceptable")

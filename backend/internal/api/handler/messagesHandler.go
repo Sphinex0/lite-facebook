@@ -17,14 +17,6 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-// var (
-// 	UserConnections = make(map[int][]*websocket.Conn)
-// 	UserConnMu      sync.RWMutex
-
-// 	ConvSubscribers = make(map[int][]int)
-// 	ConvSubMu       sync.RWMutex
-// )
-
 // handle messages of ws
 func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

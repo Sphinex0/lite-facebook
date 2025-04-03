@@ -247,12 +247,20 @@ export const FetchApi = async (path, redirect, { method, body, signal, headers }
       redirect.push("/page405")
       return false
     } else if (response.status == 400) {
-      // document.getElementsByClassName("error")
+      console.log("hhh")
+      const data = await response.json()
+      const e = document.querySelector(".error")
+      e.textContent = data
+      e.style.display = "block"
+      setTimeout(() => {
+        e.style.display = "none"
+      },2000)
     } else if (response.status == 429) {
 
     }
     return response
   } catch (error) {
+    console.log(error)
     return false
   }
 }
