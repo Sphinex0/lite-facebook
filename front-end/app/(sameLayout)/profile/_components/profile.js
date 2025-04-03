@@ -25,7 +25,7 @@ const Profile = ({ userID }) => {
   return (
     <div>
 
-      {profileInfo.user_info && (
+      {profileInfo.user_info ? (
         <ProfileHeader
           profileInfo={profileInfo.user_info}
           followersCount={profileInfo.followers}
@@ -34,7 +34,7 @@ const Profile = ({ userID }) => {
           profileNav={profileNav}
           setProfileNav={setProfileNav}
         />
-      )}
+      ):"user not found"}
 
       {profileNav == "posts" ? <Posts user_id={userID} setIsAllowed={setIsAllowed} /> : ""}
       {profileNav == "followers" ? <Followers user_id={userID} /> : ""}
