@@ -10,7 +10,7 @@ self.onconnect = (event) => {
         const { kind, payload } = event.data
         if (kind == "connect") {
             if (!socket) {
-                socket = new WebSocket(`${payload}/ws`)
+                socket = new WebSocket(`${payload}/api/ws`)
                 socket.onopen = () => {
                     console.log("socket is open now")
                 }

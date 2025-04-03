@@ -13,6 +13,7 @@ export default function MainLayout({ children }) {
   return (
       <WorkerProvider>
         <main>
+        <div style={{display:"none"}} className={`errorPopup error`}></div>
           <div className="container">
             <div className="left">
               <Profile />

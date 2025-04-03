@@ -2,7 +2,7 @@
 export default class FakePort {
     constructor(url) {
         this.listeners = [];
-        this.socket = new WebSocket(`${url}/ws`);
+        this.socket = new WebSocket(`${url}/api/ws`);
         this.socket.onmessage = (event) => {
             const data = JSON.parse(event.data);
             this.listeners.forEach(listener => listener({ data }));

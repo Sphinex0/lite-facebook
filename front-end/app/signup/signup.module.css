@@ -1,124 +1,126 @@
-
-  /* Centering */
-  .container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background: linear-gradient(135deg, #89f7fe, #66a6ff);
-  }
-  
-  /* Form box */
-  .formBox {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    width: 400px;
-    text-align: center;
+/* Centering */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #89f7fe, #66a6ff);
 }
-  
-  /* Heading */
-  .heading {
-    margin-bottom: 20px;
-    font-size: 24px;
-  }
-  
-  /* Input fields */
-  .inputGroup {
-    margin-bottom: 12px;
-    text-align: left;
-  }
-  
-  .inputField {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 14px;
-    transition: all 0.3s ease-in-out;
-  }
-  
-  /* Scale effect on focus */
-  .inputField:focus {
-    border-color: #66a6ff;
-    box-shadow: 0px 0px 8px rgba(102, 166, 255, 0.6);
-    transform: scale(1.05);
-  }
-  
-  /* Textarea */
-  .textarea {
-    height: 80px;
-    resize: none;
-  }
-  
-  /* File Input */
-  .fileLabel {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 5px;
-    display: block;
-  }
-  
-  .fileInput {
-    padding: 5px;
-  }
-  
-  /* Submit Button */
-  .submitBtn {
-    width: 100%;
-    background: #66a6ff;
-    color: white;
-    padding: 10px;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: 0.3s, transform 0.2s;
-  }
-  
-  /* Button hover effect */
-  .submitBtn:hover {
-    background: #5590e3;
-    transform: scale(1.05);
+
+/* Form box */
+.formBox {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  width: 400px;
+  text-align: center;
+}
+
+/* Heading */
+.heading {
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+/* Input fields */
+.inputGroup {
+  margin-bottom: 12px;
+  text-align: left;
+}
+
+.inputField {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Scale effect on focus */
+.inputField:focus {
+  border-color: #66a6ff;
+  box-shadow: 0px 0px 8px rgba(102, 166, 255, 0.6);
+  transform: scale(1.05);
+}
+
+/* Textarea */
+.textarea {
+  height: 80px;
+  resize: none;
+}
+
+/* File Input */
+.fileLabel {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.fileInput {
+  padding: 5px;
+}
+
+/* Submit Button */
+.submitBtn {
+  width: 100%;
+  background: #66a6ff;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s, transform 0.2s;
+}
+
+/* Button hover effect */
+.submitBtn:hover {
+  background: #5590e3;
+  transform: scale(1.05);
+}
+
+/*popo out error*/
+.errorPopup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ff4d4d;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: bold;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  animation: fadeIn 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+/* Fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
   }
 
-  /*popo out error*/
-  .errorPopup {
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: #ff4d4d;
-    color: white;
-    padding: 12px 18px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: bold;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    animation: fadeIn 0.3s ease-in-out;
-    z-index: 1000;
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
-  
-  /* Fade-in animation */
-  @keyframes fadeIn {
-    from {
-      opacity: 0;
-      transform: translateX(-50%) translateY(-10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-  }
-  
+}
+
 /* login Link Section */
 .login-link {
   text-align: center;
-  margin-top: 0; /* Remove top margin */
+  margin-top: 0;
+  /* Remove top margin */
 }
 
 .login-link p {

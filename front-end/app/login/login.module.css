@@ -36,8 +36,10 @@
 }
 
 .inputField {
+  box-sizing: border-box;
   width: 100%;
   padding: 10px;
+  margin: auto;
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 14px;
@@ -88,3 +90,5 @@
 .signup-link a:hover {
   text-decoration: underline;
 }
+
+
