@@ -15,7 +15,7 @@ const ProfileHeader= ({profileInfo, followersCount, followingsCount, profileNav,
       <div className={styles.profileHeader}>
         <div className={styles.basicInfo}>
         <div className={styles.p10}>
-          <img className={styles.image} src={`/pics/${profileInfo?.image || "default-profile.png"}`} />
+          <img className={styles.image} src={`http://localhost:8080/public/pics/${profileInfo?.image || "default-profile.png"}`} />
         </div>
         <div className={styles.g2}>
           

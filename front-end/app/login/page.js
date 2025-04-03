@@ -1,22 +1,24 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import styles from "./login.module.css"
 import { FetchApi } from '../helpers'
-import Link from 'next/link' 
+import Link from 'next/link'
+import { useCtx } from '../_Context/ctx'
+import { useRouter } from 'next/navigation'
 
-export default function Login () {
+export default function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const router = useRouter()
+  const { userRef } = useCtx()
+  const redirect = useRouter()
 
   const [error, seterror] = useState('')
 
   const handleSubmit = async e => {
     e.preventDefault()
     try {
-      const response = await FetchApi('/api/login', router,{
+      const response = await FetchApi('/api/login', redirect, {
         method: 'POST',
         body: JSON.stringify({ email, password })
       })
@@ -24,9 +26,15 @@ export default function Login () {
       if (response.status == 200) {
         const data = await response.json()
         localStorage.setItem('user', JSON.stringify(data))
-        router.push('/')
-      } else {  
-        const data = await response.json()      
+        console.log("fgdfgdfgdfgdfgdf")
+        userRef.current = data
+        console.log("sqdsd")
+        setTimeout(() => {
+          redirect.push('/')
+        })
+        console.log("jj")
+      } else {
+        const data = await response.json()
         seterror(data)
       }
     } catch (error) {

@@ -49,7 +49,7 @@ function Profilepop({ setprofile }) {
                         }}>
                             <div className='profile'>
                                 {console.log(user?.image)}
-                                <img className='left-profile' src={`/pics/${user?.image || "default-profile.png"}`} alt='Profile' />
+                                <img src={`http://localhost:8080/public/pics/${user?.image || "default-profile.png"}`} alt='Profile'  className='left-profile' />
                                 <h3 className='right-profile'>{user?.first_name} {user?.last_name}</h3>
                             </div>
                         </div>

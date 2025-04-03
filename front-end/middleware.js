@@ -42,6 +42,7 @@ export default async function middleware(request) {
 
     // Protect private routes
     if (!isAuthenticated) {
+      console.log("eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
       return NextResponse.redirect(new URL("/login", request.url));
     }
 

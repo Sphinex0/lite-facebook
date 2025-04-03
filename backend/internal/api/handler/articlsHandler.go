@@ -44,7 +44,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 	file, handler, err := r.FormFile("image")
 	if err == nil {
 		defer file.Close()
-		article.Image, err = utils.StoreThePic("../front-end/public/posts", file, handler)
+		article.Image, err = utils.StoreThePic("public/posts", file, handler)
 		if err != nil {
 			utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		}

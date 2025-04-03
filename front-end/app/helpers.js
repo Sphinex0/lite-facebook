@@ -231,7 +231,9 @@ export const FetchApi = async (path, redirect, { method, body, signal, headers }
       body,
       headers
     })
+    console.log("pathhhhhhhhh",path)
     if (response.status == 401) {
+      console.log(path,"redirect to login")
       redirect.push("/login")
       return false
     } else if (response.status == 403) {

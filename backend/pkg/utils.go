@@ -127,7 +127,11 @@ func GetUserFromContext(ctx context.Context) (user models.UserInfo, uuidCookie s
 
 func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileHeader) (string, error) {
 	if _, err := os.Stat(UploadDir); os.IsNotExist(err) {
-		os.Mkdir(UploadDir, os.ModePerm)
+		fmt.Println(err)
+		er := os.Mkdir(UploadDir, os.ModePerm)
+		fmt.Println(er)
+	} else {
+		fmt.Println(err)
 	}
 
 	randomstr := GenerateUuid()
@@ -144,12 +148,14 @@ func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileH
 	filePath := filepath.Join(UploadDir, randomstr+extensions[extIndex])
 	dst, err := os.Create(filePath)
 	if err != nil {
+		fmt.Println("err1",err)
 		return "", errors.New("could not save file")
 	}
 	defer dst.Close()
 
 	_, err = io.Copy(dst, file)
 	if err != nil {
+		fmt.Println("err2",err)
 		return "", errors.New("failed to save file")
 	}
 

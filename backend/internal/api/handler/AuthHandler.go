@@ -47,10 +47,12 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 	// Extract profile picture (optional)
 	file, handler, err := r.FormFile("avatar")
 	if err == nil {
+		// user.Image, err = utils.StoreThePic("../front-end/public/pics", file, handler)
 		defer file.Close()
-		user.Image, err = utils.StoreThePic("../front-end/public/pics", file, handler)
+		user.Image, err = utils.StoreThePic("public/pics", file, handler)
 		if err != nil {
 			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
+			return
 		}
 	} else {
 		user.Image = "default-profile.png"
@@ -58,21 +60,21 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("user", user)
 	// Proccess Data and Insert it
-	Uuid, err, id := H.Service.RegisterUser(&user)
+	_, err, _ = H.Service.RegisterUser(&user)
 	if err != nil {
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
 
 	// some data that to make it easy in the front-end
-	userinfo := models.UserInfo{
-		ID:         id,
-		First_Name: user.First_Name,
-		Last_Name:  user.Last_Name,
-		Image:      user.Image,
-	}
-	utils.SetSessionCookie(w, Uuid)
-	utils.WriteJson(w, http.StatusOK, userinfo)
+	// userinfo := models.UserInfo{
+	// 	ID:         id,
+	// 	First_Name: user.First_Name,
+	// 	Last_Name:  user.Last_Name,
+	// 	Image:      user.Image,
+	// }
+	// utils.SetSessionCookie(w, Uuid)
+	utils.WriteJson(w, http.StatusOK, "successfully")
 }
 
 func (H *Handler) Logout(w http.ResponseWriter, r *http.Request) {

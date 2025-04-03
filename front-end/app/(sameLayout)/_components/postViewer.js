@@ -66,7 +66,7 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
           </div>
           <div className={`${styles.content} ${styles.PreviewContent}`}>{postInfo.article.content}</div>
 
-          {postInfo.article.image && <div className={styles.imageHolder}><img src={`/posts/${postInfo.article.image}`} /> <a href={`/posts/${postInfo.article.image}`} target="_blank" className={styles.OpenInNew}><OpenInNew /></a> </div>}
+          {postInfo.article.image && <div className={styles.imageHolder}><img src={`http://localhost:8080/public/posts/${postInfo.article.image}`} /> <a href={`/posts/${postInfo.article.image}`} target="_blank" className={styles.OpenInNew}><OpenInNew /></a> </div>}
 
           <div className="action-button">
             <div className="action-buttons">

@@ -16,6 +16,8 @@ export default function Posts() {
     const redirect = useRouter()
     // forbidden()
     // notFound()
+    console.log("rani f home")
+    
 
     const lastPostElementRef = useRef(null)
     const before = useRef(Math.floor(Date.now()))

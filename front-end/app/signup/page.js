@@ -5,8 +5,11 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import styles from "./signup.module.css"
 import { FetchApi } from '../helpers'
+import { useCtx } from '../_Context/ctx'
 
 export default function SignupPage() {
+
+  const { userRef } = useCtx()
   const [form, setForm] = useState({
     email: '',
     password: '',
@@ -39,32 +42,35 @@ export default function SignupPage() {
     }
 
     try {
-      const response = await FetchApi('/api/signup',redirect, {
+      const response = await FetchApi('/api/signup', redirect, {
         method: 'POST',
         body: data,
       })
 
       if (response.status == 200) {
         // If the response is ok, navigate to the homepage
-        const data = await response.json()
-        localStorage.setItem('user', JSON.stringify(data))
-        router.push('/')
+        // const data = await response.json()
+        // console.log(data)
+        // localStorage.setItem('user', JSON.stringify(data))
+        // userRef.current = data
+        userRef.current = {}
+        router.push('/login')
       } else {
-        const data = await response.json()        
+        const data = await response.json()
         seterror(data)
       }
     } catch (error) {
       seterror("network accured error!")
     }
   }
-/*
-  useEffect(() => {
-    if (error) {
-      const timer = setTimeout(() => seterror(''), 3000)
-      return () => clearTimeout(timer)
-    }
-  }, [error])
-*/
+  /*
+    useEffect(() => {
+      if (error) {
+        const timer = setTimeout(() => seterror(''), 3000)
+        return () => clearTimeout(timer)
+      }
+    }, [error])
+  */
   return (
     <form onSubmit={handleSignup}>
       <div className={styles.container}>
@@ -75,23 +81,23 @@ export default function SignupPage() {
           {error && <div className={styles.errorPopup}>{error}</div>}
           {error && console.log(error)}
           {
-          ['email', 'password', 'firstName', 'lastName', 'dob'].map(field => (
-            <div key={field} className={styles.inputGroup}>
-              <input
-                type={
-                  field === 'dob'
-                    ? 'date'
-                    : field === 'password'
-                      ? 'password'
-                      : 'text'
-                }
-                name={field}
-                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-                onChange={handleChange}
-                className={styles.inputField}
-              />
-            </div>
-          ))}
+            ['email', 'password', 'firstName', 'lastName', 'dob'].map(field => (
+              <div key={field} className={styles.inputGroup}>
+                <input
+                  type={
+                    field === 'dob'
+                      ? 'date'
+                      : field === 'password'
+                        ? 'password'
+                        : 'text'
+                  }
+                  name={field}
+                  placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
+                  onChange={handleChange}
+                  className={styles.inputField}
+                />
+              </div>
+            ))}
 
           {/* Optional Fields */}
           <div className={styles.inputGroup}>
@@ -124,13 +130,13 @@ export default function SignupPage() {
           <button type='submit' className={styles.submitBtn}>
             Sign Up
           </button>
-        <div className='login-link'>
-          <p>
-            Don't have an account? <Link href='/login'>Login in here</Link>
-          </p>
+          <div className='login-link'>
+            <p>
+              Don't have an account? <Link href='/login'>Login in here</Link>
+            </p>
+          </div>
+        </div>
       </div>
-        </div>
-        </div>
     </form>
   )
 }
