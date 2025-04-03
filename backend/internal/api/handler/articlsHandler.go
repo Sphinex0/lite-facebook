@@ -67,12 +67,6 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
 			return
 		}
-		// _, err := Handler.Service.CheckMember(GroupID, user.ID)
-		// if err != nil {
-		// 	fmt.Println("grouggggp")
-		// 	utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
-		// 	return
-		// }
 		article.GroupID = &GroupID
 		article.Privacy = "public"
 

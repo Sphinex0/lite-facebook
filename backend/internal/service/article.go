@@ -11,7 +11,11 @@ import (
 )
 
 func (service *Service) CreateArticle(article *models.Article, users []string, id int) (err models.Error) {
-	if article.Content == "" {
+	if article.Content == "" && article.Image == "" {
+		err.Err = fmt.Errorf("err in content")
+		return
+	}
+	if len(article.Content) > 5000 {
 		err.Err = fmt.Errorf("err in content")
 		return
 	}
