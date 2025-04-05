@@ -21,10 +21,10 @@ const Notifications = ({ notifications = [], Err }) => {
             'Content-Type': 'application/json',
           },
         });
+        console.log("res",res)
 
         const newItems = await res.json();
         if (res.status === 200) {
-          console.log(newItems.notifications, "new items");
           if (newItems.notifications != null) {
             // Filter out duplicates by checking `id`
             setItems((prev) => {
@@ -146,7 +146,7 @@ const Notifications = ({ notifications = [], Err }) => {
             case 'event-created':
               return (
                 <div key={`notif${notification.id}`} className="notification-div">
-                  <Link href={`/event/${notification.eventID}`}>
+                  <Link href={`/groups/${notification.group_id}`}>
                     <h1>New Event</h1>
                   </Link>
                   <p><strong>{notification.invoker_name}</strong> created an event in <strong>{notification.group_title}</strong></p>

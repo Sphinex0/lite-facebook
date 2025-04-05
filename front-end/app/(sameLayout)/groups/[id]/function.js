@@ -3,7 +3,6 @@
 import { FetchApi } from "@/app/helpers";
 
 async function JoinGroup(id,creator,setIsAction,isAction,redirect) {
-    console.log("group_id",id);
     console.log(creator);
 
 
@@ -23,7 +22,6 @@ async function JoinGroup(id,creator,setIsAction,isAction,redirect) {
             } else if (isAction === "join") {
                 setIsAction("pending")
             }
-            console.log('Group joined successfully');
 
         } else {
             console.error('Failed to join group');

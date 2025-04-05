@@ -10,7 +10,6 @@ const Comment = ({ commentInfo , reference}) => {
   const [disLikes, setDislikes] = useState(commentInfo.disLikes || 0);
   const [likeState, setLikeState] = useState(commentInfo.like || 0);
   const redirect = useRouter()
-  console.log(commentInfo)
   
   return (
     <div className={styles.comment} ref={reference}>

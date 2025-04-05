@@ -111,7 +111,6 @@ export const addArticle = async (e, setAtricle, { parent, group }, redirect, use
     const formData = new FormData(e.target)
     formData.append("group_id", group || 0)
     formData.append("parent", parent || 0)
-    console.log(formData.get("image"))
 
     const response = await FetchApi("/api/articles/store", redirect, {
       method: "POST",
@@ -231,9 +230,7 @@ export const FetchApi = async (path, redirect, { method, body, signal, headers }
       body,
       headers
     })
-    console.log("pathhhhhhhhh",path)
     if (response.status == 401) {
-      console.log(path,"redirect to login")
       redirect.push("/login")
       return false
     } else if (response.status == 403) {
@@ -249,16 +246,19 @@ export const FetchApi = async (path, redirect, { method, body, signal, headers }
       redirect.push("/page405")
       return false
     } else if (response.status == 400) {
-      console.log("hhh")
-      const data = await response.json()
       const e = document.querySelector(".error")
-      e.textContent = data
+      e.textContent = "unexpected error!"
       e.style.display = "block"
       setTimeout(() => {
         e.style.display = "none"
       },2000)
     } else if (response.status == 429) {
-
+      const e = document.querySelector(".error")
+      e.textContent = "multiple requests"
+      e.style.display = "block"
+      setTimeout(() => {
+        e.style.display = "none"
+      },2000)
     }
     return response
   } catch (error) {

@@ -30,7 +30,7 @@ const UserInfo = ({redirect, userInfo, articleInfo, group, onlineDiv, lastMessag
                             onError={() => setImageSrc('http://localhost:8080/public/pics/default-profile.png')}
                         /> */}
                         <img
-                        src={`http://localhost:8080/public/pics/${userInfo ? userInfo.image : (group && group.image)}`}
+                        src={`http://localhost:8080/public/pics/${userInfo.image ? userInfo.image : (group && group.image)}`}
                         alt="Profile Photo" />
                     </div>
                     {onlineDiv && <div className={userInfo.first_name && `status ${userInfo && (userInfo.online ? "online" : "offline")}`}></div>}

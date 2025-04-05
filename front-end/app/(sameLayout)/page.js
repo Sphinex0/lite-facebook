@@ -14,16 +14,11 @@ export default function Posts() {
     const [modalDisplay, setModalDisplay] = useState(false)
     
     const redirect = useRouter()
-    // forbidden()
-    // notFound()
-    console.log("rani f home")
-    
 
     const lastPostElementRef = useRef(null)
     const before = useRef(Math.floor(Date.now()))
     const fetchData = async (signal) => {
         try {
-            console.log("9bl")
             const response = await FetchApi("/api/posts",redirect, {
                 method: "POST",
                 credentials: "include",
@@ -32,7 +27,6 @@ export default function Posts() {
                 
             })
 
-            console.log("status:", response.status)
             if (response.ok) {
                 const postsData = await response.json()
                 if (postsData) {

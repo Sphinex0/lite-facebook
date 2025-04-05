@@ -9,7 +9,6 @@ export function CtxP({ children }) {
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
         userRef.current = storedUser ? JSON.parse(storedUser) : {};
-        console.log("userRef", userRef.current);
     }, []);
 
     return (

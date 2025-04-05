@@ -28,7 +28,6 @@ const Posts = ({ groupID, setIsAllowed, isAllowed }) => {
                 if (postsData) {
                     setPosts((prv) => [...prv, ...postsData])
                     before.current = postsData[postsData.length - 1].article.created_at
-                    console.log("last created at", postsData[postsData.length - 1].article.created_at)
                 }
                 setIsAllowed(true)
             }
@@ -54,7 +53,7 @@ const Posts = ({ groupID, setIsAllowed, isAllowed }) => {
     return (<>
         {isAllowed && <>
             <CreatePost setModalDisplay={setModalDisplay} />
-            {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} group={groupID} /> : ""}
+            {modalDisplay ? <CreatePostModal setModalDisplay={setModalDisplay} setPosts={setPosts} group={groupID} hidePrivacy={true}/> : ""}
             <PostList posts={posts} reference={lastPostElementRef} />
         </>
         }

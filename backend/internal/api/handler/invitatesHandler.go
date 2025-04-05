@@ -109,7 +109,7 @@ func (Handler *Handler) GetMembers(w http.ResponseWriter, r *http.Request) {
 	groupErr := Handler.Service.VerifyGroup(Invite.GroupID, user.ID)
 	err = groupErr.Err
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 		return
 	}
 	Invites, err := Handler.Service.AllMembers(Invite.GroupID)

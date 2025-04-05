@@ -139,7 +139,7 @@ func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileH
 
 	extensions := []string{".png", ".jpg", ".jpeg", ".gif"}
 	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
-		return strings.HasSuffix(handler.Filename, ext)
+		return strings.HasSuffix(strings.ToLower(handler.Filename), ext)
 	})
 	if extIndex == -1 {
 		return "" , fmt.Errorf("err")

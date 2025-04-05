@@ -11,7 +11,7 @@ import { GroupsOutlined } from '@mui/icons-material'
 import { usePathname, useRouter } from 'next/navigation'
 import { FetchApi } from '@/app/helpers'
 import "./navbar.css"
-import { useCtx } from '@/app/_Context/ctx'
+import { useWorker } from '@/app/_Context/WorkerContext'
 /*
 export default function Navbar () {
   const [bool, setbool] = useState(false)
@@ -43,19 +43,19 @@ export default function Navbar() {
   const [bool, setbool] = useState(false)
   const [profile, setprofile] = useState(false)
   const redirect = useRouter()
-  const { userRef } = useCtx()
-  console.log(" userRef +=+++ ", userRef)
+  const [notifications, setNotifications] = useState();
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [Err, setError] = useState("")
+  const { userRef } = useWorker()
 
 
   function handleclick() {
     setbool(!bool)
+    setNotificationCount(0)
   }
   const handleProfileclick = (e) => {
     setprofile(!profile)
   }
-  const [notifications, setNotifications] = useState();
-  const [notificationCount, setNotificationCount] = useState(0);
-  const [Err, setError] = useState("")
 
   const router = usePathname();
 

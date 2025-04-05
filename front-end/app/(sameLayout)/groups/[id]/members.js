@@ -24,9 +24,6 @@ const Members = ({ groupID }) => {
 
             })
 
-            console.log("status:", response.status)
-            console.log(JSON.stringify({ before: before.current, group_id: groupID }))
-
             if (response.ok) {
                 const membersData = await response.json()
                 if (membersData) {

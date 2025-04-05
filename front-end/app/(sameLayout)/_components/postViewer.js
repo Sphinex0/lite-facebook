@@ -29,7 +29,6 @@ export default function PostViewer({ postInfo, likes, disLikes, likeState, likeP
         signal
       })
 
-      console.log("status:", response.status)
       if (response.ok) {
         const commentsData = await response.json()
         if (commentsData) {

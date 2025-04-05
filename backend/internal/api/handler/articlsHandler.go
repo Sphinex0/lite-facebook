@@ -64,7 +64,7 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 		/// select
 		err := Handler.Service.VerifyGroup(GroupID, user.ID)
 		if err.Err != nil {
-			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+			utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 			return
 		}
 		article.GroupID = &GroupID
@@ -100,7 +100,7 @@ func (Handler *Handler) HandelGetPostsByGroup(w http.ResponseWriter, r *http.Req
 	}
 	err = Handler.Service.VerifyGroup(data.GroupID, user.ID)
 	if err.Err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 		return
 	}
 	article_views, err := Handler.Service.FetchPostsByGroup(user.ID, data.GroupID, data.Before)
@@ -126,7 +126,7 @@ func (Handler *Handler) HandelGetComments(w http.ResponseWriter, r *http.Request
 	if article.GroupID != nil {
 		err = Handler.Service.VerifyGroup(*article.GroupID, user.ID)
 		if err.Err != nil {
-			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+			utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 			return
 		}
 	}
