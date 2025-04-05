@@ -3,10 +3,14 @@
 import Link from 'next/link';
 import GroupInfo from './_components/groupInfo';
 import './groupe.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Add, DisabledByDefault, TurnSharpLeft } from '@mui/icons-material';
 import { useRouter } from 'next/navigation';
-import { FetchApi } from '@/app/helpers';
+import { FetchApi, useOnVisible } from '@/app/helpers';
+import Popover from './_components/popover';
+import UserInfo from '../_components/userInfo';
+import SelectFollower from '../_components/selectFollower';
+import JoinGroup from './[id]/function';
 let type = "groups"
 
 const Groups = () => {
@@ -14,31 +18,29 @@ const Groups = () => {
   const [loading, setLoading] = useState(false);
   const [section, setSection] = useState("all groups")
   const [groupCreated, setGroupCreated] = useState(false);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [image, setImage] = useState('');
+  // const [title, setTitle] = useState('');
+  // const [description, setDescription] = useState('');
+  // const [image, setImage] = useState('');
   const redirect = useRouter()
 
-  const handleImage =(e)=>{
-    setImage(e.target.files[0])
-  
-  }
+  // const handleImage = (e) => {
+  //   setImage(e.target.files[0])
+
+  // }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formDataToSend = new FormData();
-    formDataToSend.append('Title', title);
-    formDataToSend.append('Description', description);
-    formDataToSend.append('image', image);
+    const formDataToSend = new FormData(e.target);
+    const users = formDataToSend.getAll("users")
     type
-    setTitle("")
-    setDescription("")
-    setImage(null)
-    
+    // setTitle("")
+    // setDescription("")
+    // setImage(null)
+
 
     try {
-      const response = await FetchApi(`/api/groups/store`, redirect , {
+      const response = await FetchApi(`/api/groups/store`, redirect, {
         method: 'POST',
         body: formDataToSend
       });
@@ -46,6 +48,11 @@ const Groups = () => {
 
       if (!response.ok) {
         throw new Error('Network response was not ok');
+      } else {
+        const data = await response.json()
+        users.forEach((userID) => {
+          JoinGroup(data.id, +userID)
+        })
       }
       handleLinkClick(type)
 
@@ -84,7 +91,7 @@ const Groups = () => {
     type = content
     setLoading(true); // Show loading spinner or text
     try {
-      const response = await FetchApi(`/api/` + content,redirect ,{
+      const response = await FetchApi(`/api/` + content, redirect, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -122,6 +129,8 @@ const Groups = () => {
     );
   };
 
+
+
   useEffect(() => {
     handleLinkClick("groups")
   }, [])
@@ -157,11 +166,14 @@ const Groups = () => {
         </div>
         <form method='POST' onSubmit={handleSubmit} className='formAddGroup'>
           <label htmlFor='title' >title</label>
-          <input type='text' className='title' id='title'   value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input type='text' name='Title' className='title' id='title' />
           <label htmlFor='descriptopn'>descriptopn</label>
-          <input type='text' className='descriptopn' id='descriptopn' value={description}  onChange={(e) => setDescription(e.target.value)} />
+          <input type='text' name='Description' className='descriptopn' id='descriptopn' />
           <label htmlFor='image'>image</label>
-          <input type='file' className='image' id='image'  onChange={handleImage} />
+          <input type='file' name='image' className='image' id='image' />
+          <div className="invite-friends">
+            <SelectFollower group={true} />
+          </div>
           <button className='button' type='onSubmit'> Submit </button>
         </form>
       </div>

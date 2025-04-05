@@ -41,7 +41,7 @@ func (data *Database) SaveGroup(Group *models.Group) (err error) {
 }
 
 func (data *Database) Getallgroup() (*sql.Rows, error) {
-	res, err := data.Db.Query(`SELECT * FROM groups`)
+	res, err := data.Db.Query(`SELECT * FROM groups ORDER BY id DESC`)
 	if err != nil {
 		return nil, err
 	}
@@ -49,9 +49,10 @@ func (data *Database) Getallgroup() (*sql.Rows, error) {
 }
 
 func (data *Database) GetGroupById(id int) *sql.Row {
-	res := data.Db.QueryRow(`SELECT DISTINCT * FROM groups Where id =?`, id)
 
+	res := data.Db.QueryRow(`SELECT DISTINCT * FROM groups Where id =?`, id)
 	return res
+
 }
 
 func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
@@ -69,7 +70,7 @@ func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
 }
 
 func (data *Database) Getmember(id int) (*sql.Rows, error) {
-	query := `SELECT DISTINCT group_id FROM invites WHERE (sender = ? OR receiver = ?) AND status = "accepted"`
+	query := `SELECT DISTINCT group_id FROM invites WHERE (sender = ? OR receiver = ?) AND status = "accepted" ORDER BY id DESC`
 
 	return data.Db.Query(query, id, id)
 }

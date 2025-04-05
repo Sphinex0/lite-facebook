@@ -19,10 +19,11 @@
     padding: 15px;
 }
 
-.formAddGroup * {
+.formAddGroup>* {
     width: 100%;
     padding: 4px;
 }
+
 
 .layout{
     height: 100%;

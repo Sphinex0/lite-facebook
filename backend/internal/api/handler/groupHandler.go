@@ -54,6 +54,8 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return
 	}
+
+	utils.WriteJson(w, http.StatusOK, Group)
 }
 
 func (Handler *Handler) GetGroups(w http.ResponseWriter, r *http.Request) {
