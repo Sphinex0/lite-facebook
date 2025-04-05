@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"time"
 
 	"social-network/internal/models"
@@ -50,8 +51,13 @@ func (database *Database) CheckIfUserExists(email string) bool {
 }
 
 func (database *Database) InsertUser(user models.User, Uuid string) (int, error) {
-	res, err := database.Db.Exec("INSERT INTO users (Nickname, date_birth, first_name, last_name, email, password, image, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		user.Nickname, user.DateBirth, user.First_Name, user.Last_Name, user.Email, user.Password, user.Image, time.Now())
+	user.CreatedAt = int(time.Now().UnixMilli())
+	args := utils.GetExecFields(user, "ID")
+	res, err := database.Db.Exec(fmt.Sprintf(`
+		INSERT INTO users
+		VALUES (NULL, %v) 
+	`, utils.Placeholders(len(args))),
+		args...)
 	if err != nil {
 		return 0, err
 	}

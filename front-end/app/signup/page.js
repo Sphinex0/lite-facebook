@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import styles from "./signup.module.css"
 import { FetchApi } from '../helpers'
-import { useCtx } from '../_Context/ctx'
 import FakeNavbar from '../(sameLayout)/_components/navbar/FakeNavbar'
 
 export default function SignupPage() {
@@ -27,7 +26,7 @@ export default function SignupPage() {
   const router = useRouter()
 
   const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value })
+    setForm({ ...form, [e.target.name]: e.target.name === "dob" ? (new Date(e.target.value)).getTime() : e.target.value })
   }
 
   const handleFileChange = e => {
@@ -35,7 +34,7 @@ export default function SignupPage() {
   }
 
   const handleSignup = async e => {
-    e.preventDefault() // Prevent the default form submit behavior
+    e.preventDefault() 
     const data = new FormData()
     for (let i in form) {
       data.append(i, form[i])

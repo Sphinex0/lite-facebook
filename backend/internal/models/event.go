@@ -9,3 +9,8 @@ type Event struct {
 	GroupID     int    `json:"group_id"`
 	UserID      int    `json:"user_id"`
 }
+
+type EventPardse struct {
+	Event Event `json="event"`
+	Going bool  `json="going"`
+}

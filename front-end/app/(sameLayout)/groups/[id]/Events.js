@@ -1,7 +1,7 @@
 'use client'
 import { FetchApi } from "@/app/helpers";
 import style from "./group.module.css";
-import { Add, DisabledByDefault } from "@mui/icons-material";
+import { Add, DisabledByDefault, EventAvailable } from "@mui/icons-material";
 import EventsOptions from "./EventsOptions";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -11,6 +11,7 @@ const Events = ({ groupID }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [title, setTitle] = useState('');
+    const [going, setGoing] = useState(false)
     const [description, setDescription] = useState('');
     const [day, setDay] = useState('');
     const redirect = useRouter()
@@ -37,7 +38,10 @@ const Events = ({ groupID }) => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ group_id: parseInt(groupID), Title: title, Description: description, day })
+                body: JSON.stringify({
+                    event: { group_id: parseInt(groupID), Title: title, Description: description, day },
+                    going
+                })
             });
 
             if (!response.ok) {
@@ -108,6 +112,26 @@ const Events = ({ groupID }) => {
                     <label htmlFor='description'>Description</label>
                     <input type='text' className={style.InputDescriptopn} id='description' value={description} onChange={(e) => setDescription(e.target.value)} />
                     <input type='datetime-local' className={style.InputDescriptopn} id='day' value={day} onChange={(e) => setDay(e.target.value)} />
+                    
+                    <div className={style.options}>
+                        <div>
+                            <label onClick={() => setGoing(true)} >
+                                <EventAvailable
+                                    color={going ? "secondary" : "action"}
+                                />
+                                going
+                            </label>
+                        </div>
+                        <div>
+                            <label onClick={() => setGoing(false)} >
+                                <EventAvailable
+                                    color={going == false ? "warning" : "action"}
+                                />
+                                going
+                            </label>
+                        </div>
+                    </div>
+                    
                     <button className={style.InputButton} type='submit'>Submit</button>
                 </form>
             </div>
