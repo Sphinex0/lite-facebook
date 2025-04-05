@@ -3,6 +3,7 @@ import PostList from '../../_components/postList'
 import { FetchApi, useOnVisible } from '@/app/helpers'
 import MemberInfo from '../_components/member'
 import { useRouter } from 'next/navigation'
+import UserInfo from '../../_components/userInfo'
 
 const Members = ({ groupID }) => {
     const [members, setMembers] = useState([])
@@ -56,10 +57,14 @@ const Members = ({ groupID }) => {
         <div className='feeds'>
             {members.map((memberInfo, index) => {
                 if (index == members.length - 1) {
-                    return <MemberInfo key={`member${memberInfo.id}`} memberInfo={memberInfo} reference={lastElementRef} />
+                    return <div className='feed' key={`member${memberInfo.id}`}>
+                        <UserInfo  userInfo={memberInfo} reference={lastElementRef} />
+                    </div>
 
                 }
-                return <MemberInfo key={`member${memberInfo.id}`} memberInfo={memberInfo} />
+                return <div className='feed' key={`member${memberInfo.id}`}>
+                    <UserInfo  userInfo={memberInfo} />
+                </div>
 
 
             })}

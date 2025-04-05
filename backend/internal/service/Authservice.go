@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"fmt"
 	"html"
 	"net/http"
 	"net/mail"
@@ -66,8 +67,8 @@ func (s *Service) RegisterUser(user *models.User) (string, error, int) {
 		return "", errors.New("LongEmail"), 0
 	}
 
-	//dob
-	err := validateDOB((*user).DateBirth)
+	// dob
+	err := validateDOB(int64((*user).DateBirth))
 	if err != nil {
 		return "", err, 0
 	}
@@ -164,32 +165,23 @@ func (S *Service) Extractuser(r *http.Request) models.User {
 		Password:   r.FormValue("password"),
 		First_Name: r.FormValue("firstName"),
 		Last_Name:  r.FormValue("lastName"),
-		DateBirth:  r.FormValue("dob"),
 		Nickname:   r.FormValue("nickname"),
 		AboutMe:    r.FormValue("aboutMe"),
 	}
 	return user
 }
 
-func validateDOB(dobStr string) error {
-	dob, err := time.Parse("2006-01-02", dobStr)
-	if err != nil {
-		return errors.New("invalid date format, expected YYYY-MM-DD")
+func validateDOB(dobStr int64) error {
+	dob := time.UnixMilli(dobStr)
+	age := time.Since(dob)
+	year := 365 * 24 * time.Hour
+	minAge := 18 * year
+	maxAge := 100 * year
+	if age < minAge {
+		return fmt.Errorf("you must be at least 18 years old")
 	}
-
-	today := time.Now()
-	age := today.Year() - dob.Year()
-	if today.YearDay() < dob.YearDay() {
-		age--
+	if age > maxAge {
+		return fmt.Errorf("invalid age, please check the date of birth")
 	}
-
-	if age < 18 {
-		return errors.New("you must be at least 18 years old")
-	}
-	
-	if age > 100 {
-		return errors.New("invalid age, please check the date of birth")
-	}
-
 	return nil
 }

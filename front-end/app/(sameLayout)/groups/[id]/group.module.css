@@ -272,6 +272,12 @@
   align-items: center;
 }
 
+.optionsA {
+  display: flex;
+  justify-content:center;
+  align-items: center;
+}
+
 .options div {
   display: flex;
   align-items: center;
@@ -280,4 +286,5 @@
 .options label {
   display: flex;
   align-items: center;
+  cursor: pointer;
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -35,7 +36,14 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
+	
 	user := H.Service.Extractuser(r)
+	var err1 error
+	user.DateBirth , err1 = strconv.Atoi( r.FormValue("dob"))
+	if err1 != nil {
+		utils.WriteJson(w, http.StatusBadRequest, "file too big")
+		return
+	}
 
 	// Parse the multipart form (10MB max file size)
 	err := r.ParseMultipartForm(10 << 20)

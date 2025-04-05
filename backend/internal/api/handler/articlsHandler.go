@@ -73,7 +73,11 @@ func (Handler *Handler) HandelCreateArticle(w http.ResponseWriter, r *http.Reque
 	}
 	if err := Handler.Service.CreateArticle(&article, users, user.ID); err.Err != nil {
 		fmt.Println(err)
-		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		if err.Code == http.StatusBadRequest {
+			utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		} else {
+			utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
+		}
 		return
 	}
 

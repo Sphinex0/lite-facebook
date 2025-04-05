@@ -279,7 +279,6 @@ func (data *Database) VerifyGroupByID(group_id, id int) (err models.Error) {
 	`
 	var result int
 	err.Err = data.Db.QueryRow(query, group_id, id, id).Scan(&result)
-	fmt.Println("result =>", result)
 	return
 }
 

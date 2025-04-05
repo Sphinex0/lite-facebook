@@ -8,8 +8,9 @@ import (
 	utils "social-network/pkg"
 )
 
-func (service *Service) CreateEvent(Events models.Event) (err error) {
+func (service *Service) CreateEvent(event_pardse models.EventPardse) (err error) {
 	// valid, err := service.Database.GetCreatorGroup(Events.GroupID, Events.UserID)
+	Events := event_pardse.Event
 	err2 := service.VerifyGroup(Events.GroupID, Events.UserID)
 	if err2.Err != nil {
 		fmt.Println("err => ", err)
@@ -20,6 +21,17 @@ func (service *Service) CreateEvent(Events models.Event) (err error) {
 	if err != nil {
 		return
 	}
+	//
+	option := models.EventOption{
+		Going: event_pardse.Going,
+		UserID: Events.UserID,
+		EventID: Events.ID,
+	}
+	err = service.Database.SaveOptionEvent(&option)
+	if err != nil {
+		return
+	}
+	//
     var ids []int
 	ids , err = service.Database.GetGroupMembers(Events.GroupID)
     if err != nil {

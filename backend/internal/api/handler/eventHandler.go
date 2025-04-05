@@ -18,9 +18,11 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 		return
 	}
-	var Event models.Event
-	err := utils.ParseBody(r, &Event)
-	Event.UserID = user.ID
+
+	var event_pardse models.EventPardse
+	err := utils.ParseBody(r, &event_pardse)
+	Event := event_pardse.Event
+	event_pardse.Event.UserID = user.ID
 	if err != nil || Event.GroupID == 0 {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -31,7 +33,7 @@ func (Handler *Handler) AddEvent(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := Handler.Service.CreateEvent(Event); err != nil {
+	if err := Handler.Service.CreateEvent(event_pardse); err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
