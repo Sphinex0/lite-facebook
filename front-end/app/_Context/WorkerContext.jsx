@@ -18,9 +18,7 @@ export function WorkerProvider({ children }) {
     // Load user from localStorage
     useEffect(() => {
         const storedUser = localStorage.getItem("user");
-        console.log("storedUser", storedUser);
         userRef.current = storedUser ? JSON.parse(storedUser) : {};
-        console.log("userRef", userRef.current);
     }, []);
 
     // Initialize worker or fallback
@@ -124,7 +122,6 @@ export function WorkerProvider({ children }) {
                     }
                     break;
                 case "error" :
-                    console.log(data?.message?.content)
                     setError(data?.message?.content)
                     break
 
@@ -153,7 +150,6 @@ export function WorkerProvider({ children }) {
     useEffect(() => {
         const count = conversations.reduce((acc, conv) => acc + conv.seen, 0);
         setNotifications(count);
-        console.log(count);
     }, [conversations]);
 
     const value = {

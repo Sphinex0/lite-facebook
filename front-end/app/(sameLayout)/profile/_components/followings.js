@@ -24,7 +24,6 @@ const Followings = ({ user_id }) => {
                 if (followingsData) {
                     setFollowings((prv) => [...prv, ...followingsData])
                     before.current = followingsData[followingsData.length - 1].modified_at
-                    console.log(followingsData)
                 }
             }
 

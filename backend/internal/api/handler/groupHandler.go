@@ -37,9 +37,10 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 	Group.Image = "default-group.png"
 	if err == nil {
 		defer file.Close()
-		Group.Image, err = utils.StoreThePic("../front-end/public/pics", file, handler)
+		Group.Image, err = utils.StoreThePic("public/pics", file, handler)
 		if err != nil {
 			utils.WriteJson(w, http.StatusInternalServerError, "internalserver error")
+			return
 		}
 	}
 

@@ -26,7 +26,6 @@ const Posts = ({user_id, setIsAllowed}) => {
                     if (postsData) {
                         setPosts((prv) => [...prv, ...postsData])
                         before.current = postsData[postsData.length-1].article.created_at
-                        console.log("last created at", postsData[postsData.length-1].article.created_at)
                     }
                     setIsAllowed(true)
                 }

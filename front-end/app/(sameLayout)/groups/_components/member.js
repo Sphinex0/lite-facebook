@@ -5,7 +5,7 @@ const MemberInfo = ({memberInfo}) => {
     <div className='feed'>
       <div className="user">
           <div className="profile-photo">
-              <img src={`/pics/${memberInfo.image || "default-profile.png"}`}/>
+              <img src={`http://localhost:8080/public/pics/${memberInfo.image || "default-profile.png"}`}/>
           </div>
           <div className="ingo">
               <h3>{memberInfo.first_name} {memberInfo.last_name} </h3>  

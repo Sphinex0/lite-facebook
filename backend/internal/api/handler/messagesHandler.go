@@ -8,6 +8,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"time"
 
 	"social-network/internal/models"
 	"social-network/internal/service"
@@ -57,14 +58,21 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 
 		notifyUserStatus(user.ID, "online", conversations, h)
 
+		lastMessage := time.Now()
+
 		for {
 			var msg models.WSMessage
 			typeMessage, message, err := conn.ReadMessage()
+			fmt.Println(time.Since(lastMessage))
 			if err != nil {
-				if websocket.IsUnexpectedCloseError(err) {
-				}
 				break
 			}
+			if msg.Type == "new_message" && time.Since(lastMessage) < (100 * time.Millisecond) {
+				sendError(user.ID,"slow down (bl39l)")
+				continue
+			}
+			lastMessage = time.Now()
+			
 
 			if typeMessage == websocket.BinaryMessage {
 				if len(message) < 4 {
@@ -335,15 +343,15 @@ func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.R
 }
 
 func HandleImage(filename string, buffer []byte) string {
-	extensions := []string{".png", ".jepg", ".gif", ".jpg"}
+	extensions := []string{".png", ".jpeg", ".gif", ".jpg"}
 	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
-		return strings.HasSuffix(filename, ext)
+		return strings.HasSuffix(strings.ToLower(filename), ext)
 	})
 	if extIndex == -1 {
 		return ""
 	}
 	imageName, _ := uuid.NewV4()
-	err := os.WriteFile("../front-end/public/images/"+imageName.String()+extensions[extIndex], buffer, 0o644)
+	err := os.WriteFile("public/images/"+imageName.String()+extensions[extIndex], buffer, 0o644)
 	if err != nil {
 		return ""
 	}

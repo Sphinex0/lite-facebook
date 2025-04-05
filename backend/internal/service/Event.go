@@ -29,6 +29,7 @@ func (service *Service) CreateEvent(Events models.Event) (err error) {
 	notification.Type = "event-created"
 	notification.InvokerID = Events.UserID
 	notification.EventID = Events.ID
+	notification.GroupID = Events.GroupID
 	for _,id := range ids{
 		if id != Events.UserID {
 		    notification.UserID = id

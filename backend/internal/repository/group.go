@@ -49,13 +49,13 @@ func (data *Database) Getallgroup() (*sql.Rows, error) {
 }
 
 func (data *Database) GetGroupById(id int) *sql.Row {
-	res := data.Db.QueryRow(`SELECT * FROM groups Where id =?`, id)
+	res := data.Db.QueryRow(`SELECT DISTINCT * FROM groups Where id =?`, id)
 
 	return res
 }
 
 func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
-	res := data.Db.QueryRow(`SELECT creator FROM groups Where id = ? `, group_ID)
+	res := data.Db.QueryRow(`SELECT DISTINCT creator FROM groups Where id = ? `, group_ID)
 	var id int
 
 	err := res.Scan(&id)
@@ -69,7 +69,7 @@ func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
 }
 
 func (data *Database) Getmember(id int) (*sql.Rows, error) {
-	query := `SELECT group_id FROM invites WHERE (sender = ? OR receiver = ?) AND status = "accepted"`
+	query := `SELECT DISTINCT group_id FROM invites WHERE (sender = ? OR receiver = ?) AND status = "accepted"`
 
 	return data.Db.Query(query, id, id)
 }

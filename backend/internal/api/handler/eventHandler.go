@@ -57,7 +57,7 @@ func (Handler *Handler) GetEvents(w http.ResponseWriter, r *http.Request) {
 	groupErr := Handler.Service.VerifyGroup(Event.GroupID, user.ID)
 	err = groupErr.Err
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 		return
 	}
 
@@ -92,7 +92,7 @@ func (Handler *Handler) GetEvent(w http.ResponseWriter, r *http.Request) {
 	groupErr := Handler.Service.VerifyGroup(Events.GroupID, user.ID)
 	err = groupErr.Err
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 		return
 	}
 
@@ -140,7 +140,7 @@ func (Handler *Handler) OptionEvent(w http.ResponseWriter, r *http.Request) {
 	groupErr := Handler.Service.VerifyGroup(ev.GroupID, user.ID)
 	err = groupErr.Err
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 		return
 	}
 
@@ -180,7 +180,7 @@ func (Handler *Handler) GetEventOption(w http.ResponseWriter, r *http.Request) {
 	groupErr := Handler.Service.VerifyGroup(ev.GroupID, user.ID)
 	err = groupErr.Err
 	if err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusBadRequest))
+		utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 		return
 	}
 
@@ -221,7 +221,7 @@ func (h *Handler) GetEventChoice(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if groupErr := h.Service.VerifyGroup(event.GroupID, user.ID); groupErr.Err != nil {
-		utils.WriteJson(w, http.StatusBadRequest, "user not in group")
+		utils.WriteJson(w, http.StatusNotAcceptable, "information locked")
 		return
 	}
 

@@ -27,7 +27,7 @@ func (S *Service) GetUserNotifications(usrId string, page int) ([]models.Notific
 	}
 
 	if from > allntf {
-		return nil, 0, errors.New("invalide page")
+		return nil, 0, nil
 	}
 
 	notifications, err := S.Database.GetUserNotifications(usrId, from)
@@ -40,12 +40,14 @@ func (S *Service) GetUserNotifications(usrId string, page int) ([]models.Notific
 		return []models.Notification{}, 0, errors.New("error while counting unseen notifications")
 	}
 
-	usrID, err := strconv.Atoi(usrId); if err != nil {
+	usrID, err := strconv.Atoi(usrId)
+	if err != nil {
 		return nil, 0, errors.New("converting userid to int")
 	}
 
-	for _,notification := range notifications {
-		err = S.Database.MarkAsseen(notification.ID, usrID); if err != nil {
+	for _, notification := range notifications {
+		err = S.Database.MarkAsseen(notification.ID, usrID)
+		if err != nil {
 			return []models.Notification{}, 0, errors.New("error while turning notifications as seen")
 		}
 	}
@@ -105,9 +107,9 @@ func (s *Service) Deletentfc(ntfId, userID int) error {
 		return errors.New("invalide notification")
 	}
 
-	err := s.Database.DeleteNotification(ntfId, userID); if err != nil {
+	err := s.Database.DeleteNotification(ntfId, userID)
+	if err != nil {
 		return errors.New("database error")
 	}
 	return nil
 }
-

@@ -2,7 +2,7 @@
 FROM node:latest
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /front-end
 
 # Copy package files to leverage caching
 COPY package*.json ./

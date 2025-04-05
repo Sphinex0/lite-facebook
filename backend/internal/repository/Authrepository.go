@@ -61,10 +61,10 @@ func (database *Database) InsertUser(user models.User, Uuid string) (int, error)
 		return 0, err
 	}
 
-	err = database.AddUuid(Uuid, int(usrid))
-	if err != nil {
-		return 0, err
-	}
+	// err = database.AddUuid(Uuid, int(usrid))
+	// if err != nil {
+	// 	return 0, err
+	// }
 
 	return int(usrid), nil
 }

@@ -10,14 +10,13 @@ const Comment = ({ commentInfo , reference}) => {
   const [disLikes, setDislikes] = useState(commentInfo.disLikes || 0);
   const [likeState, setLikeState] = useState(commentInfo.like || 0);
   const redirect = useRouter()
-  console.log(commentInfo)
   
   return (
     <div className={styles.comment} ref={reference}>
       <UserInfo userInfo={commentInfo.user_info} articleInfo={commentInfo.article}/>
       <div className={styles.content}>{commentInfo.article.content}</div>
 
-      {commentInfo.article.image && <img src={`/posts/${commentInfo.article.image}`} />}
+      {commentInfo.article.image && <img src={`http://localhost:8080/public/posts/${commentInfo.article.image}`} />}
 
 
       <div className="action-button">

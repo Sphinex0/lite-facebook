@@ -71,6 +71,9 @@ func Routes(db *sql.DB) *http.ServeMux {
 	// check auth
 	mux.HandleFunc("/api/checkuser", handler.CheckAuth)
 
+	//
+	mux.HandleFunc("/public/", handler.ServeFilesHandler)
+
 	// websocket
 	upgrader := websocket.Upgrader{
 		CheckOrigin: func(r *http.Request) bool { return true },

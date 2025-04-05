@@ -23,7 +23,6 @@ export default function ShowGroup({ params }) {
   
 
   const redirect = useRouter()
-  console.log(JSON.stringify({ id: parseInt(id) }))
   const [popover, setPopover] = useState(false)
 
   useEffect(() => {
@@ -42,10 +41,8 @@ export default function ShowGroup({ params }) {
         }
 
         const data = await response.json();
-        console.log(data);
         setIsAction(data.action)
         setGroupData(data);
-        console.log(groupData);
         
         if (data.action==="accepted"){
           setIsAllowed(true)
@@ -70,13 +67,12 @@ export default function ShowGroup({ params }) {
       <div className={styles.profileHeader}>
         <div className={styles.basicInfo}>
           <div className={styles.p10}>
-             <img className={styles.image}  src={`/pics/${groupData.group_info.image}`}  ></img>
+             <img className={styles.image}  src={`http://localhost:8080/public/pics/${groupData.group_info.image}`}  ></img>
             {/* <img className={styles.image} src="../images/profile-13.jpg" /> */}
           </div>
           <div className={styles.g2}>
 
             <h1 className={styles.title}>{groupData.group_info.title}</h1>
-            {console.log(groupData)}
             <span className={styles.nickname}>{groupData.group_info.description}</span><br />
             <span className={styles.nickname}> creator : {groupData.creator_name} </span> <br/>  
             <span className={styles.followText}>{new Date(groupData.group_info.created_at).toLocaleDateString()}</span><br />

@@ -12,7 +12,6 @@ const FollowBtn = ({ user_id, setAction, setFollowers }) => {
                 method: "POST",
                 body: JSON.stringify({ user_id })
             })
-            console.log(JSON.stringify({ user_id }))
             console.log("status:", response.status)
             if (response.ok) {
                 const inviteData = await response.json()

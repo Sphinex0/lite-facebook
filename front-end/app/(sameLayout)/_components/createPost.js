@@ -11,7 +11,7 @@ const CreatePost = ({ setModalDisplay }) => {
   return (
     <div className="create-post" onClick={show}>
       <div className="profile-photo">
-        {userRef.current && <img src={`/pics/${userRef.current.image}`} />}
+        {userRef.current && <img src={`http://localhost:8080/public/pics/${userRef.current.image}`} />}
       </div>
       <div id="create-post" >What's on your mind, Diana ?</div>
     </div>

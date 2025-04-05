@@ -31,6 +31,9 @@ func (service *Service) CreateArticle(article *models.Article, users []string, i
 		return
 	}
 
+	if len(users) > 0 && article.Privacy != "private" {
+		users = []string{}
+	}
 	for _, user := range users {
 		id, err.Err = strconv.Atoi(user)
 		if err.Err != nil {

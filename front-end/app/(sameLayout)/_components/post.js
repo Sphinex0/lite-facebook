@@ -33,7 +33,7 @@ export default function Post({ postInfo , reference}) {
             <div className={styles.content}>{postInfo.article.content}</div>
 
 
-            {postInfo.article.image && <img src={`/posts/${postInfo.article.image}`} />}
+            {postInfo.article.image && <img src={`http://localhost:8080/public/posts/${postInfo.article.image}`} />}
 
             <div className="action-button">
                 <div className="action-buttons">

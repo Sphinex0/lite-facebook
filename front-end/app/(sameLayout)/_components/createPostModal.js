@@ -7,13 +7,13 @@ import { addArticle } from '@/app/helpers'
 import { useRouter } from 'next/navigation'
 import { useWorker } from '@/app/_Context/WorkerContext'
 
-const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
+const CreatePostModal = ({ setModalDisplay, setPosts, group, hidePrivacy }) => {
   const [content, setContent] = useState("")
   const [imagePreview, setImagePreview] = useState("")
   const [privacy, setPrivacy] = useState("")
   const redirect = useRouter()
 
-  const {userRef} = useWorker()
+  const { userRef } = useWorker()
 
   const hide = (e) => {
     if (e.target.classList.contains('customize-theme')) {
@@ -22,7 +22,7 @@ const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
   }
 
   const addPost = async (e) => {
-    const added = await addArticle(e, setPosts, {group},redirect, userRef.current)
+    const added = await addArticle(e, setPosts, { group }, redirect, userRef.current)
     if (added) {
       setModalDisplay(false)
       setContent("")
@@ -41,11 +41,15 @@ const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
       <div className="card">
         <h2>Create post</h2>
         <form action="" className={styles.form} onSubmit={addPost}>
-          <select name='privacy' className={styles.selectPrivacy} onChange={(e) => setPrivacy(e.target.value)}>
-            <option value="public"> Public</option>
-            <option value="almost_private">Almost Private</option>
-            <option value="private">Private</option>
-          </select>
+          {
+            hidePrivacy !== true &&
+            <select name='privacy' className={styles.selectPrivacy} onChange={(e) => setPrivacy(e.target.value)}>
+              <option value="public"> Public</option>
+              <option value="almost_private">Almost Private</option>
+              <option value="private">Private</option>
+            </select>
+          }
+
           {privacy === "private" && <SelectFollower />}
           <textarea name='content' className={styles.textInput}
             placeholder={"What's on your mind, Diana ?"}>
@@ -71,7 +75,7 @@ const CreatePostModal = ({ setModalDisplay, setPosts , group}) => {
 
           <div className={styles.footer}>
             <label htmlFor="postImage" className={styles.addFile}>
-            {imagePreview ? <img src={imagePreview} className="imagePreview" /> : <AddPhotoAlternate />}
+              {imagePreview ? <img src={imagePreview} className="imagePreview" /> : <AddPhotoAlternate />}
             </label>
 
             <input type="submit" value="Post" className="btn btn-primary" />

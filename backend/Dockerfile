@@ -2,7 +2,7 @@
 FROM golang:1.23
 
 # Set the working directory inside the container
-WORKDIR /app
+WORKDIR /backend
 
 # Copy the Go module files to leverage caching
 COPY go.mod go.sum ./
@@ -14,11 +14,11 @@ RUN go mod download
 COPY . .
 
 # If Go files are in a subdirectory like 'src', specify it
-WORKDIR /app/cmd/app 
+WORKDIR /backend/cmd/app 
 # Build the Go application
 RUN go build -o ../../socialnetwork  
 
-WORKDIR /app
+WORKDIR /backend
 # Expose port 8080 for the backend server
 EXPOSE 8080
 

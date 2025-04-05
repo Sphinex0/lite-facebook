@@ -35,7 +35,6 @@ const Groups = () => {
     setTitle("")
     setDescription("")
     setImage(null)
-    console.log(formDataToSend);
     
 
     try {
@@ -66,7 +65,6 @@ const Groups = () => {
 
 
   const CreateGroup = () => {
-    console.log("groupCreated", groupCreated);
 
     setGroupCreated(true)
     const element = document.querySelector('.formclass')

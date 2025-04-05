@@ -19,7 +19,6 @@ const SelectFollower = () => {
                 signal
             })
 
-            console.log("status:", response.status)
             if (response.ok) {
                 const followersData = await response.json()
                 if (followersData){

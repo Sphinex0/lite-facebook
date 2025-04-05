@@ -6,7 +6,6 @@ export const fetchProfile = async(setProfileInfo, id,redirect)=>{
             method: "POST",
             body: JSON.stringify({ id })
         })
-        console.log(JSON.stringify({ id }))
         console.log("status:", response.status)
         if (response.ok) {
             const profileData = await response.json()

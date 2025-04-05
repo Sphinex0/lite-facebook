@@ -38,7 +38,7 @@ function Profilepop({ setprofile }) {
     };
 
     return (
-        <div tabIndex="0" className='profile-container' ref={refP} onBlur={() => setprofile(false)} onFocus={(e) => console.log("jjj")}>
+        <div tabIndex="0" className='profile-container' ref={refP} onBlur={() => setprofile(false)} >
             {err && <div className='profileerr'>{err}</div>}
             {user?.id ? (
                 <>
@@ -48,8 +48,7 @@ function Profilepop({ setprofile }) {
                             setprofile(false)
                         }}>
                             <div className='profile'>
-                                {console.log(user?.image)}
-                                <img className='left-profile' src={`/pics/${user?.image || "default-profile.png"}`} alt='Profile' />
+                                <img src={`http://localhost:8080/public/pics/${user?.image || "default-profile.png"}`} alt='Profile'  className='left-profile' />
                                 <h3 className='right-profile'>{user?.first_name} {user?.last_name}</h3>
                             </div>
                         </div>

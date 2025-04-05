@@ -11,6 +11,7 @@ import { GroupsOutlined } from '@mui/icons-material'
 import { usePathname, useRouter } from 'next/navigation'
 import { FetchApi } from '@/app/helpers'
 import "./navbar.css"
+import { useWorker } from '@/app/_Context/WorkerContext'
 /*
 export default function Navbar () {
   const [bool, setbool] = useState(false)
@@ -42,44 +43,51 @@ export default function Navbar() {
   const [bool, setbool] = useState(false)
   const [profile, setprofile] = useState(false)
   const redirect = useRouter()
+  const [notifications, setNotifications] = useState();
+  const [notificationCount, setNotificationCount] = useState(0);
+  const [Err, setError] = useState("")
+  const { userRef } = useWorker()
+
+
   function handleclick() {
     setbool(!bool)
+    setNotificationCount(0)
   }
   const handleProfileclick = (e) => {
     setprofile(!profile)
   }
-  const [notifications, setNotifications] = useState();
-  const [notificationCount, setNotificationCount] = useState(0);
-  const [Err, setError] = useState("")
 
   const router = usePathname();
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      try {
-        const response = await FetchApi("/api/GetNotification/?page=1", redirect, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+    if (userRef.current.id) {
+      const fetchNotifications = async () => {
+        try {
+          const response = await FetchApi("/api/GetNotification/?page=1", redirect, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
 
-        if (response.status == 200) {
-          const data = await response.json();
-          setNotifications(data.notifications);
-          setNotificationCount(data.unseen);
+          if (response.status == 200) {
+            const data = await response.json();
+            setNotifications(data.notifications || []);
+            setNotificationCount(data.unseen);
 
-        } else {
+          } else {
+            setError("error while fetching notifications");
+          }
+        } catch (error) {
           setError("error while fetching notifications");
+          console.error('Error fetching notifications:', error);
         }
-      } catch (error) {
-        setError("error while fetching notifications");
-        console.error('Error fetching notifications:', error);
-      }
-    };
+      };
 
-    fetchNotifications();
-  }, []);
+      fetchNotifications();
+
+    }
+  }, [userRef.current]);
 
   return (
     <nav className={router == "/login" || router == "/signup" ? "disable" : ""}>
@@ -121,7 +129,7 @@ export default function Navbar() {
         </div>
       </div>
       <div className='notification' >
-        <svg  onClick={handleProfileclick} role="img" width="24px" viewBox="0 0 44 44" aria-label="icon" fill='rgb(24, 119, 242)' >
+        <svg onClick={handleProfileclick} role="img" width="24px" viewBox="0 0 44 44" aria-label="icon" fill='rgb(24, 119, 242)' >
           <g xmlns="http://www.w3.org/2000/svg">
             <path
               fillRule="evenodd"
@@ -131,7 +139,7 @@ export default function Navbar() {
             </path>
           </g>
         </svg>
-        <div className='pop-out'>{profile && <Profilepop  setprofile={setprofile} />}</div>
+        <div className='pop-out'>{profile && <Profilepop setprofile={setprofile} />}</div>
       </div>
 
     </nav>

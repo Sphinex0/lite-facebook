@@ -12,7 +12,6 @@ const Page = () => {
     const before = useRef(null)
     const fetchData = async (signal) => {
         try {
-            console.log(before, users)
             const response = await FetchApi("/api/users",redirect, {
                 method: "POST",
                 body: JSON.stringify({ before: before.current }),

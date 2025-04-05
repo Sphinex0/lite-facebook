@@ -22,7 +22,6 @@ const About = ({ user_id, action }) => {
                 const profileData = await response.json()
                 if (profileData) {
                     setProfileInfo(profileData)
-                    console.log(profileData)
                     setPrivacy(profileData.privacy)
                 }
             }
@@ -43,7 +42,6 @@ const About = ({ user_id, action }) => {
             console.log("status:", response.status)
             if (response.ok) {
                 const profileData = await response.json()
-                console.log(profileData, "response")
 
                 setPrivacy(privacy)
             }
@@ -64,7 +62,6 @@ const About = ({ user_id, action }) => {
             {profileInfo.id &&
                 <div className='feed' style={{ display: "flex", justifyContent: "space-evenly", flexWrap: "wrap", minHeight: "250px", alignItems: "center" }}>
                     <div className={styles.infoItem}>
-                        {console.log(action)}
 
                         <span>
                             <select
