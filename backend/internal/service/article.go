@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"net/http"
 	"slices"
 	"strconv"
 
@@ -13,10 +14,12 @@ import (
 func (service *Service) CreateArticle(article *models.Article, users []string, id int) (err models.Error) {
 	if article.Content == "" && article.Image == "" {
 		err.Err = fmt.Errorf("err in content")
+		err.Code = http.StatusBadRequest
 		return
 	}
 	if len(article.Content) > 5000 {
 		err.Err = fmt.Errorf("err in content")
+		err.Code = http.StatusBadRequest
 		return
 	}
 	privacies := []string{"public", "private", "almost_private"}

@@ -49,6 +49,7 @@ const Events = ({ groupID }) => {
                 setLoading(false);
             } else {
                 fetchEvents()
+                SeeClick()
             }
         } catch (error) {
             setError("An error occurred while submitting the event.");
@@ -127,11 +128,11 @@ const Events = ({ groupID }) => {
                                 <EventAvailable
                                     color={going == false ? "warning" : "action"}
                                 />
-                                going
+                                Not going
                             </label>
                         </div>
                     </div>
-                    
+
                     <button className={style.InputButton} type='submit'>Submit</button>
                 </form>
             </div>
