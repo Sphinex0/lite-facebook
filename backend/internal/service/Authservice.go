@@ -82,7 +82,7 @@ func (s *Service) RegisterUser(user *models.User) (string, error, int) {
 
 	// AboutMe
 	if (*user).AboutMe != "" {
-		if len(strings.TrimSpace((*user).AboutMe)) < 3 || len(strings.TrimSpace((*user).AboutMe)) > 50 {
+		if len(strings.TrimSpace((*user).AboutMe)) > 50 {
 			return "", errors.New("InvalidUsername"), 0
 		}
 	}
