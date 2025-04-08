@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import "./notification.css";
 
 const Notifications = ({ notifications = [], Err }) => {
-  const [items, setItems] = useState(notifications); // Use array instead of Set
+  const [items, setItems] = useState([]); 
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const containerRef = useRef();
@@ -28,11 +28,11 @@ const Notifications = ({ notifications = [], Err }) => {
           if (newItems.notifications != null) {
             // Filter out duplicates by checking `id`
             setItems((prev) => {
-              const existingIds = new Set(prev.map(item => item.id)); // Set of existing IDs
+              const existingIds = new Set(prev.map(item => item.id)); 
               const uniqueNewItems = newItems.notifications.filter(
                 (item) => !existingIds.has(item.id)
               );
-              return [...prev, ...uniqueNewItems]; // Combine without duplicates
+              return [...prev, ...uniqueNewItems]; 
             });
           }
         } else {

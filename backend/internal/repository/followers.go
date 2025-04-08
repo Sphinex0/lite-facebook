@@ -288,7 +288,7 @@ func (data *Database) GetGroupInvitables(currentUser int, before int, group_id i
     `
     
     // Add conditions for pagination
-    params := []interface{}{group_id, group_id, currentUser, currentUser}
+    params := []interface{}{group_id, group_id, currentUser}
     if before > 0 {
         query += " AND u.id < ?"
         params = append(params, before)

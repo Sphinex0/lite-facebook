@@ -52,6 +52,7 @@ func (database *Database) CheckIfUserExists(email string) bool {
 
 func (database *Database) InsertUser(user models.User, Uuid string) (int, error) {
 	user.CreatedAt = int(time.Now().UnixMilli())
+	user.Privacy = "public"
 	args := utils.GetExecFields(user, "ID")
 	res, err := database.Db.Exec(fmt.Sprintf(`
 		INSERT INTO users
@@ -66,12 +67,6 @@ func (database *Database) InsertUser(user models.User, Uuid string) (int, error)
 	if err != nil {
 		return 0, err
 	}
-
-	// err = database.AddUuid(Uuid, int(usrid))
-	// if err != nil {
-	// 	return 0, err
-	// }
-
 	return int(usrid), nil
 }
 
