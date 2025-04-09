@@ -338,6 +338,15 @@ func (Handler *Handler) HandelMessagesHestories(w http.ResponseWriter, r *http.R
 }
 
 func HandleImage(filename string, buffer []byte) string {
+	if _, err := os.Stat("public/images/"); os.IsNotExist(err) {
+		er := os.Mkdir("public/images/", os.ModePerm)
+		if er != nil {
+			return ""
+		}
+	} else {
+		fmt.Println(err)
+		return ""
+	}
 	extensions := []string{".png", ".jpeg", ".gif", ".jpg"}
 	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
 		return strings.HasSuffix(strings.ToLower(filename), ext)
@@ -348,6 +357,7 @@ func HandleImage(filename string, buffer []byte) string {
 	imageName, _ := uuid.NewV4()
 	err := os.WriteFile("public/images/"+imageName.String()+extensions[extIndex], buffer, 0o644)
 	if err != nil {
+		fmt.Println("extIndex", err)
 		return ""
 	}
 	return imageName.String() + extensions[extIndex]
