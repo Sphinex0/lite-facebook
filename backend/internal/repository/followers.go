@@ -278,20 +278,17 @@ func (data *Database) GetGroupInvitables(currentUser int, before int, group_id i
     query := `
         SELECT DISTINCT u.id, u.nickname, u.first_name, u.last_name, u.image
         FROM followers f1
-        INNER JOIN followers f2 ON f1.follower = f2.user_id
         INNER JOIN users u ON u.id = f1.follower
         LEFT JOIN invites i1 ON i1.receiver = u.id AND i1.group_id = ?
         LEFT JOIN invites i2 ON i2.sender = u.id AND i2.group_id = ?
         WHERE f1.user_id = ?
-        AND f2.follower = ?
         AND f1.status = 'accepted'
-        AND f2.status = 'accepted'
         AND i1.receiver IS NULL  
         AND i2.sender IS NULL    
     `
     
     // Add conditions for pagination
-    params := []interface{}{group_id, group_id, currentUser, currentUser}
+    params := []interface{}{group_id, group_id, currentUser}
     if before > 0 {
         query += " AND u.id < ?"
         params = append(params, before)

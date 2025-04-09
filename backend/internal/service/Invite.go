@@ -37,8 +37,9 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 		}
 	} else {
 		resA := service.Database.IsFollow(Invites.Sender, Invites.Receiver)
-		resB := service.Database.IsFollow(Invites.Receiver, Invites.Sender)
-		if resA && resB {
+		//resB := service.Database.IsFollow(Invites.Receiver, Invites.Sender)
+		// if resA && resB {
+		if resA {
 			Invites.Status = "pending"
 			id := 0
 			id, err = service.Database.Saveinvite(&Invites)
