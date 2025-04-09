@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -32,12 +31,12 @@ func main() {
 	authHandler := middlewares.AuthMiddleware(rateLimitedHandler, db)
 
 	finalHandler := middlewares.CORS(authHandler)
-	
+
 	server := &http.Server{
 		Addr:    ":8080",
 		Handler: finalHandler,
 	}
-	fmt.Println("http://localhost:8080/")
+	log.Println("http://localhost:8080/")
 	err = server.ListenAndServe()
 	if err != nil {
 		log.Println("Error in starting of server:", err)

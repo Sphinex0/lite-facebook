@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -134,7 +135,7 @@ func (data *Database) GetPosts(id, before int) (article_views []models.ArticleVi
 	var rows *sql.Rows
 	rows, err.Err = data.Db.Query(query, id, id, id, id, id, id, before)
 	if err.Err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer rows.Close()
@@ -201,7 +202,7 @@ func (data *Database) GetPostsByUserId(id, user_id, before int) (article_views [
 	var rows *sql.Rows
 	rows, err.Err = data.Db.Query(query, id, id, id, id, id, user_id, id, before)
 	if err.Err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	defer rows.Close()

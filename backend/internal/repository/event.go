@@ -62,36 +62,12 @@ func (data *Database) OptionEvent(id int) (*sql.Rows, error) {
 }
 
 func (data *Database) CheckEvent(EventId, UserId int) (bool, error) {
-	fmt.Println("EventId", EventId)
-	fmt.Println("UserId", UserId)
 	var going bool
 
 	err := data.Db.QueryRow(`SELECT going FROM event_options WHERE event_id = ? AND user_id = ?`, EventId, UserId).Scan(&going)
 
 	return going, err
 }
-
-// func (data *Database) ChoiseEvent(id int, choise bool) (int, int, error) {
-//     var count int
-//     var user_id int
-//     res := data.Db.QueryRow(`SELECT  user_id FROM event_options WHERE event_id = ? AND going = ?`, id, choise).Scan(&user_id)
-
-// 	log.Println(res, id, choise)
-
-// 	if res != nil && res!=sql.ErrNoRows && count == 0 {
-// 		log.Println("error: res", res)
-//         return count, 0, res
-//     }
-
-// 	res1 := data.Db.QueryRow(`SELECT Count(*) FROM event_options WHERE event_id = ? AND going = ?`, id, choise).Scan(&count)
-//     if res1 != nil && user_id == 0 {
-// 		log.Println("error: res1", res1)
-
-//         return count, 0, res
-//     }
-
-//     return count, user_id, res
-// }
 
 // GetEventCountsAndUserChoice fetches counts and user's choice for an event
 func (data *Database) GetEventCountsAndUserChoice(eventID int, userID int) (int, int, sql.NullBool, error) {

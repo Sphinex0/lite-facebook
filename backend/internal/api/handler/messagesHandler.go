@@ -3,7 +3,7 @@ package handler
 import (
 	"encoding/binary"
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"slices"
@@ -63,16 +63,14 @@ func (h *Handler) MessagesHandler(upgrader websocket.Upgrader) http.HandlerFunc 
 		for {
 			var msg models.WSMessage
 			typeMessage, message, err := conn.ReadMessage()
-			fmt.Println(time.Since(lastMessage))
 			if err != nil {
 				break
 			}
-			if msg.Type == "new_message" && time.Since(lastMessage) < (100 * time.Millisecond) {
-				sendError(user.ID,"slow down (bl39l)")
+			if msg.Type == "new_message" && time.Since(lastMessage) < (100*time.Millisecond) {
+				sendError(user.ID, "slow down (bl39l)")
 				continue
 			}
 			lastMessage = time.Now()
-			
 
 			if typeMessage == websocket.BinaryMessage {
 				if len(message) < 4 {
@@ -198,7 +196,7 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 
 		var err error
 		if err = h.Service.CreateMessage(&msg); err != nil {
-			fmt.Println("Create message error:", err)
+			log.Println("Create message error:", err)
 			sendError(msg.Message.SenderID, "Failed to send message")
 			return
 		}
@@ -208,7 +206,6 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			return
 		}
 
-		fmt.Println("subscribers", subscribers)
 		distributeMessage(msg, subscribers)
 	case "conversations":
 
@@ -223,22 +220,20 @@ func handleMessage(msg models.WSMessage, h *Handler, conn *websocket.Conn) {
 			OnlineUsers:   getOnlineUsers(conversations),
 		}
 		if err := conn.WriteJSON(initialMsg); err != nil {
-			fmt.Println("Initial message send error:", err)
+			log.Println("Initial message send error:", err)
 			return
 		}
 	case "read_messages_private":
-		fmt.Println("read")
 		err := h.Service.ReadMessages(msg.Message.ConversationID)
 		if err != nil {
-			fmt.Println("Read messages error:", err)
+			log.Println("Read messages error:", err)
 			sendError(msg.Message.SenderID, "Failed to read messages")
 			return
 		}
 	case "read_messages_group":
-		fmt.Println(msg.Message.ConversationID, msg.Message.SenderID)
 		err := h.Service.ReadMessagesGroup(msg.Message.ConversationID, msg.Message.SenderID)
 		if err != nil {
-			fmt.Println("Read messages error:", err)
+			log.Println("Read messages error:", err)
 			sendError(msg.Message.SenderID, "Failed to read messages")
 			return
 		}
@@ -277,7 +272,7 @@ func distributeMessage(msg models.WSMessage, receivers []int) {
 		if conns, ok := service.UserConnections[userID]; ok {
 			for _, conn := range conns {
 				if err := conn.WriteJSON(msg); err != nil {
-					fmt.Println("Message distribution error:", err)
+					log.Println("Message distribution error:", err)
 				}
 			}
 		}

@@ -3,7 +3,7 @@ package middlewares
 import (
 	"context"
 	"database/sql"
-	"fmt"
+	"log"
 	"net/http"
 	"slices"
 	"strings"
@@ -58,17 +58,16 @@ func AuthMiddleware(next http.Handler, db *sql.DB) http.Handler {
 			return strings.Contains(r.URL.Path, ext)
 		})
 
-
 		cookie, err := r.Cookie("session_token")
 		if Hasallowed == -1 {
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}
 			uuid, err := uuid.FromString(cookie.Value)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				utils.WriteJson(w, http.StatusUnauthorized, "Unauthorized")
 				return
 			}

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"fmt"
+	"log"
 
 	"social-network/internal/models"
 )
@@ -13,9 +13,10 @@ func (database *Database) GetUserNotifications(userID string, start int) ([]mode
 	WHERE notified_user_id = ?
 	ORDER BY notification_id DESC
 	LIMIT ? OFFSET ?
-`, userID, 10, start);if err != nil{
-	return []models.Notification{}, err
-} 
+`, userID, 10, start)
+	if err != nil {
+		return []models.Notification{}, err
+	}
 
 	var notifications []models.Notification
 	for rows.Next() {
@@ -31,7 +32,6 @@ func (database *Database) GetUserNotifications(userID string, start int) ([]mode
 			&notification.EventID,
 			&notification.EventName,
 		)
-		
 		if err != nil {
 			return []models.Notification{}, err
 		}
@@ -39,7 +39,7 @@ func (database *Database) GetUserNotifications(userID string, start int) ([]mode
 	}
 
 	if err := rows.Err(); err != nil {
-		fmt.Println("err rows",err)
+		log.Println("err rows", err)
 		return nil, err
 	}
 	rows.Close()
@@ -56,29 +56,25 @@ func (database *Database) CheckIfEventExists(EventId int) bool {
 }
 
 func (database *Database) InsertNotification(notification models.Notification) error {
+	// Helper function to handle nullable integer values
+	toNullInt := func(value int) interface{} {
+		if value == 0 {
+			return nil
+		}
+		return value
+	}
 
-    // Helper function to handle nullable integer values
-    toNullInt := func(value int) interface{} {
-        if value == 0 {
-            return nil
-        }
-        return value
-    }
-
-    _, err := database.Db.Exec("INSERT INTO notifications (user_id, type, invoker_id, group_id, event_id) VALUES (?,?,?,?,?)",
-        notification.UserID,
-        notification.Type,
-        toNullInt(notification.InvokerID),
-        toNullInt(notification.GroupID),
-        toNullInt(notification.EventID),
-    )
-
-    fmt.Println(notification.UserID, notification.Type, notification.InvokerID, notification.GroupID, notification.EventID)
-
-    if err != nil {
-        return err
-    }
-    return nil
+	_, err := database.Db.Exec("INSERT INTO notifications (user_id, type, invoker_id, group_id, event_id) VALUES (?,?,?,?,?)",
+		notification.UserID,
+		notification.Type,
+		toNullInt(notification.InvokerID),
+		toNullInt(notification.GroupID),
+		toNullInt(notification.EventID),
+	)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (database *Database) CountUnSeenNotifications(userID string) (int, error) {
@@ -98,7 +94,7 @@ func (database *Database) CheckNotifValidation(ntfId int) bool {
 	query := `SELECT EXISTS(SELECT 1 FROM notifications WHERE id = ?)`
 	err := database.Db.QueryRow(query, ntfId).Scan(&exists)
 	if err != nil {
-		fmt.Println("err checknotification", err)
+		log.Println("err checknotification", err)
 		return false
 	}
 	return exists

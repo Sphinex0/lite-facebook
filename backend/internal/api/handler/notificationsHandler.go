@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -52,7 +52,7 @@ func (H *Handler) HandleDeleteNotification(w http.ResponseWriter, r *http.Reques
 	}
 	err := utils.ParseBody(r, &ntfID)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		utils.WriteJson(w, http.StatusBadRequest, "bad request")
 		return
 	}

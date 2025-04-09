@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 	"time"
@@ -49,7 +50,7 @@ func (Handler *Handler) AddGroup(w http.ResponseWriter, r *http.Request) {
 		utils.WriteJson(w, http.StatusBadRequest, http.StatusText(http.StatusInternalServerError))
 		return
 	}
-	fmt.Println(Group)
+	log.Println(Group)
 	if err := Handler.Service.GreatedGroup(&Group); err != nil {
 		utils.WriteJson(w, http.StatusInternalServerError, http.StatusText(http.StatusInternalServerError))
 		return

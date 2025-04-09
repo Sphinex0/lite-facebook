@@ -58,7 +58,7 @@ func (S *Service) AllGroups() ([]models.Group, error) {
 	for rows.Next() {
 		var group models.Group
 		if err := rows.Scan(utils.GetScanFields(&group)...); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return nil, err
 		}
 		groups = append(groups, group)
@@ -70,7 +70,7 @@ func (S *Service) AllGroups() ([]models.Group, error) {
 func (S *Service) GetGroupsById(Group *models.Group) (*models.Group, error) {
 	row := S.Database.GetGroupById(Group.ID)
 	if row == nil {
-		return nil, fmt.Errorf("no group found with ID: %s", Group.ID)
+		return nil, fmt.Errorf("no group found with ID: %d", Group.ID)
 	}
 
 	// Scan the row into the Group struct
@@ -98,19 +98,17 @@ func (S *Service) GetMemberById(GroupId int) ([]models.Group, error) {
 		return nil, err
 	}
 	defer rows.Close()
-	fmt.Println(rows)
 
 	Group := []int{}
 	for rows.Next() {
 		var groupIDScan int
 		if err := rows.Scan(&groupIDScan); err != nil {
-			fmt.Println("Error scanning row:", err)
+			log.Println("Error scanning row:", err)
 			return nil, err
 		}
 		Group = append(Group, groupIDScan)
 	}
 
-	log.Println(Group)
 	var groups []models.Group
 
 	for _, v := range Group {

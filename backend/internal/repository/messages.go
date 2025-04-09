@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -54,20 +55,19 @@ func (data *Database) GetMessagesHestories(befor, conversation_id int) (messages
 	var rows *sql.Rows
 	rows, err.Err = data.Db.Query(query, conversation_id, befor)
 	if err.Err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 
 	defer rows.Close()
 
-	fmt.Println("hh")
 	for rows.Next() {
 		var msg models.WSMessage
 		tab := append(utils.GetScanFields(&msg.Message), &msg.ReplyContent)
 		tab = append(tab, utils.GetScanFields(&msg.UserInfo)...)
 		err.Err = rows.Scan(tab...)
 		if err.Err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return
 		}
 		messages = append(messages, msg)
@@ -83,7 +83,7 @@ func (data *Database) ReadMessages(convId int) (err error) {
 		WHERE conversation_id = ?
 	`, convId)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 	return
 }

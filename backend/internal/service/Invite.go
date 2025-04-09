@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"slices"
 
 	"social-network/internal/models"
@@ -37,7 +38,7 @@ func (service *Service) CreateInvite(Invites models.Invite) (err error) {
 		}
 	} else {
 		resA := service.Database.IsFollow(Invites.Sender, Invites.Receiver)
-		//resB := service.Database.IsFollow(Invites.Receiver, Invites.Sender)
+		// resB := service.Database.IsFollow(Invites.Receiver, Invites.Sender)
 		// if resA && resB {
 		if resA {
 			Invites.Status = "pending"
@@ -99,7 +100,7 @@ func (service *Service) InviderDecision(Invites *models.Invite) (err error) {
 		if err != nil {
 			return
 		}
-		
+
 		ConvSubMu.Lock()
 		defer ConvSubMu.Unlock()
 
@@ -130,7 +131,7 @@ func (S *Service) AllInvites(id int) ([]models.Invite, error) {
 	for rows.Next() {
 		var Invite models.Invite
 		if err := rows.Scan(utils.GetScanFields(&Invite)...); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return nil, err
 		}
 		Invites = append(Invites, Invite)
@@ -150,7 +151,7 @@ func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 	for rows.Next() {
 		var Invite models.Invite
 		if err := rows.Scan(utils.GetScanFields(&Invite)...); err != nil {
-			fmt.Println("tttttttee", err)
+			log.Println(err)
 			return nil, err
 		}
 		Invites = append(Invites, Invite)
@@ -162,10 +163,9 @@ func (S *Service) AllMembers(id int) ([]models.Invite, error) {
 func (S *Service) Members(Invite []models.Invite) ([]models.User, error) {
 	var members []models.User
 	for _, m := range Invite {
-		fmt.Println("m.Receiver", m.Receiver)
 		row1, err := S.Database.GetUsers(m.Receiver)
 		if err != nil {
-			fmt.Println("fffffffffffff", err)
+			log.Println(err)
 			return nil, fmt.Errorf("error getting receiver user with ID %d: %w", m.Receiver, err)
 		}
 		if !slices.Contains(members, row1) {
@@ -174,7 +174,7 @@ func (S *Service) Members(Invite []models.Invite) ([]models.User, error) {
 
 		row2, err := S.Database.GetUsers(m.Sender)
 		if err != nil {
-			fmt.Println("hhhhhhhhhhhhhhhhhhh", err)
+			log.Println(err)
 			return nil, fmt.Errorf("error getting sender user with ID %d: %w", m.Sender, err)
 		}
 		if !slices.Contains(members, row2) {

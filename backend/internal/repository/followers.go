@@ -8,8 +8,6 @@ import (
 	utils "social-network/pkg"
 )
 
-
-
 func (data *Database) GetFollowersCount(user *models.UserInfo) (count int, err error) {
 	row := data.Db.QueryRow(`
         SELECT COUNT(*)
@@ -77,8 +75,8 @@ func (data *Database) GetFollowerStatus(targetUser int, FollowerUser int) (statu
 		WHERE user_id = ?
 		AND follower = ?
     `,
-	targetUser,
-	FollowerUser).Scan(&status)
+		targetUser,
+		FollowerUser).Scan(&status)
 
 	return
 }
@@ -261,21 +259,21 @@ func (data *Database) AcceptFollowRequest(follow *models.Follower) (err error) {
 	return
 }
 
-func (data *Database) GetUserPrivacyByID(userID int ) (status string, err error) {
+func (data *Database) GetUserPrivacyByID(userID int) (status string, err error) {
 	err = data.Db.QueryRow(`
         SELECT privacy 
 		FROM users
 		WHERE id = ?
     `,
-	userID).Scan(&status)
+		userID).Scan(&status)
 
 	return
 }
 
 func (data *Database) GetGroupInvitables(currentUser int, before int, group_id int) (users []models.UserInfo, err error) {
-    const pageSize = 10
+	const pageSize = 10
 
-    query := `
+	query := `
         SELECT DISTINCT u.id, u.nickname, u.first_name, u.last_name, u.image
         FROM followers f1
         INNER JOIN users u ON u.id = f1.follower
@@ -286,37 +284,37 @@ func (data *Database) GetGroupInvitables(currentUser int, before int, group_id i
         AND i1.receiver IS NULL  
         AND i2.sender IS NULL    
     `
-    
-    // Add conditions for pagination
-    params := []interface{}{group_id, group_id, currentUser}
-    if before > 0 {
-        query += " AND u.id < ?"
-        params = append(params, before)
-    }
-    
-    // Add ordering and limit
-    query += `
+
+	// Add conditions for pagination
+	params := []interface{}{group_id, group_id, currentUser}
+	if before > 0 {
+		query += " AND u.id < ?"
+		params = append(params, before)
+	}
+
+	// Add ordering and limit
+	query += `
         ORDER BY u.id DESC
         LIMIT ?
     `
-    params = append(params, pageSize)
+	params = append(params, pageSize)
 
-    var rows *sql.Rows
-    rows, err = data.Db.Query(query, params...)
-    if err != nil {
-        return
-    }
-    defer rows.Close()
+	var rows *sql.Rows
+	rows, err = data.Db.Query(query, params...)
+	if err != nil {
+		return
+	}
+	defer rows.Close()
 
-    for rows.Next() {
-        var user models.UserInfo
-        if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
-            return
-        }
-        users = append(users, user)
-    }
-	
-    err = rows.Err()
+	for rows.Next() {
+		var user models.UserInfo
+		if err = rows.Scan(utils.GetScanFields(&user)...); err != nil {
+			return
+		}
+		users = append(users, user)
+	}
 
-    return
+	err = rows.Err()
+
+	return
 }

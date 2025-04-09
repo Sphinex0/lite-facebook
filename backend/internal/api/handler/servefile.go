@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"os"
 
@@ -12,8 +12,7 @@ func (Handler *Handler) ServeFilesHandler(w http.ResponseWriter, r *http.Request
 	r.URL.Path = r.URL.Path[1:]
 	_, err := os.ReadFile(r.URL.Path)
 	if err != nil {
-		fmt.Println(err)
-		fmt.Println(r.URL.Path)
+		log.Println(err)
 		utils.WriteJson(w, http.StatusInternalServerError, "StatusInternalServerError")
 		return
 	}

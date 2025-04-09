@@ -3,6 +3,7 @@ package service
 import (
 	"database/sql"
 	"fmt"
+	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -13,7 +14,7 @@ func (service *Service) CreateEvent(event_pardse models.EventPardse) (err error)
 	Events := event_pardse.Event
 	err2 := service.VerifyGroup(Events.GroupID, Events.UserID)
 	if err2.Err != nil {
-		fmt.Println("err => ", err)
+		log.Println("err => ", err)
 		err = err2.Err
 		return
 	}
@@ -23,8 +24,8 @@ func (service *Service) CreateEvent(event_pardse models.EventPardse) (err error)
 	}
 	//
 	option := models.EventOption{
-		Going: event_pardse.Going,
-		UserID: Events.UserID,
+		Going:   event_pardse.Going,
+		UserID:  Events.UserID,
 		EventID: Events.ID,
 	}
 	err = service.Database.SaveOptionEvent(&option)
@@ -32,9 +33,9 @@ func (service *Service) CreateEvent(event_pardse models.EventPardse) (err error)
 		return
 	}
 	//
-    var ids []int
-	ids , err = service.Database.GetGroupMembers(Events.GroupID)
-    if err != nil {
+	var ids []int
+	ids, err = service.Database.GetGroupMembers(Events.GroupID)
+	if err != nil {
 		return
 	}
 	var notification models.Notification
@@ -42,14 +43,14 @@ func (service *Service) CreateEvent(event_pardse models.EventPardse) (err error)
 	notification.InvokerID = Events.UserID
 	notification.EventID = Events.ID
 	notification.GroupID = Events.GroupID
-	for _,id := range ids{
+	for _, id := range ids {
 		if id != Events.UserID {
-		    notification.UserID = id
-		    err = service.AddNotification(notification)
-		    if err != nil {
-			    fmt.Println(err)
-			    return
-		    }
+			notification.UserID = id
+			err = service.AddNotification(notification)
+			if err != nil {
+				log.Println(err)
+				return
+			}
 		}
 	}
 	return
@@ -67,7 +68,7 @@ func (service *Service) AllEvents(Event models.Event) ([]models.Event, error) {
 	for rows.Next() {
 		var event models.Event
 		if err := rows.Scan(utils.GetScanFields(&event)...); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return nil, err
 		}
 		events = append(events, event)
@@ -78,7 +79,7 @@ func (service *Service) AllEvents(Event models.Event) ([]models.Event, error) {
 func (S *Service) GetEventsById(Event *models.Event) (*models.Event, error) {
 	row := S.Database.GetEventById(Event.ID)
 	if row == nil {
-		return nil, fmt.Errorf("no group found with ID: %s", Event.ID)
+		return nil, fmt.Errorf("no group found with ID: %d", Event.ID)
 	}
 
 	// Scan the row into the Event struct
@@ -90,9 +91,7 @@ func (S *Service) GetEventsById(Event *models.Event) (*models.Event, error) {
 }
 
 func (S *Service) PostEventsOption(OptionEvent models.EventOption) (err error) {
-	fmt.Println("OptionEvent", OptionEvent)
 	booll, err := S.Database.CheckEvent(OptionEvent.EventID, OptionEvent.UserID)
-	fmt.Println("booll", booll)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			err = S.Database.SaveOptionEvent(&OptionEvent)
@@ -103,7 +102,7 @@ func (S *Service) PostEventsOption(OptionEvent models.EventOption) (err error) {
 		return
 	} else if booll != OptionEvent.Going {
 		err = S.Database.UpdateOptionEvent(OptionEvent)
-		fmt.Println(err)
+		log.Println(err)
 		return
 	}
 	err = S.Database.SaveOptionEvent(&OptionEvent)
@@ -122,32 +121,13 @@ func (S *Service) GetEventsOption(OptionEvent models.EventOption) ([]models.Even
 	for rows.Next() {
 		var event models.EventOption
 		if err := rows.Scan(utils.GetScanFields(&event)...); err != nil {
-			fmt.Println(err)
+			log.Println(err)
 			return nil, err
 		}
 		events = append(events, event)
 	}
 	return events, nil
 }
-
-// func (S *Service) GetEventgoing(OptionEvent models.EventOption, user_id int) (int, string, error) {
-// 	rows, user, err := S.Database.ChoiseEvent(OptionEvent.EventID, OptionEvent.Going)
-// 	if err != nil {
-// 		if err == sql.ErrNoRows {
-// 			fmt.Println("rows", rows)
-// 			fmt.Println("user", user)
-// 			fmt.Println("err", nil)
-// 			return 0, "not", nil
-// 		} else {
-// 			return 0, "", err
-// 		}
-// 	}
-// 	if user == user_id {
-// 		fmt.Println("user", user)
-// 		return rows, "action", nil
-// 	}
-// 	return rows, "not", nil
-// }
 
 // GetEventGoingInfo processes event attendance data
 func (s *Service) GetEventGoingInfo(eventID int, userID int) (int, int, string, error) {

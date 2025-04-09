@@ -26,7 +26,6 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 			return
 		}
 		bl := S.Database.IsFollow(follow.Follower, follow.UserID)
-		fmt.Println(" bl => ,", bl)
 		if !bl {
 			err = S.DeleteConversation(follow.UserID, follow.Follower)
 			if err != nil {
@@ -57,7 +56,7 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 			if follow.Status == "accepted" {
 				// chaeck if there is a conversation between the two
 				conv, err1 := S.Database.GetConversationByUsers(follow.Follower, follow.UserID)
-				fmt.Println("err1", err1)
+				log.Println("err1", err1)
 				if err1 != nil && err1 != sql.ErrNoRows {
 					log.Println("error getting the conversation")
 					err = err1
@@ -90,8 +89,6 @@ func (S *Service) Follow(follow *models.Follower) (err error) {
 
 		notification.UserID = follow.UserID
 		notification.InvokerID = follow.Follower
-
-		fmt.Println("rrrr")
 		S.AddNotification(notification)
 
 	}
@@ -110,7 +107,7 @@ func (S *Service) FollowDecision(follow *models.Follower) (err error) {
 		if err == nil {
 			// chaeck if there is a conversation between the two
 			conv, err1 := S.Database.GetConversationByUsers(follow.Follower, follow.UserID)
-			fmt.Println("err1", err1)
+			log.Println("err1", err1)
 			if err1 != nil && err1 != sql.ErrNoRows {
 				log.Println("error getting the conversation")
 				err = err1

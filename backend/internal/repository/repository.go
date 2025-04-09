@@ -3,6 +3,7 @@ package repository
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"time"
 
 	"social-network/internal/models"
@@ -38,7 +39,7 @@ func ApplyMigrations(db *sql.DB) error {
 	if err != nil {
 		return fmt.Errorf("error while executing the migration: %v", err)
 	}
-	fmt.Printf("Applied %d migrations successfully!\n", n)
+	log.Printf("Applied %d migrations successfully!\n", n)
 	return nil
 }
 

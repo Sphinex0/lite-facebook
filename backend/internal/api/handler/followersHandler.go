@@ -159,6 +159,5 @@ func (Handler *Handler) HandleGetGroupInvitable(w http.ResponseWriter, r *http.R
 		utils.WriteJson(w, http.StatusBadRequest, "Bad request")
 		return
 	}
-	log.Println("users are :", data.GroupID, data.BeforeID)
 	utils.WriteJson(w, http.StatusOK, users)
 }

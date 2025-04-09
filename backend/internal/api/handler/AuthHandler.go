@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 
@@ -22,7 +22,7 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	Uuid, err := H.Service.LoginUser(&user)
 	if err != nil {
-		fmt.Println("err",err)
+		log.Println("err", err)
 		utils.WriteJson(w, http.StatusBadRequest, err.Error())
 		return
 	}
@@ -36,10 +36,9 @@ func (H *Handler) Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
-	
 	user := H.Service.Extractuser(r)
 	var err1 error
-	user.DateBirth , err1 = strconv.Atoi( r.FormValue("dob"))
+	user.DateBirth, err1 = strconv.Atoi(r.FormValue("dob"))
 	if err1 != nil {
 		utils.WriteJson(w, http.StatusBadRequest, "file too big")
 		return
@@ -66,7 +65,7 @@ func (H *Handler) Signup(w http.ResponseWriter, r *http.Request) {
 		user.Image = "default-profile.png"
 	}
 
-	fmt.Println("user", user)
+	log.Println("user", user)
 	// Proccess Data and Insert it
 	_, err, _ = H.Service.RegisterUser(&user)
 	if err != nil {

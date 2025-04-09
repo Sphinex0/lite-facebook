@@ -2,6 +2,7 @@ package repository
 
 import (
 	"fmt"
+	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -101,7 +102,7 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 		tab := append(utils.GetScanFields(&conv.Conversation), &conv.LastMessage)
 		err1 := rows.Scan(tab...)
 		if err1 != nil {
-			fmt.Println(err1)
+			log.Println(err1)
 		}
 		conversations = append(conversations, conv)
 	}
@@ -111,7 +112,7 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 			row := data.GetGroupById(*conv.Conversation.Entitie_two_group)
 			err = row.Scan(utils.GetScanFields(&conversations[i].Group)...)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 			err = data.Db.QueryRow(`
@@ -119,9 +120,8 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 				FROM members
 				WHERE conversation_id = ? AND member == ?
 			`, conv.Conversation.ID, id).Scan(&conversations[i].Seen)
-			// fmt.Println(conv.Seen)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 		} else {
@@ -131,7 +131,7 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 			}
 			conversations[i].UserInfo, err = data.GetUserByID(idUser)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 
@@ -140,9 +140,8 @@ func (data *Database) GetConversations(id int) (conversations []models.Conversat
 				FROM messages
 				WHERE conversation_id = ? AND sender_id != ? AND seen = 0
 			`, conv.Conversation.ID, id).Scan(&conversations[i].Seen)
-			// fmt.Println(conv.Seen)
 			if err != nil {
-				fmt.Println(err)
+				log.Println(err)
 				return
 			}
 		}

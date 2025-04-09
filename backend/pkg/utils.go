@@ -127,39 +127,38 @@ func GetUserFromContext(ctx context.Context) (user models.UserInfo, uuidCookie s
 
 func StoreThePic(UploadDir string, file multipart.File, handler *multipart.FileHeader) (string, error) {
 	if _, err := os.Stat(UploadDir); os.IsNotExist(err) {
-		fmt.Println(err)
+		log.Println(err)
 		er := os.Mkdir(UploadDir, os.ModePerm)
-		fmt.Println(er)
+		log.Println(er)
 	} else {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	randomstr := GenerateUuid()
-	fmt.Println(randomstr + handler.Filename)
 
 	extensions := []string{".png", ".jpg", ".jpeg", ".gif"}
 	extIndex := slices.IndexFunc(extensions, func(ext string) bool {
 		return strings.HasSuffix(strings.ToLower(handler.Filename), ext)
 	})
 	if extIndex == -1 {
-		return "" , fmt.Errorf("err")
+		return "", fmt.Errorf("err")
 	}
 
 	filePath := filepath.Join(UploadDir, randomstr+extensions[extIndex])
 	dst, err := os.Create(filePath)
 	if err != nil {
-		fmt.Println("err1",err)
+		log.Println("err1", err)
 		return "", errors.New("could not save file")
 	}
 	defer dst.Close()
 
 	_, err = io.Copy(dst, file)
 	if err != nil {
-		fmt.Println("err2",err)
+		log.Println("err2", err)
 		return "", errors.New("failed to save file")
 	}
 
-	return randomstr+extensions[extIndex], nil
+	return randomstr + extensions[extIndex], nil
 }
 
 func GenerateUuid() string {

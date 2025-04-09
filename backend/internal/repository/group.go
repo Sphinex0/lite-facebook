@@ -3,7 +3,6 @@ package repository
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	"social-network/internal/models"
 	utils "social-network/pkg"
@@ -49,10 +48,8 @@ func (data *Database) Getallgroup() (*sql.Rows, error) {
 }
 
 func (data *Database) GetGroupById(id int) *sql.Row {
-
 	res := data.Db.QueryRow(`SELECT DISTINCT * FROM groups Where id =?`, id)
 	return res
-
 }
 
 func (data *Database) GetCreatorGroup(group_ID int, IdUser int) (bool, error) {
@@ -85,6 +82,5 @@ func (data *Database) TypeUserInvate(id int, group_id int) (string, error) {
 			return "join", err
 		}
 	}
-	log.Println(types)
 	return types, nil
 }
